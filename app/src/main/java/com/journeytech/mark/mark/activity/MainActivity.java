@@ -72,9 +72,6 @@ public class MainActivity extends BaseActivityLocation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        tvdist = (TextView) findViewById(R.id.tvDistance);
-        tvdura = (TextView) findViewById(R.id.tvDuration);
-
         p = new Proximity();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -186,7 +183,9 @@ public class MainActivity extends BaseActivityLocation
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();*/
         if (id == R.id.snailtrail) {
-
+            tvdist = (TextView) findViewById(R.id.tvDistance);
+            tvdura = (TextView) findViewById(R.id.tvDuration);
+            tvdist.setText("");tvdura.setText("");
             manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
             mMap.clear();
             tvdist.setText(""); tvdura.setText("");
@@ -215,7 +214,8 @@ public class MainActivity extends BaseActivityLocation
             }
 
         } else if (id == R.id.proximity) {
-
+            tvdist = (TextView) findViewById(R.id.tvDistance);
+            tvdura = (TextView) findViewById(R.id.tvDuration);
             manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
             mMap.clear();
             String lat = "";
@@ -269,6 +269,8 @@ public class MainActivity extends BaseActivityLocation
 
             }
         } else if (id == R.id.navigation) {
+            tvdist = (TextView) findViewById(R.id.tvDistance);
+            tvdura = (TextView) findViewById(R.id.tvDuration);
             Double lat2 = Double.parseDouble(list_location.get(list_location.size()-1).getLatitude());
             Double long2 = Double.parseDouble(list_location.get(list_location.size()-1).getLongitude());
             LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
