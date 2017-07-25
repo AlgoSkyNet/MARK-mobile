@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MARK</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_maps">Map</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="not_found">Location still not found</string>
+    <string name="dashboard_permission_denied">One of the Permission is still denied</string>
+    <string name="err">Error</string>
+</resources>
