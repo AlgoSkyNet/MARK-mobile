@@ -32,6 +32,6 @@ dependencies {
     compile 'com.android.support:support-v4:26.+'
     compile 'com.google.android.gms:play-services-location:11.0.1'
     compile 'com.google.maps.android:android-maps-utils:0.4.3'
-    compile 'br.com.mauker.materialsearchview:materialsearchview:1.2.2'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
     testCompile 'junit:junit:4.12'
 }
