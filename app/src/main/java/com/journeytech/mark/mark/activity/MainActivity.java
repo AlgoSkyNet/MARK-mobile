@@ -1,12 +1,14 @@
 package com.journeytech.mark.mark.activity;
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -14,22 +16,21 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.journeytech.mark.mark.LocationHolder;
 import com.journeytech.mark.mark.Navigation;
@@ -42,27 +43,18 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.journeytech.mark.mark.R.id.search;
 import static com.journeytech.mark.mark.fragment.MapFragment.list_location;
 import static com.journeytech.mark.mark.fragment.MapFragment.mMap;
 
 public class MainActivity extends BaseActivityLocation
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
+        SearchView.OnSuggestionListener {
 
     public Proximity p;
 
     ArrayList<LocationHolder> al = new ArrayList<>();
-
-    private Button btnFindPath;
-    private EditText etOrigin;
-    private EditText etDestination;
-    private List<Marker> originMarkers = new ArrayList<>();
-    private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
-    private ProgressDialog progressDialog;
-
 
     FragmentManager manager;
     MapFragment mapFragment;
@@ -71,6 +63,58 @@ public class MainActivity extends BaseActivityLocation
 
     MaterialSearchView searchView;
 
+    private static final String[] COLUMNS = {
+            BaseColumns._ID,
+            SearchManager.SUGGEST_COLUMN_TEXT_1,
+    };
+
+    private SuggestionsAdapter mSuggestionsAdapter;
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Toast.makeText(this, "You searched for: " + query, Toast.LENGTH_LONG).show();
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionSelect(int position) {
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+        Cursor c = (Cursor) mSuggestionsAdapter.getItem(position);
+        String query = c.getString(c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
+        Toast.makeText(this, "Suggestion clicked: " + query, Toast.LENGTH_LONG).show();
+        return true;
+    }
+
+    private class SuggestionsAdapter extends CursorAdapter {
+
+        public SuggestionsAdapter(Context context, Cursor c) {
+            super(context, c, 0);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View v = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            return v;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            TextView tv = (TextView) view;
+            final int textIndex = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1);
+            tv.setText(cursor.getString(textIndex));
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +122,7 @@ public class MainActivity extends BaseActivityLocation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        searchView = (MaterialSearchView) findViewById(R.id.search_view);
+       /* searchView = (MaterialSearchView) findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -105,7 +149,7 @@ public class MainActivity extends BaseActivityLocation
             }
         });
 
-        searchView.setVoiceSearch(true);
+        searchView.setVoiceSearch(true);*/
         p = new Proximity();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -181,7 +225,7 @@ public class MainActivity extends BaseActivityLocation
                 return true;
             }
         };
-            et.setOnQueryTextListener(queryTextListener);
+        et.setOnQueryTextListener(queryTextListener);
 
     }
 
@@ -197,13 +241,36 @@ public class MainActivity extends BaseActivityLocation
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        //Create the search view
+        SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setQueryHint("What is your vehicle plate no.?");
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnSuggestionListener(this);
 
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
+        if (mSuggestionsAdapter == null) {
+            MatrixCursor cursor = new MatrixCursor(COLUMNS);
+            /*for (int i = 0; i < vehicle.size(); i++) {
+                container = container + vehicle.toString();
+                String is = String.valueOf(i);
+                cursor.addRow(new String[]{is, vehicle.get(0).get("plate_num").toString()});
+            }*/
+            cursor.addRow(new String[]{"1", "Android"});
+            cursor.addRow(new String[]{"1", "Android"});
+            mSuggestionsAdapter = new SuggestionsAdapter(getSupportActionBar().getThemedContext(), cursor);
+        }
+//        Toast.makeText(this, vehicle.get(0).get("plate_num").toString() + "A", Toast.LENGTH_SHORT).show();
+        searchView.setSuggestionsAdapter(mSuggestionsAdapter);
+
+
+        menu.add("Search")
+                .setIcon(true ? R.drawable.ic_action_action_search : R.drawable.ic_action_action_search)
+                .setActionView(searchView)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -238,11 +305,13 @@ public class MainActivity extends BaseActivityLocation
         if (id == R.id.snailtrail) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
             tvdura = (TextView) findViewById(R.id.tvDuration);
-            tvdist.setText("");tvdura.setText("");
+            tvdist.setText("");
+            tvdura.setText("");
             manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
             mMap.clear();
-            tvdist.setText(""); tvdura.setText("");
-            if(manager != null) {
+            tvdist.setText("");
+            tvdura.setText("");
+            if (manager != null) {
                 // Instantiating the class PolylineOptions to plot polyline in the map
                 final PolylineOptions polylineOptions = new PolylineOptions();
                 al = list_location;
@@ -274,27 +343,27 @@ public class MainActivity extends BaseActivityLocation
             String lat = "";
             String Longitude = "";
             if (p != null) {
-                 lat = String.valueOf(p.getLatitude());
-                 Longitude = String.valueOf(p.getLongitude());
+                lat = String.valueOf(p.getLatitude());
+                Longitude = String.valueOf(p.getLongitude());
 
-            MapFragment.createProximity(lat,Longitude);
-                Double lat2 = Double.parseDouble(list_location.get(list_location.size()-1).getLatitude());
-                Double long2 = Double.parseDouble(list_location.get(list_location.size()-1).getLongitude());
+                MapFragment.createProximity(lat, Longitude);
+                Double lat2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLatitude());
+                Double long2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLongitude());
                 LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
                 LatLng l2 = new LatLng(lat2, long2);
 
                 Double m = MapFragment.distanceBetween(l1, l2);
                 double km = 1000;
-                double distanceInMeters =m/km;
+                double distanceInMeters = m / km;
 
                 DecimalFormat df = new DecimalFormat();
                 df.setMaximumFractionDigits(2);
 
-                tvdist.setText( df.format(distanceInMeters )+ " km");
+                tvdist.setText(df.format(distanceInMeters) + " km");
 
                 //For example spead is 10 meters per minute.
                 int speedIs10MetersPerMinute = 10;
-                Double estimatedDriveTimeInMinutes = m  / speedIs10MetersPerMinute;
+                Double estimatedDriveTimeInMinutes = m / speedIs10MetersPerMinute;
                 estimatedDriveTimeInMinutes = estimatedDriveTimeInMinutes / 60;
 
                 tvdura.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");
@@ -324,23 +393,23 @@ public class MainActivity extends BaseActivityLocation
         } else if (id == R.id.navigation) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
             tvdura = (TextView) findViewById(R.id.tvDuration);
-            Double lat2 = Double.parseDouble(list_location.get(list_location.size()-1).getLatitude());
-            Double long2 = Double.parseDouble(list_location.get(list_location.size()-1).getLongitude());
+            Double lat2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLatitude());
+            Double long2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLongitude());
             LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
             LatLng l2 = new LatLng(lat2, long2);
 
             Double m = MapFragment.distanceBetween(l1, l2);
             double km = 1000;
-            double distanceInMeters =m/km;
+            double distanceInMeters = m / km;
 
             DecimalFormat df = new DecimalFormat();
             df.setMaximumFractionDigits(2);
 
-            tvdist.setText( df.format(distanceInMeters )+ " km");
+            tvdist.setText(df.format(distanceInMeters) + " km");
 
             //For example spead is 10 meters per minute.
             int speedIs10MetersPerMinute = 10;
-            Double estimatedDriveTimeInMinutes = m  / speedIs10MetersPerMinute;
+            Double estimatedDriveTimeInMinutes = m / speedIs10MetersPerMinute;
             estimatedDriveTimeInMinutes = estimatedDriveTimeInMinutes / 60;
 
             tvdura.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");
@@ -351,11 +420,9 @@ public class MainActivity extends BaseActivityLocation
 //            Double Longitude = Double.parseDouble(al.get(al.size()-1).getLongitude());
             n.setLatitude(14.507743);
             n.setLongitude(121.003601);
-            MapFragment.createNavigation(list_location.get(list_location.size()-1).getLatitude(), list_location.get(list_location.size()-1).getLongitude());
+            MapFragment.createNavigation(list_location.get(list_location.size() - 1).getLatitude(), list_location.get(list_location.size() - 1).getLongitude());
 //            Toast.makeText(getApplicationContext(), lat+Longitude.toString(), Toast.LENGTH_SHORT).show();
-        }
-
-        else if (id == R.id.account) {
+        } else if (id == R.id.account) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
         } else if (id == R.id.sign_out) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
@@ -379,26 +446,20 @@ public class MainActivity extends BaseActivityLocation
 
         //After initLocationFetching.
         Bundle bundle = new Bundle();
-        bundle.putDouble("Lat",mLocal.getLatitude());
-        bundle.putDouble("Long",mLocal.getLongitude());
+        bundle.putDouble("Lat", mLocal.getLatitude());
+        bundle.putDouble("Long", mLocal.getLongitude());
         mapFragment.setArguments(bundle);
         manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
 
-//        Toast.makeText(getApplication(), "Lat : " + p.getLatitude() + " Lng : " + mLocal.getLongitude(), Toast.LENGTH_SHORT).show();
-/*        if(mLocal.getAltitude() == 0.0 && mLocal.getLongitude() == 0.0){
-            Toast.makeText(getApplicationContext(), R.string.not_found, Toast.LENGTH_SHORT).show();
-        }else{
-            mLocalTV.setText("Lat : " + mLocal.getLatitude() + " Lng : " + mLocal.getLongitude());
-        }
-        mLocationProviderTV.setText(locationProvider);
-        mlocationTimeTV.setText(time);*/
     }
+
     public Location mLocal;
+
     public Location getMLocal() {
         return mLocal;
     }
 
     public void setMLocal(Location mLocal) {
-        this.mLocal= mLocal;
+        this.mLocal = mLocal;
     }
 }

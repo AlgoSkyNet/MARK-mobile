@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,13 +21,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,10 +40,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 import com.journeytech.mark.mark.HttpHandler;
 import com.journeytech.mark.mark.LocationHolder;
-import com.journeytech.mark.mark.Navigation;
-import com.journeytech.mark.mark.Proximity;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.SnailTrail;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.drawroute.DataParser;
 
@@ -71,42 +65,28 @@ import java.util.List;
 public class MapFragment extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener {
 
-    SnailTrail st;
-    PopupWindow popupWindow;
-    LocationManager mLocationManager;
-
-    Button b;
-
     private ProgressDialog pDialog;
     private ListView lv;
     // URL to get contacts JSON
     private static String url = "http://mark.journeytech.com.ph/immo_dev/mark_live_active/snailtrailApi.php?timeFrom=07%2F05%2F2017+00%3A00%3A00&timeTo=07%2F05%2F2017+23%3A59%3A59&plateNo=AJA5963&server=active";
 
-    ArrayList<SnailTrail> stt = new ArrayList<SnailTrail>();
-    SnailTrail g = new SnailTrail();
-
-    public static ArrayList<LocationHolder>list_location;
+    public static ArrayList<LocationHolder> list_location;
 
     public static GoogleMap mMap;
     ArrayList<LatLng> MarkerPoints;
     GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
-    Marker mCurrLocationMarker;
-    LocationRequest mLocationRequest;
 
-Context context;
+    Context context;
     static Activity activity;
 
-    Proximity p = new Proximity();
-    static Navigation n = new Navigation();
-
-    MainActivity ma = new MainActivity();
-
-    static double lati=0.0;
-    static double longi=0.0;
+    static double lati = 0.0;
+    static double longi = 0.0;
     static LatLng origin;
 
-    public MapFragment(Context c, Activity a) { context = c; activity = a;}
+    public MapFragment(Context c, Activity a) {
+        context = c;
+        activity = a;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,12 +101,8 @@ Context context;
         // Initializing
         MarkerPoints = new ArrayList<>();
 
-/*        if(ma.p.getLatitude()!= null) {
-            Toast.makeText(context, "Asdasdasdasdas" + ma.p.getLatitude().toString(), Toast.LENGTH_SHORT).show();
-        }*/
-
-        lati=getArguments().getDouble("Lat");
-        longi=getArguments().getDouble("Long");
+        lati = getArguments().getDouble("Lat");
+        longi = getArguments().getDouble("Long");
 
         return v;
     }
@@ -146,7 +122,8 @@ Context context;
             image = BitmapDescriptorFactory.fromResource(R.drawable.vehicle_list);
         else {
             image = BitmapDescriptorFactory.fromResource(R.drawable.marker);
-        } if (index == list_location.size()-1)
+        }
+        if (index == list_location.size() - 1)
             image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
 
         mMap.addMarker(new MarkerOptions()
@@ -273,7 +250,7 @@ Context context;
                     marker.hideInfoWindow();
                 }
             });
-                TextView markerLabel = (TextView) v.findViewById(R.id.textView2);
+            TextView markerLabel = (TextView) v.findViewById(R.id.textView2);
             markerLabel.setText("");
 
             return v;
@@ -315,7 +292,7 @@ Context context;
                     // Getting JSON Array node
                     JSONArray contacts = jsonObj.getJSONArray("snailtrail_data");
 
-                    list_location=new ArrayList<>();
+                    list_location = new ArrayList<>();
                     for (int i = 0; i < contacts.length(); i++) {
                         JSONObject c = contacts.getJSONObject(i);
                         String account = c.getString("account");
@@ -335,7 +312,7 @@ Context context;
                         String engine = c.getString("engine");
                         String plateno = c.getString("plateno");
 
-                        list_location.add(new LocationHolder(longitude,latitude,location,direction));
+                        list_location.add(new LocationHolder(longitude, latitude, location, direction));
                     }
 
                 } catch (final JSONException e) {
@@ -357,7 +334,9 @@ Context context;
         }
 
     }
-Location l;
+
+    Location l;
+
     public void setLocation(Location loc) {
         l = loc;
     }
@@ -382,14 +361,13 @@ Location l;
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
-        }
-        else {
+        } else {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
 
-        Location mLocal = ((MainActivity)getActivity()).getMLocal();
-        origin = new LatLng(lati,longi);
+        Location mLocal = ((MainActivity) getActivity()).getMLocal();
+        origin = new LatLng(lati, longi);
         mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lati, longi))
                 .anchor(0.5f, 0.5f)
@@ -416,7 +394,7 @@ Location l;
     }
 
     public static void createNavigation(String latitude, String longitude) {
-        origin = new LatLng(lati,longi);
+        origin = new LatLng(lati, longi);
         mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lati, longi))
                 .anchor(0.5f, 0.5f)
@@ -575,17 +553,17 @@ Location l;
 
             try {
                 jObject = new JSONObject(jsonData[0]);
-                Log.d("ParserTask",jsonData[0].toString());
+                Log.d("ParserTask", jsonData[0].toString());
                 DataParser parser = new DataParser();
                 Log.d("ParserTask", parser.toString());
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-                Log.d("ParserTask","Executing routes");
-                Log.d("ParserTask",routes.toString());
+                Log.d("ParserTask", "Executing routes");
+                Log.d("ParserTask", routes.toString());
 
             } catch (Exception e) {
-                Log.d("ParserTask",e.toString());
+                Log.d("ParserTask", e.toString());
                 e.printStackTrace();
             }
             return routes;
@@ -621,16 +599,15 @@ Location l;
                 lineOptions.width(10);
                 lineOptions.color(Color.RED);
 
-                Log.d("onPostExecute","onPostExecute lineoptions decoded");
+                Log.d("onPostExecute", "onPostExecute lineoptions decoded");
 
             }
 
             // Drawing polyline in the Google Map for the i-th route
-            if(lineOptions != null) {
+            if (lineOptions != null) {
                 mMap.addPolyline(lineOptions);
-            }
-            else {
-                Log.d("onPostExecute","without Polylines drawn");
+            } else {
+                Log.d("onPostExecute", "without Polylines drawn");
             }
         }
     }
@@ -697,7 +674,8 @@ Location l;
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
+
+    public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {

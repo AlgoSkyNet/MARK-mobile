@@ -25,24 +25,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class VehicleFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private ProgressDialog pDialog;
     private ListView lv;
     // URL to get contacts JSON
     private static String url = "http://mark.journeytech.com.ph/json/1.json";
 
-    ArrayList<HashMap<String, String>> contactList;
+    public static ArrayList<HashMap<String, String>> vehicle;
     SnailTrail g = new SnailTrail();
     TextView tv;
     String a = "";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,18 +47,18 @@ public class VehicleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_vehicle, container, false);
-        contactList = new ArrayList<>();
+        vehicle = new ArrayList<>();
 
         lv = (ListView) v.findViewById(R.id.list);
 
         TextView tv = (TextView) v.findViewById(R.id.tv3);
         tv.setText(a);
         Toast.makeText(getContext(), a, Toast.LENGTH_SHORT).show();
-        new GetContacts().execute();
+        new GetVehicles().execute();
         return v;
     }
 
-    private class GetContacts extends AsyncTask<Void, Void, Void> {
+    private class GetVehicles extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -100,6 +93,8 @@ public class VehicleFragment extends Fragment {
                 JSONArray getter = null;
                 try {
                     JSONArray jr = new JSONArray(jsonStr);
+
+                    vehicle = new ArrayList<>();
                     for(int i=0;i<jsonStr.length();i++) {
                         JSONObject jb = (JSONObject)jr.getJSONObject(i);
                         plate_num = jb.getString("plate_num");
@@ -112,24 +107,24 @@ public class VehicleFragment extends Fragment {
                         engine = jb.getString("engine");
                         remarks = jb.getString("remarks");
 
-                        // tmp hash map for single contact
-                        HashMap<String, String> contact = new HashMap<>();
+                        // tmp hash map for detail [single]
+                        HashMap<String, String> details = new HashMap<>();
 
                         // adding each child node to HashMap key => value
-                        contact.put("plate_num", plate_num);
-                        contact.put("gps_num", gps_num);
-                        contact.put("location", location);
-                        contact.put("date", date);
-                        contact.put("time", time);
-                        contact.put("lat", lat);
-                        contact.put("lng", lng);
-                        contact.put("engine", engine);
-                        contact.put("remarks", remarks);
+                        details.put("plate_num", plate_num);
+                        details.put("gps_num", gps_num);
+                        details.put("location", location);
+                        details.put("date", date);
+                        details.put("time", time);
+                        details.put("lat", lat);
+                        details.put("lng", lng);
+                        details.put("engine", engine);
+                        details.put("remarks", remarks);
 
-                        a = contact.get("date");
+                        a = details.get("date");
 
-                        // adding contact to contact list
-                        contactList.add(contact);
+                        // adding vehicle to vehicle list
+                        vehicle.add(details);
                     }
                 } catch (final JSONException e) {
 
@@ -151,7 +146,7 @@ public class VehicleFragment extends Fragment {
              * Updating parsed JSON data into ListView
              * */
 
-            ListAdapter adapter = new SimpleAdapter(getActivity(), contactList,
+            ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
                     R.layout.list_vehicle, new String[]{"plate_num", "gps_num",
                     "location", "date", "time", "lat", "lng", "engine",
                     "remarks", "remarks", "remarks", "remarks", "remarks", "remarks", "remarks", "remarks"},
