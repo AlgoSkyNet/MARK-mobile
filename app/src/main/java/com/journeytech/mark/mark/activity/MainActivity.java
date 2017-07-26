@@ -2,14 +2,12 @@ package com.journeytech.mark.mark.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -21,7 +19,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -122,7 +119,7 @@ public class MainActivity extends BaseActivityLocation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-       /* searchView = (MaterialSearchView) findViewById(R.id.search_view);
+/*        searchView = (MaterialSearchView) findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -179,6 +176,16 @@ public class MainActivity extends BaseActivityLocation
 //        manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
     }
 
+/*    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
+        return true;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == MaterialSearchView.REQUEST_VOICE && resultCode == RESULT_OK) {
@@ -193,7 +200,7 @@ public class MainActivity extends BaseActivityLocation
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
+    }*/
 
     void presser() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -251,7 +258,7 @@ public class MainActivity extends BaseActivityLocation
         if (mSuggestionsAdapter == null) {
             MatrixCursor cursor = new MatrixCursor(COLUMNS);
             /*for (int i = 0; i < vehicle.size(); i++) {
-                container = container + vehicle.toString();
+
                 String is = String.valueOf(i);
                 cursor.addRow(new String[]{is, vehicle.get(0).get("plate_num").toString()});
             }*/
