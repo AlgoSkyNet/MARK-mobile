@@ -6,11 +6,11 @@
             android:id="@+id/vehicle_list"
             android:icon="@drawable/vehicle_list"
             android:title="Vehicle List" />
-        <!--        <item
-                    android:id="@+id/map"
-                    android:icon="@drawable/vehicle_list"
-                    android:title="Map" />-->
         <item
+            android:id="@+id/map"
+            android:icon="@drawable/vehicle_list"
+            android:title="Map" />
+        <!--<item
             android:id="@+id/snailtrail"
             android:icon="@drawable/vehicle_list"
             android:title="Snail Trail" />
@@ -21,7 +21,7 @@
         <item
             android:id="@+id/navigation"
             android:icon="@drawable/vehicle_list"
-            android:title="Navigation" />
+            android:title="Navigation" />-->
     </group>
 
     <item android:title="Account">

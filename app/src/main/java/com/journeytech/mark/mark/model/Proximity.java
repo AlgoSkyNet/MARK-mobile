@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark;
+package com.journeytech.mark.mark.model;
 
 /**
  * Created by rtyJa on 19/07/2017.

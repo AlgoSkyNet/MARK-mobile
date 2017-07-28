@@ -1,11 +1,13 @@
 package com.journeytech.mark.mark.activity;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -24,26 +26,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.journeytech.mark.mark.LocationHolder;
-import com.journeytech.mark.mark.Navigation;
-import com.journeytech.mark.mark.Proximity;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.fragment.MapFragment;
-import com.journeytech.mark.mark.fragment.VehicleFragment;
+import com.journeytech.mark.mark.fragment.VehicleListFragment;
 import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
+import com.journeytech.mark.mark.model.LocationHolder;
+import com.journeytech.mark.mark.model.Proximity;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import static com.journeytech.mark.mark.R.id.search;
-import static com.journeytech.mark.mark.fragment.MapFragment.list_location;
-import static com.journeytech.mark.mark.fragment.MapFragment.mMap;
+import static com.journeytech.mark.mark.fragment.VehicleDetailsProximityNavigationFragment.createSnailTrail;
+import static com.journeytech.mark.mark.fragment.VehicleDetailsProximityNavigationFragment.list_location;
+import static com.journeytech.mark.mark.fragment.VehicleDetailsProximityNavigationFragment.mMap;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -59,6 +61,8 @@ public class MainActivity extends BaseActivityLocation
     TextView tvdist, tvdura;
 
     MaterialSearchView searchView;
+
+    ProgressDialog pDialog;
 
     private static final String[] COLUMNS = {
             BaseColumns._ID,
@@ -173,7 +177,7 @@ public class MainActivity extends BaseActivityLocation
 
         mapFragment = new MapFragment(MainActivity.this, this);
         manager = getSupportFragmentManager();
-//        manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+        manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
     }
 
 /*    @Override
@@ -257,13 +261,19 @@ public class MainActivity extends BaseActivityLocation
 
         if (mSuggestionsAdapter == null) {
             MatrixCursor cursor = new MatrixCursor(COLUMNS);
-            /*for (int i = 0; i < vehicle.size(); i++) {
+
+            AutoCompleteTextView actv = new AutoCompleteTextView(this);
+            actv.setThreshold(1);
+
+/*            VehicleHolder vh = new VehicleHolder("");
+            for (int i = 0; i < vh.getVehicle().length(); i++) {
 
                 String is = String.valueOf(i);
-                cursor.addRow(new String[]{is, vehicle.get(0).get("plate_num").toString()});
+//                cursor.addRow(new String[]{is, list_vehicle.get(0).get("plate_num").toString()});
+                cursor.addRow(new String[]{is, list_vehicle.get(i).getVehicle().toString()});
             }*/
-            cursor.addRow(new String[]{"1", "Android"});
-            cursor.addRow(new String[]{"1", "Android"});
+
+//            Toast.makeText(MainActivity.this, list_vehicle.get(0).getVehicle().toString(), Toast.LENGTH_SHORT).show();
             mSuggestionsAdapter = new SuggestionsAdapter(getSupportActionBar().getThemedContext(), cursor);
         }
 //        Toast.makeText(this, vehicle.get(0).get("plate_num").toString() + "A", Toast.LENGTH_SHORT).show();
@@ -276,6 +286,10 @@ public class MainActivity extends BaseActivityLocation
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
         return true;
+    }
+
+    private void VehiclePlateNum(String plate_num) {
+
     }
 
 
@@ -302,14 +316,15 @@ public class MainActivity extends BaseActivityLocation
         int id = item.getItemId();
 
         if (id == R.id.vehicle_list) {
-            VehicleFragment vehicleFragment = new VehicleFragment();
+            VehicleListFragment vehicleFragment = new VehicleListFragment();
             manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.mainLayout, vehicleFragment).commit();
-        } /*else if (id == map) {
-            MapFragment mapFragment = new MapFragment();
+        } else if (id == R.id.map) {
+            MapFragment mapFragment = new MapFragment(MainActivity.this, MainActivity.this);
             FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();*/
-        if (id == R.id.snailtrail) {
+            manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+
+        /*if (id == R.id.snailtrail) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
             tvdura = (TextView) findViewById(R.id.tvDuration);
             tvdist.setText("");
@@ -318,29 +333,8 @@ public class MainActivity extends BaseActivityLocation
             mMap.clear();
             tvdist.setText("");
             tvdura.setText("");
-            if (manager != null) {
-                // Instantiating the class PolylineOptions to plot polyline in the map
-                final PolylineOptions polylineOptions = new PolylineOptions();
-                al = list_location;
-                for (int i = 0; i < al.size(); i++) {
 
-                    // Setting the color of the polyline
-                    polylineOptions.color(Color.RED);
-
-                    // Setting the width of the polyline
-                    polylineOptions.width(3);
-
-                    Double lat = Double.parseDouble(al.get(i).getLatitude());
-                    Double Longitude = Double.parseDouble(al.get(i).getLongitude());
-
-                    // Setting points of polyline
-                    polylineOptions.add(new LatLng(lat, Longitude));
-
-                    MapFragment.createMarker(i, al.get(i).getLatitude(), al.get(i).getLongitude(), al.get(i).getLocation());
-                }
-                // Adding the polyline to the map
-                mMap.addPolyline(polylineOptions);
-            }
+            new getSnailTrail().execute();
 
         } else if (id == R.id.proximity) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
@@ -375,7 +369,7 @@ public class MainActivity extends BaseActivityLocation
 
                 tvdura.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");
 
-               /* float distance;
+               *//* float distance;
                 Location locationA=new Location("A");
                 locationA.setLatitude(p.getLatitude());
                 locationA.setLongitude(p.getLongitude());
@@ -393,7 +387,7 @@ public class MainActivity extends BaseActivityLocation
                 float estimatedDriveTimeInMinutes2 = distance / speedIs1KmMinute;
                 Toast.makeText(this,String.valueOf(distance+
                         "Km"),Toast.LENGTH_SHORT).show();
-                Toast.makeText(this,String.valueOf(estimatedDriveTimeInMinutes2+" Time"),Toast.LENGTH_SHORT).show();*/
+                Toast.makeText(this,String.valueOf(estimatedDriveTimeInMinutes2+" Time"),Toast.LENGTH_SHORT).show();*//*
 
 
             }
@@ -429,7 +423,7 @@ public class MainActivity extends BaseActivityLocation
             n.setLongitude(121.003601);
             MapFragment.createNavigation(list_location.get(list_location.size() - 1).getLatitude(), list_location.get(list_location.size() - 1).getLongitude());
 //            Toast.makeText(getApplicationContext(), lat+Longitude.toString(), Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.account) {
+     */   } else if (id == R.id.account) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
         } else if (id == R.id.sign_out) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
@@ -439,6 +433,50 @@ public class MainActivity extends BaseActivityLocation
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    private class getSnailTrail extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+        }
+
+        protected Void doInBackground(Void... args) {
+            // do background work here
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+
+            // Instantiating the class PolylineOptions to plot polyline in the map
+            final PolylineOptions polylineOptions = new PolylineOptions();
+//            al = list_location;
+            for (int i = 0; i < list_location.size(); i++) {
+                // Setting the color of the polyline
+                polylineOptions.color(Color.RED);
+
+                // Setting the width of the polyline
+                polylineOptions.width(3);
+
+                Double lat = Double.parseDouble(list_location.get(i).getLatitude());
+                Double Longitude = Double.parseDouble(list_location.get(i).getLongitude());
+
+                // Setting points of polyline
+                polylineOptions.add(new LatLng(lat, Longitude));
+
+                createSnailTrail(i, list_location.get(i).getLatitude(), list_location.get(i).getLongitude(), list_location.get(i).getLocation());
+            }
+
+            // Adding the polyline to the map
+            mMap.addPolyline(polylineOptions);
+        }
     }
 
     @Override
@@ -456,7 +494,7 @@ public class MainActivity extends BaseActivityLocation
         bundle.putDouble("Lat", mLocal.getLatitude());
         bundle.putDouble("Long", mLocal.getLongitude());
         mapFragment.setArguments(bundle);
-        manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+//        manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
 
     }
 
