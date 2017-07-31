@@ -4,6 +4,7 @@ package com.journeytech.mark.mark.fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,16 +24,23 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.HttpHandler;
 import com.journeytech.mark.mark.R;
+import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.VehicleHolder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -189,6 +197,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                         vehicleHolder.add(new VehicleHolder(lat, lng));
 
+                        SharedPreferences preferences = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor prefsEditor = preferences.edit();
+
+                        Gson gson = new Gson();
+
+                        String jsonText = gson.toJson(vehicleHolder );
+                        prefsEditor.putString("key", jsonText);
+                        prefsEditor.commit();
                     }
 
                 } catch (final JSONException e) {
@@ -211,6 +227,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             for(int i =0; i < vehicleHolder.size(); i++) {
                 createMarker(i,vehicleHolder.get(i).getLatitude(),vehicleHolder.get(i).getLongitude(),vehicleHolder.get(i).getVehicle());
             }
+
+//            final List<LocationHolder> addArray  = new ArrayList<>();
+            Gson gson = new Gson();
+            SharedPreferences myPrefs;
+            myPrefs = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
+            String jsonText = myPrefs.getString("key", null);
+
+            Type collectionType = new TypeToken<List<LocationHolder>>(){}.getType();
+            List<LocationHolder> addArray= (List<LocationHolder>) new Gson()
+                    .fromJson( jsonText , collectionType);
+
+//            addArray = Arrays.asList(text);
+//            addArray = new ArrayList(addArray);
+
+            for(int i = 0; i < addArray.size(); i++) {
+                String lati = addArray.get(i).getLatitude();
+//                Toast.makeText(context, lati.toString() /*+ addArray.toString()*/, Toast.LENGTH_SHORT).show();
+            }
+
         }
 
     }

@@ -15,7 +15,7 @@ import android.widget.SimpleAdapter;
 
 import com.journeytech.mark.mark.HttpHandler;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.VehicleListMap;
+import com.journeytech.mark.mark.model.VehicleListMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,6 +117,7 @@ public class VehicleListFragment extends Fragment {
 
                         vlm = new VehicleListMap();
 
+                        vlm.setLoc(location);
                         vlm.setDate(date);
                         vlm.setEngine(engine);
                         vlm.setLati(lat);

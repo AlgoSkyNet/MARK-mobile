@@ -5,12 +5,16 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -115,21 +119,64 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
 
         }*/
 //        VehicleListMap vlm = new VehicleListMap();
-        Double lati = Double.parseDouble(vlm.getLati());
-        Double longi = Double.parseDouble(vlm.getLongi());
+        final Double lati = Double.parseDouble(vlm.getLati());
+        final Double longi = Double.parseDouble(vlm.getLongi());
 
         mMapVehicleListMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(lati, longi))
                 .anchor(0.5f, 0.5f)
-                .title("title")
-                .snippet("snippet")
+                .title("Location: " +vlm.getLoc())
+                .snippet("Engine: " + vlm.getEngine())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+//        mMapVehicleListMapFragment.
+
+        mMapVehicleListMapFragment.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                marker.hideInfoWindow();
+            }
+        });
 
         mMapVehicleListMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lati, longi), 16.0f));
 
         mMapVehicleListMapFragment.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
             @Override
-            public boolean onMarkerClick(Marker marker) {
+            public boolean onMarkerClick(final Marker marker) {
+                // This causes the marker at Perth to bounce into position when it is clicked.
+   /*             if (marker.equals(mPerth)) {
+                    final Handler handler = new Handler();
+                    final long start = SystemClock.uptimeMillis();
+                    Projection proj = mMapVehicleListMapFragment.getProjection();
+                    Point startPoint = proj.toScreenLocation(PERTH);
+                    startPoint.offset(0, -100);
+                    final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+                    final long duration = 1500;
+                    final Interpolator interpolator = new BounceInterpolator();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            long elapsed = SystemClock.uptimeMillis() - start;
+                            float t = interpolator.getInterpolation((float) elapsed / duration);
+                            double lng = t * PERTH.longitude + (1 - t) * startLatLng.longitude;
+                            double lat = t * PERTH.latitude + (1 - t) * startLatLng.latitude;
+                            marker.setPosition(new LatLng(lat, lng));
+                            if (t < 1.0) {
+                                // Post again 16ms later.
+                                handler.postDelayed(this, 16);
+                            }
+                        }
+                    });
+                }*/
+                // We return false to indicate that we have not consumed the event and that we wish
+                // for the default behavior to occur (which is for the camera to move such that the
+                // marker is centered and for the marker's info window to open, if it has one).
+
+
+                marker.showInfoWindow();
+                bounceMarker(marker);
+
                 BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
                 return true;
@@ -142,4 +189,24 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         tv6.setText(vlm.getRemarks());
     }
 
+    private void bounceMarker (final Marker marker) {
+        final Handler handler = new Handler();
+        final long startTime = SystemClock.uptimeMillis();
+        final long duration = 2000;
+        final Interpolator interpolator = new BounceInterpolator();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - startTime;
+                float t = Math.max(1 - interpolator.getInterpolation((float) elapsed/duration), 0);
+                marker.setAnchor(0.5f, 1.0f +  t);
+
+                if (t > 0.0) {
+                    handler.postDelayed(this, 25);
+                } else {
+                    bounceMarker(marker);
+                }
+            }
+        });
+    }
 }

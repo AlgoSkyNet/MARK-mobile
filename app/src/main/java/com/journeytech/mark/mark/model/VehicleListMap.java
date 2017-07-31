@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark;
+package com.journeytech.mark.mark.model;
 
 /**
  * Created by rtyJa on 28/07/2017.
@@ -28,6 +28,7 @@ public class VehicleListMap {
     String time = "";
     String engine = "";
     String remarks = "";
+    String loc = "";
 
     String getter = "";
 
@@ -39,6 +40,14 @@ public class VehicleListMap {
         this.engine = engine;
         this.remarks = remarks;
     }*/
+
+    public String getLoc() {
+        return loc;
+    }
+
+    public void setLoc(String loc) {
+        this.loc = loc;
+    }
 
     public String getGetter() {
         return getter;
