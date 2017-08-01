@@ -3,6 +3,8 @@ package com.journeytech.mark.mark.activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
@@ -19,6 +21,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -123,6 +126,13 @@ public class MainActivity extends BaseActivityLocation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Intent iin= getIntent();
+        Bundle b = iin.getExtras();
+
+        if(b!=null) {
+            String j = (String) b.get("name");
+            Toast.makeText(getApplicationContext(), j, Toast.LENGTH_LONG).show();
+        }
 /*        searchView = (MaterialSearchView) findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
@@ -426,7 +436,22 @@ public class MainActivity extends BaseActivityLocation
      */   } else if (id == R.id.account) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
         } else if (id == R.id.sign_out) {
-            Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Closing Activity")
+                    .setMessage("Are you sure you want to Log Out?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent ii=new Intent(MainActivity.this, LogIn.class);
+                            startActivity(ii);
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
