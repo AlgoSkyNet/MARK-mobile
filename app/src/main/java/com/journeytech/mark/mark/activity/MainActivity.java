@@ -36,7 +36,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.fragment.VehicleListAndMapFragment;
+import com.journeytech.mark.mark.fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.fragment.VehicleListFragment;
 import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.model.LocationHolder;
@@ -59,7 +59,7 @@ public class MainActivity extends BaseActivityLocation
     ArrayList<LocationHolder> al = new ArrayList<>();
 
     FragmentManager manager;
-    VehicleListAndMapFragment vehicleListAndMapFragment;
+    VehicleMapFragment vehicleMapFragment;
 
     TextView tvdist, tvdura;
 
@@ -190,9 +190,9 @@ public class MainActivity extends BaseActivityLocation
 
         initLocationFetching(MainActivity.this);
 
-        vehicleListAndMapFragment = new VehicleListAndMapFragment(MainActivity.this, this);
+        vehicleMapFragment = new VehicleMapFragment(MainActivity.this, this);
         manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
+        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
     }
 
 /*    @Override
@@ -335,16 +335,16 @@ public class MainActivity extends BaseActivityLocation
             manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.mainLayout, vehicleFragment).commit();
         } else if (id == R.id.map) {
-            VehicleListAndMapFragment vehicleListAndMapFragment = new VehicleListAndMapFragment(MainActivity.this, MainActivity.this);
+            VehicleMapFragment vehicleMapFragment = new VehicleMapFragment(MainActivity.this, MainActivity.this);
             FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
+            manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
 
         /*if (id == R.id.snailtrail) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
             tvdura = (TextView) findViewById(R.id.tvDuration);
             tvdist.setText("");
             tvdura.setText("");
-            manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
+            manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
             mMap.clear();
             tvdist.setText("");
             tvdura.setText("");
@@ -354,7 +354,7 @@ public class MainActivity extends BaseActivityLocation
         } else if (id == R.id.proximity) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
             tvdura = (TextView) findViewById(R.id.tvDuration);
-            manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
+            manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
             mMap.clear();
             String lat = "";
             String Longitude = "";
@@ -517,14 +517,14 @@ public class MainActivity extends BaseActivityLocation
 
 //        setMLocal(mLocal);
 
-//        vehicleListAndMapFragment.setLocation(mLocal);
+//        vehicleMapFragment.setLocation(mLocal);
 
         //After initLocationFetching.
         Bundle bundle = new Bundle();
         bundle.putDouble("Lat", mLocal.getLatitude());
         bundle.putDouble("Long", mLocal.getLongitude());
-        vehicleListAndMapFragment.setArguments(bundle);
-//        manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
+        vehicleMapFragment.setArguments(bundle);
+//        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
 
     }
 

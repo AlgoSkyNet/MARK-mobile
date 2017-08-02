@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment_unused;
+package com.journeytech.mark.mark.fragment;
 
 
 import android.app.Activity;
@@ -31,8 +31,8 @@ import com.journeytech.mark.mark.model.VehicleHolder;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.fragment.VehicleListAndMapFragment.mMapFragment;
 import static com.journeytech.mark.mark.fragment.VehicleListFragment.vlm;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
 
 
 /**

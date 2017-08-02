@@ -4,6 +4,7 @@ package com.journeytech.mark.mark.fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -46,7 +47,7 @@ import static com.journeytech.mark.mark.activity.MainActivity.markutype;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class VehicleListAndMapFragment extends Fragment implements OnMapReadyCallback {
+public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
     private ProgressDialog pDialog;
 
@@ -60,7 +61,7 @@ public class VehicleListAndMapFragment extends Fragment implements OnMapReadyCal
     public static NetworkAPI networkAPI;
 
 
-    public VehicleListAndMapFragment(Context c, Activity a) {
+    public VehicleMapFragment(Context c, Activity a) {
         context = c;
         activity = a;
     }
@@ -89,8 +90,7 @@ public class VehicleListAndMapFragment extends Fragment implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
 
-//        new GetVehicleValue().execute();
-        vehicleRequest_validate();
+        new GetVehicles().execute();
     }
 
     @Override
@@ -101,6 +101,35 @@ public class VehicleListAndMapFragment extends Fragment implements OnMapReadyCal
         View v = inflater.inflate(R.layout.fragment_contact_us, container, false);
 
         return v;
+    }
+
+    private class GetVehicles extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            vehicleRequest_validate();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+        }
+
     }
 
     public void vehicleRequest_validate(){

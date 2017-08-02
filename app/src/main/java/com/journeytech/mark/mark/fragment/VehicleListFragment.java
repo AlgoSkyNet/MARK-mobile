@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,29 +12,59 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import com.journeytech.mark.mark.HttpHandler;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.fragment_unused.VehicleListMapFragment;
+import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.model.VehicleListMap;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+
+import static com.journeytech.mark.mark.activity.MainActivity.client_table;
+import static com.journeytech.mark.mark.activity.MainActivity.markutype;
 
 public class VehicleListFragment extends Fragment {
 
     private ProgressDialog pDialog;
     private ListView lv;
 
-    // URL to get contacts JSON
-    private static String url = "http://mark.journeytech.com.ph/json/1.json";
+    public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
+    public static NetworkAPI networkAPI;
 
     public static ArrayList<HashMap<String, String>> vehicle;
     public static VehicleListMap vlm;
     String a = "";
+
+    public interface NetworkAPI {
+        @POST("vehicle_details.php")
+        @Headers({"Content-Type:application/json; charset=UTF-8"})
+        Call<JsonElement> loginRequest(@Body VehicleRequestPojo body);
+    }
+
+    public static class VehicleRequestPojo {
+        String ucsi_num;
+        String client_table;
+        String markutype;
+
+        public VehicleRequestPojo(String ucsi_num, String client_table, String markutype) {
+            this.ucsi_num = ucsi_num;
+            this.client_table = client_table;
+            this.markutype = markutype;
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +80,7 @@ public class VehicleListFragment extends Fragment {
         lv = (ListView) v.findViewById(R.id.list);
 
         new GetVehicles().execute();
+
         return v;
     }
 
@@ -69,74 +99,110 @@ public class VehicleListFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            HttpHandler sh = new HttpHandler();
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url);
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-            String plate_num = "",
-                    gps_num = "",
-                    location = "",
-                    date = "",
-                    time = "",
-                    lat = "",
-                    lng = "",
-                    engine = "",
-                    remarks = "";
-            if (jsonStr != null) {
-                try {
-                    JSONArray jr = new JSONArray(jsonStr);
+            httpClient.addInterceptor(logging);
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient.build())
+                    .build();
 
-                    vehicle = new ArrayList<>();
-                    for (int i = 0; i < jsonStr.length(); i++) {
-                        JSONObject jb = (JSONObject) jr.getJSONObject(i);
-                        plate_num = jb.getString("plate_num");
-                        gps_num = jb.getString("gps_num");
-                        location = jb.getString("location");
-                        date = jb.getString("date");
-                        time = jb.getString("time");
-                        lat = jb.getString("lat");
-                        lng = jb.getString("lng");
-                        engine = jb.getString("engine");
-                        remarks = jb.getString("remarks");
+            networkAPI = retrofit.create(NetworkAPI.class);
 
-                        // tmp hash map for detail [single]
-                        HashMap<String, String> details = new HashMap<>();
+            VehicleRequestPojo loginRequest = new VehicleRequestPojo(MainActivity.ucsi_num, client_table, markutype);
 
-                        // adding each child node to HashMap key => value
-                        details.put("plate_num", plate_num);
-                        details.put("gps_num", gps_num);
-                        details.put("location", location);
-                        details.put("date", date);
-                        details.put("time", time);
-                        details.put("lat", lat);
-                        details.put("lng", lng);
-                        details.put("engine", engine);
-                        details.put("remarks", remarks);
+            Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
-                        a = details.get("date");
+            call.enqueue(new Callback<JsonElement>() {
+                @Override
+                public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                    // success response
+                    if (response.body().isJsonArray()) {
+                        JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
+                        System.out.println(objectWhichYouNeed);
+//                    if(response.body().)
+                        for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
+                            JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
+                            JsonObject plate_num_obj = plate_num_array.getAsJsonObject();
+                            String plate_num = plate_num_obj.get("plate_num").toString();
 
-                        vlm = new VehicleListMap();
+                            JsonElement gps_num_array = response.body().getAsJsonArray().get(i);
+                            JsonObject gps_num_obj = gps_num_array.getAsJsonObject();
+                            String gps_num = gps_num_obj.get("gps_num").toString();
 
-                        vlm.setLoc(location);
-                        vlm.setDate(date);
-                        vlm.setEngine(engine);
-                        vlm.setLati(lat);
-                        vlm.setLongi(lng);
-                        vlm.setRemarks(remarks);
-                        vlm.setTime(time);
+                            JsonElement location_array = response.body().getAsJsonArray().get(i);
+                            JsonObject location_obj = location_array.getAsJsonObject();
+                            String location = location_obj.get("location").toString();
 
-                        // adding vehicle to vehicle list
-                        vehicle.add(details);
+                            JsonElement date_array = response.body().getAsJsonArray().get(i);
+                            JsonObject date_obj = date_array.getAsJsonObject();
+                            String date = date_obj.get("date").toString();
+
+                            JsonElement time_array = response.body().getAsJsonArray().get(i);
+                            JsonObject time_obj = time_array.getAsJsonObject();
+                            String time = time_obj.get("time").toString();
+
+                            JsonElement lat_array = response.body().getAsJsonArray().get(i);
+                            JsonObject lat_obj = lat_array.getAsJsonObject();
+                            String lat = lat_obj.get("lat").toString();
+
+                            JsonElement lng_array = response.body().getAsJsonArray().get(i);
+                            JsonObject lng_obj = lng_array.getAsJsonObject();
+                            String lng = lng_obj.get("lng").toString();
+
+                            JsonElement engine_array = response.body().getAsJsonArray().get(i);
+                            JsonObject engine_obj = engine_array.getAsJsonObject();
+                            String engine = engine_obj.get("engine").toString();
+
+                            JsonElement remarks_array = response.body().getAsJsonArray().get(i);
+                            JsonObject remarks_obj = remarks_array.getAsJsonObject();
+                            String remarks = engine_obj.get("remarks").toString();
+
+                            // tmp hash map for detail [single]
+                            HashMap<String, String> details = new HashMap<>();
+
+                            // adding each child node to HashMap key => value
+                            details.put("plate_num", plate_num);
+                            details.put("gps_num", gps_num);
+                            details.put("location", location);
+                            details.put("date", date);
+                            details.put("time", time);
+                            details.put("lat", lat);
+                            details.put("lng", lng);
+                            details.put("engine", engine);
+                            details.put("remarks", remarks);
+
+                            a = details.get("date");
+
+                            vlm = new VehicleListMap();
+
+                            vlm.setLoc(location);
+                            vlm.setDate(date);
+                            vlm.setEngine(engine);
+                            vlm.setLati(lat);
+                            vlm.setLongi(lng);
+                            vlm.setRemarks(remarks);
+                            vlm.setTime(time);
+
+                            // adding vehicle to vehicle list
+                            vehicle.add(details);
+                        }
+                    } else {
+                        System.out.println("Not a JSONArray.");
                     }
-
-                } catch (final JSONException e) {
-                    e.printStackTrace();
                 }
-            } else {
-                Log.d("JSON:", "is null");
-            }
 
+                @Override
+                public void onFailure(Call<JsonElement> call, Throwable t) {
+                    // failure response
+                    System.out.println(call.toString());
+                }
+
+            });
             return null;
         }
 
@@ -147,15 +213,12 @@ public class VehicleListFragment extends Fragment {
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            /**
-             * Updating parsed JSON data into ListView
-             * */
             final ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
                     R.layout.list_vehicle, new String[]{"plate_num", "gps_num",
                     "location", "date", "time", "lat", "lng", "engine",
                     "remarks"},
-                    new int[]{ R.id.plate_num, R.id.gps_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
-                            R.id.engine, R.id.remarks });
+                    new int[]{R.id.plate_num, R.id.gps_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
+                            R.id.engine, R.id.remarks});
 
             lv.setAdapter(adapter);
 
@@ -172,6 +235,5 @@ public class VehicleListFragment extends Fragment {
             });
 
         }
-
     }
 }
