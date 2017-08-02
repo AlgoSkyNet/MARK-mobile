@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.fragment_unused;
 
 
 import android.app.Activity;
@@ -45,7 +45,7 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
     private ProgressDialog pDialog;
 
@@ -58,7 +58,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     Context context;
     static Activity activity;
 
-    public MapFragment(Context c, Activity a) {
+    public VehicleMapFragment(Context c, Activity a) {
         context = c;
         activity = a;
     }

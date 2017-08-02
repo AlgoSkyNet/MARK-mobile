@@ -108,7 +108,10 @@ public class LogIn extends Activity {
                             String markutype = response.body().getAsJsonObject().get("markutype").getAsString();
                             System.out.println(status + ucsi_num + client_table + markutype);
                             Intent ii=new Intent(LogIn.this, MainActivity.class);
-                            ii.putExtra("name", status + ucsi_num + client_table + markutype);
+                            ii.putExtra("status", status);
+                            ii.putExtra("ucsi_num", ucsi_num);
+                            ii.putExtra("client_table", client_table);
+                            ii.putExtra("markutype", markutype);
                             startActivity(ii);
                         } else {
                             Toast.makeText(getApplicationContext(), "Please check your credentials...", Toast.LENGTH_SHORT).show();

@@ -36,7 +36,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.fragment.MapFragment;
+import com.journeytech.mark.mark.fragment.VehicleListAndMapFragment;
 import com.journeytech.mark.mark.fragment.VehicleListFragment;
 import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.model.LocationHolder;
@@ -46,9 +46,9 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import java.util.ArrayList;
 
 import static com.journeytech.mark.mark.R.id.search;
-import static com.journeytech.mark.mark.fragment.VehicleDetailsProximityNavigationFragment.createSnailTrail;
-import static com.journeytech.mark.mark.fragment.VehicleDetailsProximityNavigationFragment.list_location;
-import static com.journeytech.mark.mark.fragment.VehicleDetailsProximityNavigationFragment.mMap;
+import static com.journeytech.mark.mark.fragment_unused.VehicleDetailsProximityNavigationFragment.createSnailTrail;
+import static com.journeytech.mark.mark.fragment_unused.VehicleDetailsProximityNavigationFragment.list_location;
+import static com.journeytech.mark.mark.fragment_unused.VehicleDetailsProximityNavigationFragment.mMap;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -59,13 +59,15 @@ public class MainActivity extends BaseActivityLocation
     ArrayList<LocationHolder> al = new ArrayList<>();
 
     FragmentManager manager;
-    MapFragment mapFragment;
+    VehicleListAndMapFragment vehicleListAndMapFragment;
 
     TextView tvdist, tvdura;
 
     MaterialSearchView searchView;
 
     ProgressDialog pDialog;
+
+    public static String status, ucsi_num, client_table, markutype;
 
     private static final String[] COLUMNS = {
             BaseColumns._ID,
@@ -130,8 +132,11 @@ public class MainActivity extends BaseActivityLocation
         Bundle b = iin.getExtras();
 
         if(b!=null) {
-            String j = (String) b.get("name");
-            Toast.makeText(getApplicationContext(), j, Toast.LENGTH_LONG).show();
+            status = (String) b.get("status");
+            ucsi_num = (String) b.get("ucsi_num");
+            client_table = (String) b.get("client_table");
+            markutype = (String) b.get("markutype");
+//            Toast.makeText(getApplicationContext(), status + ucsi_num, Toast.LENGTH_LONG).show();
         }
 /*        searchView = (MaterialSearchView) findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
@@ -185,9 +190,9 @@ public class MainActivity extends BaseActivityLocation
 
         initLocationFetching(MainActivity.this);
 
-        mapFragment = new MapFragment(MainActivity.this, this);
+        vehicleListAndMapFragment = new VehicleListAndMapFragment(MainActivity.this, this);
         manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+        manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
     }
 
 /*    @Override
@@ -330,16 +335,16 @@ public class MainActivity extends BaseActivityLocation
             manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.mainLayout, vehicleFragment).commit();
         } else if (id == R.id.map) {
-            MapFragment mapFragment = new MapFragment(MainActivity.this, MainActivity.this);
+            VehicleListAndMapFragment vehicleListAndMapFragment = new VehicleListAndMapFragment(MainActivity.this, MainActivity.this);
             FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+            manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
 
         /*if (id == R.id.snailtrail) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
             tvdura = (TextView) findViewById(R.id.tvDuration);
             tvdist.setText("");
             tvdura.setText("");
-            manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+            manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
             mMap.clear();
             tvdist.setText("");
             tvdura.setText("");
@@ -349,7 +354,7 @@ public class MainActivity extends BaseActivityLocation
         } else if (id == R.id.proximity) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
             tvdura = (TextView) findViewById(R.id.tvDuration);
-            manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+            manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
             mMap.clear();
             String lat = "";
             String Longitude = "";
@@ -357,13 +362,13 @@ public class MainActivity extends BaseActivityLocation
                 lat = String.valueOf(p.getLatitude());
                 Longitude = String.valueOf(p.getLongitude());
 
-                MapFragment.createProximity(lat, Longitude);
+                VehicleMapFragment.createProximity(lat, Longitude);
                 Double lat2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLatitude());
                 Double long2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLongitude());
                 LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
                 LatLng l2 = new LatLng(lat2, long2);
 
-                Double m = MapFragment.distanceBetween(l1, l2);
+                Double m = VehicleMapFragment.distanceBetween(l1, l2);
                 double km = 1000;
                 double distanceInMeters = m / km;
 
@@ -409,7 +414,7 @@ public class MainActivity extends BaseActivityLocation
             LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
             LatLng l2 = new LatLng(lat2, long2);
 
-            Double m = MapFragment.distanceBetween(l1, l2);
+            Double m = VehicleMapFragment.distanceBetween(l1, l2);
             double km = 1000;
             double distanceInMeters = m / km;
 
@@ -431,7 +436,7 @@ public class MainActivity extends BaseActivityLocation
 //            Double Longitude = Double.parseDouble(al.get(al.size()-1).getLongitude());
             n.setLatitude(14.507743);
             n.setLongitude(121.003601);
-            MapFragment.createNavigation(list_location.get(list_location.size() - 1).getLatitude(), list_location.get(list_location.size() - 1).getLongitude());
+            VehicleMapFragment.createNavigation(list_location.get(list_location.size() - 1).getLatitude(), list_location.get(list_location.size() - 1).getLongitude());
 //            Toast.makeText(getApplicationContext(), lat+Longitude.toString(), Toast.LENGTH_SHORT).show();
      */   } else if (id == R.id.account) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
@@ -512,14 +517,14 @@ public class MainActivity extends BaseActivityLocation
 
 //        setMLocal(mLocal);
 
-//        mapFragment.setLocation(mLocal);
+//        vehicleListAndMapFragment.setLocation(mLocal);
 
         //After initLocationFetching.
         Bundle bundle = new Bundle();
         bundle.putDouble("Lat", mLocal.getLatitude());
         bundle.putDouble("Long", mLocal.getLongitude());
-        mapFragment.setArguments(bundle);
-//        manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+        vehicleListAndMapFragment.setArguments(bundle);
+//        manager.beginTransaction().replace(R.id.mainLayout, vehicleListAndMapFragment).commit();
 
     }
 

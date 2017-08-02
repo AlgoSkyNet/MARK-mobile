@@ -15,6 +15,7 @@ import android.widget.SimpleAdapter;
 
 import com.journeytech.mark.mark.HttpHandler;
 import com.journeytech.mark.mark.R;
+import com.journeytech.mark.mark.fragment_unused.VehicleListMapFragment;
 import com.journeytech.mark.mark.model.VehicleListMap;
 
 import org.json.JSONArray;

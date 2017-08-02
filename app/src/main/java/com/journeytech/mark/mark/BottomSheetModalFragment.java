@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.journeytech.mark.mark.fragment.VehicleDetailsFragment;
+import com.journeytech.mark.mark.fragment_unused.VehicleDetailsFragment;
 
 public class BottomSheetModalFragment extends BottomSheetDialogFragment {
 

@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.fragment_unused;
 
 
 import android.app.Activity;
@@ -31,8 +31,9 @@ import com.journeytech.mark.mark.model.VehicleHolder;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.fragment.MapFragment.mMapFragment;
+import static com.journeytech.mark.mark.fragment.VehicleListAndMapFragment.mMapFragment;
 import static com.journeytech.mark.mark.fragment.VehicleListFragment.vlm;
+
 
 /**
  * A simple {@link Fragment} subclass.
