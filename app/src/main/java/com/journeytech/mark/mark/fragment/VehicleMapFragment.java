@@ -29,6 +29,7 @@ import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
+import com.journeytech.mark.mark.model.VehicleMap;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -56,6 +57,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
     Context context;
     static Activity activity;
     static FragmentManager fm;
+    public static VehicleMap vm;
 
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
@@ -160,11 +162,14 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                 if (response.body().isJsonArray()) {
                     JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
                     System.out.println(objectWhichYouNeed);
-//                    if(response.body().)
+
                     for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
                         JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
                         JsonObject plate_num_obj = plate_num_array.getAsJsonObject();
-                        String plate_num = plate_num_obj.get("plate_num").toString();
+                        String plate_n = plate_num_obj.get("plate_num").toString();
+                        String plate_nString = plate_n;
+                        plate_nString = plate_nString.replace("\"", "");
+                        String plate_num = String.valueOf(plate_nString);
 
                         JsonElement gps_num_array = response.body().getAsJsonArray().get(i);
                         JsonObject gps_num_obj = gps_num_array.getAsJsonObject();
@@ -202,17 +207,24 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
                         JsonElement remarks_array = response.body().getAsJsonArray().get(i);
                         JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                        String remarks = engine_obj.get("remarks").toString();
+                        String remarks = remarks_obj.get("remarks").toString();
 
+                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null"))) {
+                            vm = new VehicleMap();
 
+                            vm.setPlate_num(plate_num);
+                            vm.setLoc(location);
+                            vm.setDate(date);
+                            vm.setEngine(engine);
+                            vm.setLati(lat);
+                            vm.setLongi(lng);
+                            vm.setRemarks(remarks);
+                            vm.setTime(time);
 
-                        if (lat != null && !lat.equals("null") || (lng != null && !lng.equals("null"))) {
                             Double d = Double.parseDouble(lat);
                             Double d2 = Double.parseDouble(lng);
-                            createMarker(d, d2);
+                            createMarker(d, d2, plate_num);
                         }
-
-
 
                     }
                 } else {
@@ -229,33 +241,35 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    public void createMarker(Double latitude, Double longitude) {
+    public void createMarker(Double latitude, Double longitude, String Plate_num) {
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
 
         mMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
-                .title("title")
-                .snippet("snippet")
+                .title("Plate no.: "+Plate_num)
+                .snippet(null)
                 .icon(image));
-
-
-        mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9.0f));
-
-        mMapFragment.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
-                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
-                return true;
-            }
-        });
 
         mMapFragment.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 marker.hideInfoWindow();
+            }
+        });
 
+        mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9.0f));
+
+        mMapFragment.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            @Override
+            public boolean onMarkerClick(final Marker marker) {
+
+                marker.showInfoWindow();
+
+                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
+                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+                return true;
             }
         });
 

@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.journeytech.mark.mark.fragment_unused.VehicleDetailsFragment;
+import com.journeytech.mark.mark.fragment.SnailTrailFragment;
 
 public class BottomSheetModalFragment extends BottomSheetDialogFragment {
 
@@ -46,11 +46,11 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "Snail Trail", Toast.LENGTH_SHORT).show();
-                VehicleDetailsFragment mapFragment;
+                SnailTrailFragment stf;
                 FragmentManager manager;
-                mapFragment = new VehicleDetailsFragment();
+                stf = new SnailTrailFragment();
                 manager = getFragmentManager();
-                manager.beginTransaction().replace(R.id.mainLayout, mapFragment).commit();
+                manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
 
 //                new GetVehicleValue().execute();
                 dismiss();

@@ -128,7 +128,10 @@ public class VehicleListFragment extends Fragment {
                         for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
                             JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
                             JsonObject plate_num_obj = plate_num_array.getAsJsonObject();
-                            String plate_num = plate_num_obj.get("plate_num").toString();
+                            String plate_n = plate_num_obj.get("plate_num").toString();
+                            String plate_nString = plate_n;
+                            plate_nString = plate_nString.replace("\"", "");
+                            String plate_num = String.valueOf(plate_nString);
 
                             JsonElement gps_num_array = response.body().getAsJsonArray().get(i);
                             JsonObject gps_num_obj = gps_num_array.getAsJsonObject();
@@ -175,7 +178,7 @@ public class VehicleListFragment extends Fragment {
 
                             JsonElement remarks_array = response.body().getAsJsonArray().get(i);
                             JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                            String re = engine_obj.get("remarks").toString();
+                            String re = remarks_obj.get("remarks").toString();
                             String reString = re;
                             reString = reString.replace("\"", "");
                             String remarks = String.valueOf(reString);
@@ -199,6 +202,7 @@ public class VehicleListFragment extends Fragment {
 
                                 vlm = new VehicleListMap();
 
+                                vlm.setPlate_num(plate_num);
                                 vlm.setLoc(location);
                                 vlm.setDate(date);
                                 vlm.setEngine(engine);

@@ -1,11 +1,10 @@
 package com.journeytech.mark.mark.model;
 
 /**
- * Created by rtyJa on 28/07/2017.
+ * Created by rtyJa on 03/08/2017.
  */
 
-public class VehicleListMap {
-
+public class VehicleMap {
     String lati = "";
     String longi = "";
     String plate_num = "";
@@ -14,16 +13,6 @@ public class VehicleListMap {
     String engine = "";
     String remarks = "";
     String loc = "";
-    String getter = "";
-
-    /*    public VehicleListMap(String lat, String lng, String date, String time, String engine, String remarks) {
-            this.lati = lat;
-            this.longi = lng;
-            this.date = date;
-            this.time = time;
-            this.engine = engine;
-            this.remarks = remarks;
-        }*/
 
     public String getLati() {
         return lati;
@@ -47,22 +36,6 @@ public class VehicleListMap {
 
     public void setPlate_num(String plate_num) {
         this.plate_num = plate_num;
-    }
-
-    public String getLoc() {
-        return loc;
-    }
-
-    public void setLoc(String loc) {
-        this.loc = loc;
-    }
-
-    public String getGetter() {
-        return getter;
-    }
-
-    public void setGetter(String getter) {
-        this.getter = getter;
     }
 
     public String getDate() {
@@ -95,5 +68,13 @@ public class VehicleListMap {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public String getLoc() {
+        return loc;
+    }
+
+    public void setLoc(String loc) {
+        this.loc = loc;
     }
 }
