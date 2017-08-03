@@ -44,7 +44,7 @@ public class VehicleListFragment extends Fragment {
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
 
-    public static ArrayList<HashMap<String, String>> vehicle;
+    public ArrayList<HashMap<String, String>> vehicle = new ArrayList<>();
     public static VehicleListMap vlm;
     String a = "";
 
@@ -89,12 +89,12 @@ public class VehicleListFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
             // Showing progress dialog
             pDialog = new ProgressDialog(getActivity());
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
-
         }
 
         @Override
@@ -124,7 +124,7 @@ public class VehicleListFragment extends Fragment {
                     if (response.body().isJsonArray()) {
                         JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
                         System.out.println(objectWhichYouNeed);
-//                    if(response.body().)
+
                         for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
                             JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
                             JsonObject plate_num_obj = plate_num_array.getAsJsonObject();
@@ -162,34 +162,63 @@ public class VehicleListFragment extends Fragment {
                             JsonObject remarks_obj = remarks_array.getAsJsonObject();
                             String remarks = engine_obj.get("remarks").toString();
 
-                            // tmp hash map for detail [single]
-                            HashMap<String, String> details = new HashMap<>();
+                            if(lat==null || lng ==null) {
+                                lat = lat +"120.98352";
+                                lng= lng +"14.62647";
+                            } else {
+                                // tmp hash map for detail [single]
+                                HashMap<String, String> details = new HashMap<>();
 
-                            // adding each child node to HashMap key => value
-                            details.put("plate_num", plate_num);
-                            details.put("gps_num", gps_num);
-                            details.put("location", location);
-                            details.put("date", date);
-                            details.put("time", time);
-                            details.put("lat", lat);
-                            details.put("lng", lng);
-                            details.put("engine", engine);
-                            details.put("remarks", remarks);
+                                // adding each child node to HashMap key => value
+                                details.put("plate_num", plate_num);
+                                details.put("gps_num", gps_num);
+                                details.put("location", location);
+                                details.put("date", date);
+                                details.put("time", time);
+                                details.put("lat", lat);
+                                details.put("lng", lng);
+                                details.put("engine", engine);
+                                details.put("remarks", remarks);
 
-                            a = details.get("date");
+                                a = details.get("date");
 
-                            vlm = new VehicleListMap();
+                                vlm = new VehicleListMap();
 
-                            vlm.setLoc(location);
-                            vlm.setDate(date);
-                            vlm.setEngine(engine);
-                            vlm.setLati(lat);
-                            vlm.setLongi(lng);
-                            vlm.setRemarks(remarks);
-                            vlm.setTime(time);
+                                vlm.setLoc(location);
+                                vlm.setDate(date);
+                                vlm.setEngine(engine);
+                                vlm.setLati(lat);
+                                vlm.setLongi(lng);
+                                vlm.setRemarks(remarks);
+                                vlm.setTime(time);
 
-                            // adding vehicle to vehicle list
-                            vehicle.add(details);
+                                // adding vehicle to vehicle list
+                                vehicle.add(details);
+
+                                /**
+                                 * Updating parsed JSON data into ListView
+                                 * */
+                                final ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
+                                        R.layout.list_vehicle, new String[]{"plate_num", "gps_num",
+                                        "location", "date", "time", "lat", "lng", "engine",
+                                        "remarks"},
+                                        new int[]{ R.id.plate_num, R.id.gps_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
+                                                R.id.engine, R.id.remarks });
+
+                                lv.setAdapter(adapter);
+
+                                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View v, int position, long l) {
+                                        Fragment mFragment = new VehicleListMapFragment(getActivity(), getActivity());
+                                        getFragmentManager().beginTransaction().replace(R.id.mainLayout, mFragment).commit();
+
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("geoLoc", adapter.getItem(position).toString());
+                                        mFragment.setArguments(bundle);
+                                    }
+                                });
+                            }
                         }
                     } else {
                         System.out.println("Not a JSONArray.");
@@ -209,31 +238,11 @@ public class VehicleListFragment extends Fragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            System.out.println(vehicle + "Vehicle1");
+
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
-
-            final ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
-                    R.layout.list_vehicle, new String[]{"plate_num", "gps_num",
-                    "location", "date", "time", "lat", "lng", "engine",
-                    "remarks"},
-                    new int[]{R.id.plate_num, R.id.gps_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
-                            R.id.engine, R.id.remarks});
-
-            lv.setAdapter(adapter);
-
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View v, int position, long l) {
-                    Fragment mFragment = new VehicleListMapFragment(getActivity(), getActivity());
-                    getFragmentManager().beginTransaction().replace(R.id.mainLayout, mFragment).commit();
-//                    Toast.makeText(getContext(), adapter.getItem(position).toString(), Toast.LENGTH_SHORT).show();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("geoLoc", adapter.getItem(position).toString());
-                    mFragment.setArguments(bundle);
-                }
-            });
-
         }
     }
 }

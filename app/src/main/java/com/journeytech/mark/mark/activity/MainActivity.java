@@ -36,8 +36,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.fragment.VehicleListFragment;
+import com.journeytech.mark.mark.fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
@@ -190,7 +190,7 @@ public class MainActivity extends BaseActivityLocation
 
         initLocationFetching(MainActivity.this);
 
-        vehicleMapFragment = new VehicleMapFragment(MainActivity.this, this);
+        vehicleMapFragment = new VehicleMapFragment(getApplicationContext(), this);
         manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
     }

@@ -57,7 +57,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
     static Activity activity;
     static FragmentManager fm;
 
-    public static String baseUrl ="http://mark.journeytech.com.ph/mobile_api/";
+    public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
 
 
@@ -76,6 +76,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         String ucsi_num;
         String client_table;
         String markutype;
+
         public VehicleRequestPojo(String ucsi_num, String client_table, String markutype) {
             this.ucsi_num = ucsi_num;
             this.client_table = client_table;
@@ -132,7 +133,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-    public void vehicleRequest_validate(){
+    public void vehicleRequest_validate() {
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
@@ -156,11 +157,11 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 // success response
-                if(response.body().isJsonArray()){
+                if (response.body().isJsonArray()) {
                     JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
                     System.out.println(objectWhichYouNeed);
 //                    if(response.body().)
-                    for(int i = 0; i< response.body().getAsJsonArray().size(); i++){
+                    for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
                         JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
                         JsonObject plate_num_obj = plate_num_array.getAsJsonObject();
                         String plate_num = plate_num_obj.get("plate_num").toString();
@@ -183,11 +184,17 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
                         JsonElement lat_array = response.body().getAsJsonArray().get(i);
                         JsonObject lat_obj = lat_array.getAsJsonObject();
-                        Double lat = lat_obj.get("lat").getAsDouble();
+                        String lati = lat_obj.get("lat").toString();
+                        String latiString = lati;
+                        latiString = latiString.replace("\"", "");
+                        String lat = String.valueOf(latiString);
 
                         JsonElement lng_array = response.body().getAsJsonArray().get(i);
                         JsonObject lng_obj = lng_array.getAsJsonObject();
-                        Double lng = lng_obj.get("lng").getAsDouble();
+                        String longi = lng_obj.get("lng").toString();
+                        String longiString = longi;
+                        longiString = longiString.replace("\"", "");
+                        String lng = String.valueOf(longiString);
 
                         JsonElement engine_array = response.body().getAsJsonArray().get(i);
                         JsonObject engine_obj = engine_array.getAsJsonObject();
@@ -197,10 +204,16 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                         JsonObject remarks_obj = remarks_array.getAsJsonObject();
                         String remarks = engine_obj.get("remarks").toString();
 
-                        createMarker(lat, lng);
 
-                        System.out.println(plate_num + "Plate Num");
-//                        Toast.makeText(activity, plate_num, Toast.LENGTH_LONG).show();
+
+                        if (lat != null && !lat.equals("null") || (lng != null && !lng.equals("null"))) {
+                            Double d = Double.parseDouble(lat);
+                            Double d2 = Double.parseDouble(lng);
+                            createMarker(d, d2);
+                        }
+
+
+
                     }
                 } else {
                     System.out.println("Not a JSONArray.");
@@ -226,6 +239,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                 .snippet("snippet")
                 .icon(image));
 
+
         mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9.0f));
 
         mMapFragment.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -244,6 +258,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
+
     }
 
     public void onMapReady(GoogleMap googleMap) {

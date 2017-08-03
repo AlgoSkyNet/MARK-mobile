@@ -32,7 +32,7 @@ public class VehicleListFragment extends Fragment {
     // URL to get contacts JSON
     private static String url = "http://mark.journeytech.com.ph/json/1.json";
 
-    public static ArrayList<HashMap<String, String>> vehicle;
+    public static ArrayList<HashMap<String, String>> vehicle = new ArrayList<>();
     public static VehicleListMap vlm;
     String a = "";
 
@@ -145,7 +145,7 @@ public class VehicleListFragment extends Fragment {
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
-
+System.out.println(vehicle);
             /**
              * Updating parsed JSON data into ListView
              * */

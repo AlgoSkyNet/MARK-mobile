@@ -51,7 +51,7 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     Context context;
     static Activity activity;
 
-    String catcher;
+    String catcher = "";
 
     TextView tv2, tv4, tv6;
 
