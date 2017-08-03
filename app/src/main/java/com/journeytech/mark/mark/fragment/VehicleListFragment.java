@@ -140,32 +140,47 @@ public class VehicleListFragment extends Fragment {
 
                             JsonElement date_array = response.body().getAsJsonArray().get(i);
                             JsonObject date_obj = date_array.getAsJsonObject();
-                            String date = date_obj.get("date").toString();
+                            String da = date_obj.get("date").toString();
+                            String daString = da;
+                            daString = daString.replace("\"", "");
+                            String date = String.valueOf(daString);
 
                             JsonElement time_array = response.body().getAsJsonArray().get(i);
                             JsonObject time_obj = time_array.getAsJsonObject();
-                            String time = time_obj.get("time").toString();
+                            String ti = time_obj.get("time").toString();
+                            String tiString = ti;
+                            tiString = tiString.replace("\"", "");
+                            String time = String.valueOf(tiString);
 
                             JsonElement lat_array = response.body().getAsJsonArray().get(i);
                             JsonObject lat_obj = lat_array.getAsJsonObject();
-                            String lat = lat_obj.get("lat").toString();
+                            String lati = lat_obj.get("lat").toString();
+                            String latiString = lati;
+                            latiString = latiString.replace("\"", "");
+                            String lat = String.valueOf(latiString);
 
                             JsonElement lng_array = response.body().getAsJsonArray().get(i);
                             JsonObject lng_obj = lng_array.getAsJsonObject();
-                            String lng = lng_obj.get("lng").toString();
+                            String longi = lng_obj.get("lng").toString();
+                            String longiString = longi;
+                            longiString = longiString.replace("\"", "");
+                            String lng = String.valueOf(longiString);
 
                             JsonElement engine_array = response.body().getAsJsonArray().get(i);
                             JsonObject engine_obj = engine_array.getAsJsonObject();
-                            String engine = engine_obj.get("engine").toString();
+                            String en = engine_obj.get("engine").toString();
+                            String enString = en;
+                            enString = enString.replace("\"", "");
+                            String engine = String.valueOf(enString);
 
                             JsonElement remarks_array = response.body().getAsJsonArray().get(i);
                             JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                            String remarks = engine_obj.get("remarks").toString();
+                            String re = engine_obj.get("remarks").toString();
+                            String reString = re;
+                            reString = reString.replace("\"", "");
+                            String remarks = String.valueOf(reString);
 
-                            if(lat==null || lng ==null) {
-                                lat = lat +"120.98352";
-                                lng= lng +"14.62647";
-                            } else {
+                            if (lat != null && !lat.equals("null") || (lng != null && !lng.equals("null"))) {
                                 // tmp hash map for detail [single]
                                 HashMap<String, String> details = new HashMap<>();
 
@@ -202,8 +217,8 @@ public class VehicleListFragment extends Fragment {
                                         R.layout.list_vehicle, new String[]{"plate_num", "gps_num",
                                         "location", "date", "time", "lat", "lng", "engine",
                                         "remarks"},
-                                        new int[]{ R.id.plate_num, R.id.gps_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
-                                                R.id.engine, R.id.remarks });
+                                        new int[]{R.id.plate_num, R.id.gps_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
+                                                R.id.engine, R.id.remarks});
 
                                 lv.setAdapter(adapter);
 
