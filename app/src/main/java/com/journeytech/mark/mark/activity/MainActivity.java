@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.journeytech.mark.mark.R;
+import com.journeytech.mark.mark.fragment.ProximityNavigationFragment;
 import com.journeytech.mark.mark.fragment.VehicleListFragment;
 import com.journeytech.mark.mark.fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
@@ -53,6 +54,8 @@ public class MainActivity extends BaseActivityLocation
 
     public static FragmentManager manager;
     VehicleMapFragment vehicleMapFragment;
+
+    ProximityNavigationFragment pnf;
 
     TextView tvdist, tvdura;
 
@@ -468,8 +471,8 @@ public class MainActivity extends BaseActivityLocation
         Bundle bundle = new Bundle();
         bundle.putDouble("Lat", mLocal.getLatitude());
         bundle.putDouble("Long", mLocal.getLongitude());
-
         vehicleMapFragment.setArguments(bundle);
+
         manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
 
     }

@@ -37,7 +37,6 @@ import com.google.maps.android.SphericalUtil;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.drawroute.DataParser;
-import com.journeytech.mark.mark.model.LocationHolder;
 
 import org.json.JSONObject;
 
@@ -62,10 +61,6 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
 
     private ProgressDialog pDialog;
     private ListView lv;
-    // URL to get contacts JSON
-    private static String url = "http://mark.journeytech.com.ph/immo_dev/mark_live_active/snailtrailApi.php?timeFrom=07%2F05%2F2017+00%3A00%3A00&timeTo=07%2F05%2F2017+23%3A59%3A59&plateNo=AJA5963&server=active";
-
-    public static ArrayList<LocationHolder> list_location;
 
     public static GoogleMap mMapProximityNavigation;
     ArrayList<LatLng> MarkerPoints;
@@ -76,7 +71,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
 
     static LatLng origin;
 
-    String lati, longi;
+    static Double lati = 0.0, longi = 0.0;
 
     public ProximityNavigationFragment(Activity a, Context c) {
         this.activity = a;
@@ -95,11 +90,6 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
         }
         // Initializing
         MarkerPoints = new ArrayList<>();
-
-        lati = getArguments().getString("Lat");
-        longi = getArguments().getString("Long");
-
-
 
         return v;
     }
@@ -176,6 +166,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
         mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 12.0f));
 
         //Passing Snail Trail Geo Location for plotting
+        //Destination
         mMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
@@ -372,7 +363,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
 
             // Drawing polyline in the Google Map for the i-th route
             if (lineOptions != null) {
-                mMapProximityNavigation.addPolyline(lineOptions);
+                mMapFragment.addPolyline(lineOptions);
             } else {
                 Log.d("onPostExecute", "without Polylines drawn");
             }

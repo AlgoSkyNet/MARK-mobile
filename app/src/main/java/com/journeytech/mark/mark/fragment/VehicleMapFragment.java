@@ -62,6 +62,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
 
+    public static Double latitudeG, longitudeG;
 
     public VehicleMapFragment(Context c, Activity a) {
         context = c;
@@ -101,6 +102,10 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_contact_us, container, false);
+
+        Bundle arguments = getArguments();
+//        lati =  arguments.getDouble("Lat");
+//        longi = arguments.getDouble("Long");
 
         return v;
     }
@@ -162,6 +167,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                 // success response
                 if (response.body().isJsonArray()) {
                     JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
+                    System.out.println(objectWhichYouNeed + " Object");
 
                     for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
                         JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
@@ -242,7 +248,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    public void createMarker(Double latitude, Double longitude, String Plate_num) {
+    public void createMarker(Double latitude, final Double longitude, String Plate_num) {
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
 
         mMapFragment.addMarker(new MarkerOptions()
@@ -265,6 +271,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public boolean onMarkerClick(final Marker marker) {
+                latitudeG = marker.getPosition().latitude;
+                longitudeG = marker.getPosition().longitude;
 
                 marker.showInfoWindow();
 

@@ -21,6 +21,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static com.journeytech.mark.mark.activity.MainActivity.manager;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.latitudeG;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.longitudeG;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
 
 public class BottomSheetModalFragment extends BottomSheetDialogFragment {
 
@@ -238,8 +241,11 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                 manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();*/
 
                 //Get Snail Trail Geo Location for plotting
-                ProximityNavigationFragment.createNavigation(SnailTrailFragment.latitude, SnailTrailFragment.longitude);
-                System.out.println(SnailTrailFragment.latitude+ " Snailtrail1");
+
+
+                mMapFragment.clear();
+
+                ProximityNavigationFragment.createNavigation(latitudeG, longitudeG);
                 dismiss();
             }
         });
