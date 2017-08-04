@@ -6,13 +6,13 @@ package com.journeytech.mark.mark.model;
 
 public class LocationHolder {
 
-    private String longitude,latitude,location,direction;
+    private String longitude,latitude,location,remarks;
 
-    public LocationHolder(String longitude, String latitude, String location, String direction) {
+    public LocationHolder(String latitude, String longitude, String location, String remarks) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.location = location;
-        this.direction = direction;
+        this.remarks = remarks;
     }
 
     public String getLongitude() {
@@ -39,11 +39,12 @@ public class LocationHolder {
         this.location = location;
     }
 
-    public String getDirection() {
-        return direction;
+    public String getRemarks() {
+        return remarks;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
+
 }

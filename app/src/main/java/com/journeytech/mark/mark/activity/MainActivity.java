@@ -303,11 +303,6 @@ public class MainActivity extends BaseActivityLocation
         return true;
     }
 
-    private void VehiclePlateNum(String plate_num) {
-
-    }
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

@@ -144,7 +144,7 @@ public class VehicleDetailsFragment extends Fragment implements OnMapReadyCallba
                         engine = jb.getString("engine");
                         plateno = jb.getString("plateno");
 
-                        list_location.add(new LocationHolder(longitude, latitude, location, direction));
+                        list_location.add(new LocationHolder(latitude, longitude, location, direction));
                     }
 
                 } catch (final JSONException e) {

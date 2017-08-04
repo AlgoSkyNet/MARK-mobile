@@ -83,8 +83,7 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                                         + " " + i_hr + ":" + i_min
                                         + ":" + i_sec;
 
-                                SnailTrailFragment stf;
-                                stf = new SnailTrailFragment();
+                                SnailTrailFragment stf = new SnailTrailFragment(getContext(), getActivity());
                                 manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
 
                             }

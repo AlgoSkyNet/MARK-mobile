@@ -93,7 +93,6 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
 
-        new GetVehicles().execute();
     }
 
     @Override
@@ -121,7 +120,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            vehicleRequest_validate();
+
             return null;
         }
 
@@ -131,6 +130,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
+
+            vehicleRequest_validate();
         }
 
     }
@@ -282,6 +283,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(cameraPosition);
         mMap.animateCamera(cameraPosition);*/
 
+        new GetVehicles().execute();
         mMapFragment.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 6));
 //        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 13));
 

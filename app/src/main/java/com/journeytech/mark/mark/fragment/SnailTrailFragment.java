@@ -1,8 +1,10 @@
 package com.journeytech.mark.mark.fragment;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +23,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -48,12 +51,20 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
     private ProgressDialog pDialog;
 
-    public static ArrayList<LocationHolder> list_location;
+    ArrayList<LocationHolder> list_location;
 
-    public static GoogleMap mMap;
+    public static GoogleMap mMapSnailTrail;
 
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
+
+    Context context;
+    static Activity activity;
+
+    public SnailTrailFragment(Context c, Activity a) {
+        context = c;
+        activity = a;
+    }
 
     public interface NetworkAPI {
         @POST("snailtrail.php")
@@ -91,123 +102,146 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
 
-        new GetSnailTrail().execute();
     }
 
-    class GetSnailTrail extends AsyncTask<Void, Void, Void> {
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMapSnailTrail = googleMap;
+        // Remove asynctask since you are already using retrofit enqueue
+        // new GetSnailTrail().execute();
+        //Create a new method to call api using retrofit
+        getDataFromServer();
+        mMapSnailTrail.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 6));
+    }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
+    private void getDataFromServer() {
 
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // Showing progress dialog
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();
 
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
-            httpClient.addInterceptor(logging);
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(httpClient.build())
-                    .build();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-            networkAPI = retrofit.create(NetworkAPI.class);
+        httpClient.addInterceptor(logging);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
 
-            SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), BottomSheetModalFragment.dateFrom, "08/04/2017 23:59:59", client_table);
+        networkAPI = retrofit.create(NetworkAPI.class);
 
-            System.out.println(vm.getPlate_num()+client_table+ BottomSheetModalFragment.dateFrom+" asdas");
+        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), /*"08/03/2017 00:00:00"*/ BottomSheetModalFragment.dateFrom, "08/04/2017 23:59:59", client_table);
 
-            Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
+        System.out.println(vm.getPlate_num() + client_table + BottomSheetModalFragment.dateFrom + " asdas");
 
-            call.enqueue(new Callback<JsonElement>() {
-                @Override
-                public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                    // success response
-                    if (response.body().isJsonArray()) {
-                        JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
-//                    System.out.println(response.body() + " "+ "Response");
+        Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
-                        for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
 
-                            JsonElement location_array = response.body().getAsJsonArray().get(i);
-                            JsonObject location_obj = location_array.getAsJsonObject();
-                            String location = location_obj.get("location").toString();
+                // success response
+                if (response.body().isJsonArray()) {
+                    JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
+                    //                    System.out.println(response.body() + " "+ "Response");
 
-                            JsonElement lat_array = response.body().getAsJsonArray().get(i);
-                            JsonObject lat_obj = lat_array.getAsJsonObject();
-                            String lati = lat_obj.get("lat").toString();
-                            String latiString = lati;
-                            latiString = latiString.replace("\"", "");
-                            String lat = String.valueOf(latiString);
+                    list_location = new ArrayList<>();
+                    final PolylineOptions polylineOptions = new PolylineOptions();
+                    for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
 
-                            JsonElement lng_array = response.body().getAsJsonArray().get(i);
-                            JsonObject lng_obj = lng_array.getAsJsonObject();
-                            String longi = lng_obj.get("lng").toString();
-                            String longiString = longi;
-                            longiString = longiString.replace("\"", "");
-                            String lng = String.valueOf(longiString);
+                        JsonElement location_array = response.body().getAsJsonArray().get(i);
+                        JsonObject location_obj = location_array.getAsJsonObject();
+                        String location = location_obj.get("location").toString();
 
-                            JsonElement remarks_array = response.body().getAsJsonArray().get(i);
-                            JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                            String remarks = remarks_obj.get("remarks").toString();
+                        JsonElement lat_array = response.body().getAsJsonArray().get(i);
+                        JsonObject lat_obj = lat_array.getAsJsonObject();
+                        String lati = lat_obj.get("lat").toString();
+                        String latiString = lati;
+                        latiString = latiString.replace("\"", "");
+                        String lat = String.valueOf(latiString);
 
-                            if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null"))) {
-                                Double d = Double.parseDouble(lat);
-                                Double d2 = Double.parseDouble(lng);
-                                createMarker(1, d, d2, "");
+                        JsonElement lng_array = response.body().getAsJsonArray().get(i);
+                        JsonObject lng_obj = lng_array.getAsJsonObject();
+                        String longi = lng_obj.get("lng").toString();
+                        String longiString = longi;
+                        longiString = longiString.replace("\"", "");
+                        String lng = String.valueOf(longiString);
+
+                        JsonElement remarks_array = response.body().getAsJsonArray().get(i);
+                        JsonObject remarks_obj = remarks_array.getAsJsonObject();
+                        String remarks = remarks_obj.get("remarks").toString();
+
+
+/*                        SharedPreferences preferences = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor prefsEditor = preferences.edit();
+
+                        Gson gson = new Gson();
+
+                        String jsonText = gson.toJson(list_location);
+                        prefsEditor.putString("key", jsonText);
+                        prefsEditor.commit();*/
+
+
+                        //Move the on postExecute code here
+
+                            // Setting the color of the polyline
+                            polylineOptions.color(Color.RED);
+
+                            // Setting the width of the polyline
+                            polylineOptions.width(3);
+
+                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null"))) {
+//                            list_location.add(new LocationHolder(lat, lng, location, remarks));
+                            Double d1 = Double.parseDouble(lat);
+                            Double d2 = Double.parseDouble(lng);
+                            // Setting points of polyline
+                            polylineOptions.add(new LatLng(d1, d2));
+                            createMarker(0, d1, d2, "");
+
+                            if(i+1 == response.body().getAsJsonArray().size()) {
+                                // Dismiss the progress dialog
+                                if (pDialog.isShowing())
+                                    pDialog.dismiss();
                             }
-
-
                         }
-                    } else {
-                        System.out.println("Not a JSONArray.");
+
                     }
+                    // Adding the polyline to the map
+                    mMapSnailTrail.addPolyline(polylineOptions);
+                } else {
+                    System.out.println("Not a JSONArray.");
                 }
+            }
 
-                @Override
-                public void onFailure(Call<JsonElement> call, Throwable t) {
-                    // failure response
-                    System.out.println("Fail " + call.toString());
-                }
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                // failure response
+                System.out.println("Fail " + call.toString());
+            }
 
-            });
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-
-        }
-
+        });
     }
 
     public void createMarker(int index, Double latitude, Double longitude, String snippet) {
         // Adding the taped point to the ArrayList
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
 
-        mMap.addMarker(new MarkerOptions()
+        mMapSnailTrail.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
                 .title(snippet)
                 .snippet(snippet)
                 .icon(image));
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
+        mMapSnailTrail.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15.0f));
 
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        mMapSnailTrail.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 marker.hideInfoWindow();
@@ -242,11 +276,4 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
             return v;
         }
     }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 13.0f));
-    }
-
 }
