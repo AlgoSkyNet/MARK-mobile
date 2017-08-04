@@ -118,7 +118,7 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
         // Showing progress dialog
         pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Please wait...");
+        pDialog.setMessage("Plotting.... Please wait.");
         pDialog.setCancelable(false);
         pDialog.show();
 
@@ -157,7 +157,10 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
                         JsonElement location_array = response.body().getAsJsonArray().get(i);
                         JsonObject location_obj = location_array.getAsJsonObject();
-                        String location = location_obj.get("location").toString();
+                        String loc = location_obj.get("location").toString();
+                        String locString = loc;
+                        locString = locString.replace("\"", "");
+                        String location = String.valueOf(locString);
 
                         JsonElement lat_array = response.body().getAsJsonArray().get(i);
                         JsonObject lat_obj = lat_array.getAsJsonObject();
@@ -175,8 +178,10 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
                         JsonElement remarks_array = response.body().getAsJsonArray().get(i);
                         JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                        String remarks = remarks_obj.get("remarks").toString();
-
+                        String rem = remarks_obj.get("remarks").toString();
+                        String remString = rem;
+                        remString = remString.replace("\"", "");
+                        String remarks = String.valueOf(remString);
 
 /*                        SharedPreferences preferences = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
                         SharedPreferences.Editor prefsEditor = preferences.edit();
@@ -202,7 +207,7 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                             Double d2 = Double.parseDouble(lng);
                             // Setting points of polyline
                             polylineOptions.add(new LatLng(d1, d2));
-                            createMarker(0, d1, d2, "");
+                            createMarker(0, d1, d2, location, remarks);
 
                             if(i+1 == response.body().getAsJsonArray().size()) {
                                 // Dismiss the progress dialog
@@ -228,15 +233,15 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    public void createMarker(int index, Double latitude, Double longitude, String snippet) {
+    public void createMarker(int index, Double latitude, Double longitude, String location, String remarks) {
         // Adding the taped point to the ArrayList
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
 
         mMapSnailTrail.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
-                .title(snippet)
-                .snippet(snippet)
+                .title(location)
+                .snippet(remarks)
                 .icon(image));
 
         mMapSnailTrail.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15.0f));
