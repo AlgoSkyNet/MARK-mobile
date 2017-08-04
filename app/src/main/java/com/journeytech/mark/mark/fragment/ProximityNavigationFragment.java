@@ -76,7 +76,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
 
     static LatLng origin;
 
-    Double lati = 0.0;
+    String lati, longi;
 
     public ProximityNavigationFragment(Activity a, Context c) {
         this.activity = a;
@@ -96,12 +96,8 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
         // Initializing
         MarkerPoints = new ArrayList<>();
 
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-        lati = bundle.getDouble("Lat");
-//        longi = getArguments().getDouble("Long");
-
-        }
+        lati = getArguments().getString("Lat");
+        longi = getArguments().getString("Long");
 
 
 

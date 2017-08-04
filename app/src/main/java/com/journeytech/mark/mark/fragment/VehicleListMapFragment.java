@@ -51,6 +51,8 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     Context context;
     static Activity activity;
 
+    String catcher = "";
+
     TextView tv2, tv4, tv6;
 
     public VehicleListMapFragment(Context c, Activity a) {
@@ -76,6 +78,8 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         tv2 = (TextView) v.findViewById(R.id.tv2);
         tv4 = (TextView) v.findViewById(R.id.tv4);
         tv6 = (TextView) v.findViewById(R.id.tv6);
+
+        catcher = getArguments().getString("geoLoc");
 
         return v;
     }
@@ -107,6 +111,8 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
                 .title("Location: " +vlm.getLoc())
                 .snippet("Engine: " + vlm.getEngine())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+//        mMapVehicleListMapFragment.
 
         mMapVehicleListMapFragment.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
