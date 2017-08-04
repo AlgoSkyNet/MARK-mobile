@@ -10,8 +10,22 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.journeytech.mark.mark.fragment.SnailTrailFragment;
+import com.journeytech.mark.mark.model.DateTime;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class BottomSheetModalFragment extends BottomSheetDialogFragment {
+
+    public static DateTime dt;
+    FragmentManager fm;
+
+    public static String dateFrom;
+
+    DateFormat formatDateTime = DateFormat.getDateTimeInstance();
+    Calendar dateTime = Calendar.getInstance();
 
     private BottomSheetBehavior.BottomSheetCallback
             mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -46,11 +60,50 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "Snail Trail", Toast.LENGTH_SHORT).show();
-                SnailTrailFragment stf;
-                FragmentManager manager;
-                stf = new SnailTrailFragment();
-                manager = getFragmentManager();
-                manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
+                final FragmentManager manager = getFragmentManager();
+
+                custom = new CustomDateTimePicker(getActivity(),
+                        new CustomDateTimePicker.ICustomDateTimeListener() {
+
+                            @Override
+                            public void onSet(Dialog dialog, Calendar calendarSelected,
+                                              Date dateSelected, int year, String monthFullName,
+                                              String monthShortName, int monthNumber, int date,
+                                              String weekDayFullName, String weekDayShortName,
+                                              int hour24, int hour12, int min, int sec, String AM_PM) {
+                                DecimalFormat df = new DecimalFormat("00");
+                                String i_hr = df.format(hour24);
+                                String i_min = df.format(min);
+                                String i_sec = df.format(sec);
+                                String i_monthNumber = df.format(dateSelected.getMonth() + 1);
+                                String i_calendar_day = df.format(dateSelected.getDay() - 1);
+
+                                dateFrom = (i_monthNumber)
+                                        + "/" + (i_calendar_day) + "/" + year
+                                        + " " + i_hr + ":" + i_min
+                                        + ":" + i_sec;
+
+                                SnailTrailFragment stf;
+                                stf = new SnailTrailFragment();
+                                manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
+
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
+                /**
+                 * Pass Directly current time format it will return AM and PM if you set
+                 * false
+                 */
+                custom.set24HourFormat(false);
+                /**
+                 * Pass Directly current data and time to show when it pop up
+                 */
+                custom.setDate(Calendar.getInstance());
+                custom.showDialog();
 
 //                new GetVehicleValue().execute();
                 dismiss();
@@ -72,4 +125,6 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
         });
     }
 
+
+    CustomDateTimePicker custom;
 }

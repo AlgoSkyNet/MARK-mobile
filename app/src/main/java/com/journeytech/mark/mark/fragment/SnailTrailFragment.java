@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.model.LocationHolder;
 
@@ -121,9 +122,9 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
             networkAPI = retrofit.create(NetworkAPI.class);
 
-            SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), "08/03/2017 00:00:01", "08/03/2017 23:59:59", client_table);
+            SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), BottomSheetModalFragment.dateFrom, "08/04/2017 23:59:59", client_table);
 
-            System.out.println(vm.getPlate_num()+client_table+ " asdas");
+            System.out.println(vm.getPlate_num()+client_table+ BottomSheetModalFragment.dateFrom+" asdas");
 
             Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 

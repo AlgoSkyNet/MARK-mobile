@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivityLocation
 
     ArrayList<LocationHolder> al = new ArrayList<>();
 
-    FragmentManager manager;
+    public static FragmentManager manager;
     VehicleMapFragment vehicleMapFragment;
 
     TextView tvdist, tvdura;

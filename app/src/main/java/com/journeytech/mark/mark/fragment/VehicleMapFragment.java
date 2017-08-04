@@ -56,7 +56,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
     Context context;
     static Activity activity;
-    static FragmentManager fm;
+    public static FragmentManager fm;
     public static VehicleMap vm;
 
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";

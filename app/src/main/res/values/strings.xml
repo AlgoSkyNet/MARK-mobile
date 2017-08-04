@@ -14,6 +14,9 @@
     <string name="dashboard_permission_denied">One of the Permission is still denied</string>
     <string name="err">Error</string>
 
+    <string name="okay">Done</string>
+    <string name="cancel">Cancel</string>
+
     <string-array name="query_suggestions">
         <item>Android</item>
         <item>iOS</item>
