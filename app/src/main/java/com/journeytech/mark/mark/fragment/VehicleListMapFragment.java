@@ -51,8 +51,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     Context context;
     static Activity activity;
 
-    String catcher = "";
-
     TextView tv2, tv4, tv6;
 
     public VehicleListMapFragment(Context c, Activity a) {
@@ -79,9 +77,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         tv4 = (TextView) v.findViewById(R.id.tv4);
         tv6 = (TextView) v.findViewById(R.id.tv6);
 
-
-        catcher = getArguments().getString("geoLoc");
-
         return v;
     }
 
@@ -89,12 +84,9 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMapVehicleListMapFragment = googleMap;
 
- /*       LatLng latlong = new LatLng(12.405888, 123.273419);
-        CameraUpdate cameraPosition = CameraUpdateFactory.newLatLngZoom(latlong, 16);
-        mMap.moveCamera(cameraPosition);
-        mMap.animateCamera(cameraPosition);*/
         mMapFragment.clear();
         mMapVehicleListMapFragment.clear();
+
         setUpMap();
     }
 
@@ -106,20 +98,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         mMapVehicleListMapFragment.setBuildingsEnabled(true);
         mMapVehicleListMapFragment.getUiSettings().setZoomControlsEnabled(true);
 
-/*        for(int i = 0; i < vlm.size(); i++) {
-            Double lati = Double.parseDouble(vlm.get(i).getLati());
-            Double longi = Double.parseDouble(vlm.get(i).getLongi());
-            vlm.get(i).getDate();
-            vlm.get(i).getTime();
-            vlm.get(i).getEngine();
-            vlm.get(i).getRemarks();
-            *//*String value = "lat";
-            int pos = Array.IndexOf(catcher, value);
-            if (pos > -1)
-            {*//*
-
-        }*/
-//        VehicleListMap vlm = new VehicleListMap();
         final Double lati = Double.parseDouble(vlm.getLati());
         final Double longi = Double.parseDouble(vlm.getLongi());
 
@@ -129,8 +107,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
                 .title("Location: " +vlm.getLoc())
                 .snippet("Engine: " + vlm.getEngine())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-
-//        mMapVehicleListMapFragment.
 
         mMapVehicleListMapFragment.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -145,35 +121,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
 
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                // This causes the marker at Perth to bounce into position when it is clicked.
-   /*             if (marker.equals(mPerth)) {
-                    final Handler handler = new Handler();
-                    final long start = SystemClock.uptimeMillis();
-                    Projection proj = mMapVehicleListMapFragment.getProjection();
-                    Point startPoint = proj.toScreenLocation(PERTH);
-                    startPoint.offset(0, -100);
-                    final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-                    final long duration = 1500;
-                    final Interpolator interpolator = new BounceInterpolator();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            long elapsed = SystemClock.uptimeMillis() - start;
-                            float t = interpolator.getInterpolation((float) elapsed / duration);
-                            double lng = t * PERTH.longitude + (1 - t) * startLatLng.longitude;
-                            double lat = t * PERTH.latitude + (1 - t) * startLatLng.latitude;
-                            marker.setPosition(new LatLng(lat, lng));
-                            if (t < 1.0) {
-                                // Post again 16ms later.
-                                handler.postDelayed(this, 16);
-                            }
-                        }
-                    });
-                }*/
-                // We return false to indicate that we have not consumed the event and that we wish
-                // for the default behavior to occur (which is for the camera to move such that the
-                // marker is centered and for the marker's info window to open, if it has one).
-
 
                 marker.showInfoWindow();
                 bounceMarker(marker);

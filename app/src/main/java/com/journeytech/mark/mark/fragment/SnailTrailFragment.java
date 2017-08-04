@@ -29,9 +29,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.model.LocationHolder;
-
-import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -51,8 +48,6 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
     private ProgressDialog pDialog;
 
-    ArrayList<LocationHolder> list_location;
-
     public static GoogleMap mMapSnailTrail;
 
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
@@ -60,6 +55,8 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
     Context context;
     static Activity activity;
+
+    public static Double latitude, longitude;
 
     public SnailTrailFragment(Context c, Activity a) {
         context = c;
@@ -99,9 +96,9 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
-
     }
 
     @Override
@@ -138,8 +135,6 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
         SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), /*"08/03/2017 00:00:00"*/ BottomSheetModalFragment.dateFrom, BottomSheetModalFragment.dateTo, client_table);
 
-        System.out.println(vm.getPlate_num() + client_table + BottomSheetModalFragment.dateFrom + " asdas");
-
         Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
         call.enqueue(new Callback<JsonElement>() {
@@ -149,9 +144,7 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                 // success response
                 if (response.body().isJsonArray()) {
                     JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
-                    //                    System.out.println(response.body() + " "+ "Response");
 
-                    list_location = new ArrayList<>();
                     final PolylineOptions polylineOptions = new PolylineOptions();
                     for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
 
@@ -183,17 +176,24 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                         remString = remString.replace("\"", "");
                         String remarks = String.valueOf(remString);
 
-/*                        SharedPreferences preferences = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
+/*                        SharedPreferences preferences = getActivity().getSharedPreferences("AppPrefs", MODE_PRIVATE);
                         SharedPreferences.Editor prefsEditor = preferences.edit();
 
                         Gson gson = new Gson();
 
                         String jsonText = gson.toJson(list_location);
                         prefsEditor.putString("key", jsonText);
-                        prefsEditor.commit();*/
+                        prefsEditor.commit();
 
+                        //Retrieve SharedPreferences
+                        SharedPreferences myPrefs;
+                        myPrefs = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                        String jsonTextGet = myPrefs.getString("key", null);
 
-                        //Move the on postExecute code here
+                        Type collectionType = new TypeToken<List<LocationHolder>>(){}.getType();
+                        List<LocationHolder> addArray= (List<LocationHolder>) new Gson()
+                                .fromJson( jsonTextGet , collectionType);*/
+
 
                             // Setting the color of the polyline
                             polylineOptions.color(Color.RED);
@@ -201,7 +201,8 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                             // Setting the width of the polyline
                             polylineOptions.width(3);
 
-                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null"))) {
+                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null") || (lat !="" && lat !="") &&
+                                lng != "")&&(lng !="")) {
 //                            list_location.add(new LocationHolder(lat, lng, location, remarks));
                             Double d1 = Double.parseDouble(lat);
                             Double d2 = Double.parseDouble(lng);
@@ -210,6 +211,8 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                             createMarker(0, d1, d2, location, remarks);
 
                             if(i+1 == response.body().getAsJsonArray().size()) {
+                                latitude = Double.parseDouble(lat);
+                                longitude = Double.parseDouble(lng);
                                 // Dismiss the progress dialog
                                 if (pDialog.isShowing())
                                     pDialog.dismiss();

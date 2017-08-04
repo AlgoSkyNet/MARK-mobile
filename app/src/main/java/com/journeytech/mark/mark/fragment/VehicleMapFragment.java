@@ -162,7 +162,6 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                 // success response
                 if (response.body().isJsonArray()) {
                     JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
-                    System.out.println(objectWhichYouNeed);
 
                     for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
                         JsonElement plate_num_array = response.body().getAsJsonArray().get(i);

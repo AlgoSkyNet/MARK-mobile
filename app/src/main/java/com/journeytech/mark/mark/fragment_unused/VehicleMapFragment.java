@@ -50,7 +50,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
     private ProgressDialog pDialog;
 
     // URL to get contacts JSON
-    private static String url = "http://mark.journeytech.com.ph/json/1.json";
+    private static String url = "http://mark.journeytech.com.ph/json/1 - Copy.json";
 
     public static GoogleMap mMapFragment;
     public static ArrayList<VehicleHolder> vehicleHolder;

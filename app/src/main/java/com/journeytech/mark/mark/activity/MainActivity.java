@@ -7,9 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -33,8 +31,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.fragment.VehicleListFragment;
 import com.journeytech.mark.mark.fragment.VehicleMapFragment;
@@ -46,9 +42,6 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import java.util.ArrayList;
 
 import static com.journeytech.mark.mark.R.id.search;
-import static com.journeytech.mark.mark.fragment_unused.VehicleDetailsProximityNavigationFragment.createSnailTrail;
-import static com.journeytech.mark.mark.fragment_unused.VehicleDetailsProximityNavigationFragment.list_location;
-import static com.journeytech.mark.mark.fragment_unused.VehicleDetailsProximityNavigationFragment.mMap;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -192,7 +185,7 @@ public class MainActivity extends BaseActivityLocation
 
         vehicleMapFragment = new VehicleMapFragment(getApplicationContext(), this);
         manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
+//        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
     }
 
 /*    @Override
@@ -460,57 +453,14 @@ public class MainActivity extends BaseActivityLocation
         return true;
     }
 
-    private class getSnailTrail extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-
-        }
-
-        protected Void doInBackground(Void... args) {
-            // do background work here
-            return null;
-        }
-
-        protected void onPostExecute(Void result) {
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-
-            // Instantiating the class PolylineOptions to plot polyline in the map
-            final PolylineOptions polylineOptions = new PolylineOptions();
-//            al = list_location;
-            for (int i = 0; i < list_location.size(); i++) {
-                // Setting the color of the polyline
-                polylineOptions.color(Color.RED);
-
-                // Setting the width of the polyline
-                polylineOptions.width(3);
-
-                Double lat = Double.parseDouble(list_location.get(i).getLatitude());
-                Double Longitude = Double.parseDouble(list_location.get(i).getLongitude());
-
-                // Setting points of polyline
-                polylineOptions.add(new LatLng(lat, Longitude));
-
-                createSnailTrail(i, list_location.get(i).getLatitude(), list_location.get(i).getLongitude(), list_location.get(i).getLocation());
-            }
-
-            // Adding the polyline to the map
-            mMap.addPolyline(polylineOptions);
-        }
-    }
-
     @Override
     public void locationFetched(Location mLocal, Location oldLocation, String time, String locationProvider) {
         super.locationFetched(mLocal, oldLocation, time, locationProvider);
         p.setLatitude(mLocal.getLatitude());
         p.setLongitude(mLocal.getLongitude());
 
-//        setMLocal(mLocal);
+        setLatitude(mLocal.getLatitude());
+        setLongitude(mLocal.getLongitude());
 
 //        vehicleMapFragment.setLocation(mLocal);
 
@@ -518,18 +468,38 @@ public class MainActivity extends BaseActivityLocation
         Bundle bundle = new Bundle();
         bundle.putDouble("Lat", mLocal.getLatitude());
         bundle.putDouble("Long", mLocal.getLongitude());
+
         vehicleMapFragment.setArguments(bundle);
-//        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
+        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
 
     }
 
-    public Location mLocal;
+    public static Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public static Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
 
     public Location getMLocal() {
-        return mLocal;
+        return MLocal;
     }
 
-    public void setMLocal(Location mLocal) {
-        this.mLocal = mLocal;
+    public void setMLocal(Location MLocal) {
+        this.MLocal = MLocal;
     }
+
+    Location MLocal;
+    static Double latitude = 0.0;
+    static Double longitude = 0.0;
 }

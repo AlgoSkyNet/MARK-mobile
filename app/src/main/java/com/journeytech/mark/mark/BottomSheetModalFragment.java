@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.journeytech.mark.mark.fragment.ProximityNavigationFragment;
 import com.journeytech.mark.mark.fragment.SnailTrailFragment;
 
 import java.text.DecimalFormat;
@@ -89,19 +90,21 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                                                       String monthShortName, int monthNumber, int date,
                                                       String weekDayFullName, String weekDayShortName,
                                                       int hour24, int hour12, int min, int sec, String AM_PM) {
-                                        DecimalFormat df = new DecimalFormat("00");
-                                        String i_hr = df.format(hour24);
-                                        String i_min = df.format(min);
-                                        String i_sec = df.format(sec);
-                                        String i_monthNumber = df.format(dateSelected.getMonth() + 1);
-                                        String i_calendar_day = df.format(dateSelected.getDay() - 1);
+                                        min = min - 1;
+                                            DecimalFormat df = new DecimalFormat("00");
+                                            String i_hr = df.format(hour24);
+                                            String i_min = df.format(min);
+                                            String i_sec = df.format(sec);
+                                            String i_monthNumber = df.format(dateSelected.getMonth() + 1);
+                                            String i_calendar_day = df.format(dateSelected.getDay() - 1);
 
-                                        dateFrom = (i_monthNumber)
-                                                + "/" + (i_calendar_day) + "/" + year
-                                                + " " + i_hr + ":" + i_min
-                                                + ":" + i_sec;
+                                            dateFrom = (i_monthNumber)
+                                                    + "/" + (i_calendar_day) + "/" + year
+                                                    + " " + i_hr + ":" + i_min
+                                                    + ":" + i_sec;
 
-                                        tv7.setText(dateFrom);
+                                            tv7.setText(dateFrom);
+
                                     }
 
                                     @Override
@@ -140,6 +143,7 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                                                       String monthShortName, int monthNumber, int date,
                                                       String weekDayFullName, String weekDayShortName,
                                                       int hour24, int hour12, int min, int sec, String AM_PM) {
+
                                         DecimalFormat df = new DecimalFormat("00");
                                         String i_hr = df.format(hour24);
                                         String i_min = df.format(min);
@@ -200,14 +204,42 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
         proximity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "Proximity ", Toast.LENGTH_SHORT).show();
+                ProximityNavigationFragment pnf = new ProximityNavigationFragment(getActivity(), getContext());
+                manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();
                 dismiss();
             }
         });
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "Navigation", Toast.LENGTH_SHORT).show();
+                /*tvdist = (TextView) findViewById(R.id.tvDistance);
+                tvdura = (TextView) findViewById(R.id.tvDuration);
+                Double lat2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLatitude());
+                Double long2 = Double.parseDouble(list_location.get(list_location.size() - 1).getLongitude());
+                LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
+                LatLng l2 = new LatLng(lat2, long2);
+
+                Double m = ProximityNavigationFragment.distanceBetween(l1, l2);
+                double km = 1000;
+                double distanceInMeters = m / km;
+
+                DecimalFormat df = new DecimalFormat();
+                df.setMaximumFractionDigits(2);
+
+                tvdist.setText(df.format(distanceInMeters) + " km");
+
+                //For example spead is 10 meters per minute.
+                int speedIs10MetersPerMinute = 10;
+                Double estimatedDriveTimeInMinutes = m / speedIs10MetersPerMinute;
+                estimatedDriveTimeInMinutes = estimatedDriveTimeInMinutes / 60;
+
+                tvdura.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");*/
+/*                ProximityNavigationFragment pnf = new ProximityNavigationFragment(getActivity(), getContext());
+                manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();*/
+
+                //Get Snail Trail Geo Location for plotting
+                ProximityNavigationFragment.createNavigation(SnailTrailFragment.latitude, SnailTrailFragment.longitude);
+                System.out.println(SnailTrailFragment.latitude+ " Snailtrail1");
                 dismiss();
             }
         });
