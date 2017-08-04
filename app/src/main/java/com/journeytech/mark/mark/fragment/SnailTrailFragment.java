@@ -136,7 +136,7 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
         networkAPI = retrofit.create(NetworkAPI.class);
 
-        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), /*"08/03/2017 00:00:00"*/ BottomSheetModalFragment.dateFrom, "08/04/2017 23:59:59", client_table);
+        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), /*"08/03/2017 00:00:00"*/ BottomSheetModalFragment.dateFrom, BottomSheetModalFragment.dateTo, client_table);
 
         System.out.println(vm.getPlate_num() + client_table + BottomSheetModalFragment.dateFrom + " asdas");
 

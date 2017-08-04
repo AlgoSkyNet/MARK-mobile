@@ -102,7 +102,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         mMapFragment.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
+                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
                 return true;
             }
@@ -133,8 +133,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         public View getInfoContents(final Marker marker) {
            View v = activity.getLayoutInflater().inflate(R.layout.marker_popup, null);
 
-            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
-            bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+/*            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
+            bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());*/
 /*             Button b = (Button) v.findViewById(R.id.button2);
             b.setOnClickListener(new Button.OnClickListener() {
 

@@ -55,7 +55,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
     public static GoogleMap mMapFragment;
 
     Context context;
-    static Activity activity;
+    public static Activity activity;
     public static FragmentManager fm;
     public static VehicleMap vm;
 
@@ -210,7 +210,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                         JsonObject remarks_obj = remarks_array.getAsJsonObject();
                         String remarks = remarks_obj.get("remarks").toString();
 
-                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null"))) {
+                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null") || (lat !="" && lat !="") &&
+                        lng != "")&&(lng !="")) {
                             vm = new VehicleMap();
 
                             vm.setPlate_num(plate_num);
@@ -268,7 +269,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
                 marker.showInfoWindow();
 
-                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
+                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
                 return true;
             }

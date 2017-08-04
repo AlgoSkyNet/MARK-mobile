@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,14 +24,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.model.VehicleHolder;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
 import static com.journeytech.mark.mark.fragment.VehicleListFragment.vlm;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
 
 
 /**
@@ -178,8 +176,8 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
                 marker.showInfoWindow();
                 bounceMarker(marker);
 
-                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
-                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+/*                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
+                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());*/
                 return true;
             }
         });

@@ -178,7 +178,7 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
                 marker.showInfoWindow();
                 bounceMarker(marker);
 
-                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
+                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
                 return true;
             }
