@@ -215,18 +215,10 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                         JsonObject remarks_obj = remarks_array.getAsJsonObject();
                         String remarks = remarks_obj.get("remarks").toString();
 
-                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null") || (lat !="" && lat !="") &&
-                        lng != "")&&(lng !="")) {
-                            vm = new VehicleMap();
-
-                            vm.setPlate_num(plate_num);
-                            vm.setLoc(location);
-                            vm.setDate(date);
-                            vm.setEngine(engine);
-                            vm.setLati(lat);
-                            vm.setLongi(lng);
-                            vm.setRemarks(remarks);
-                            vm.setTime(time);
+                        if (lat != null && !lat.equals("null")
+                                && (lng != null && !lng.equals("null")
+                                || (lat !="" && lat !="")
+                                && lng != "")&&(lng !="")) {
 
                             Double d = Double.parseDouble(lat);
                             Double d2 = Double.parseDouble(lng);
@@ -254,8 +246,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         mMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
-                .title("Plate no.: "+Plate_num)
-                .snippet(null)
+                .title("Plate no.:")
+                .snippet(Plate_num)
                 .icon(image));
 
         mMapFragment.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -271,6 +263,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public boolean onMarkerClick(final Marker marker) {
+                vm = new VehicleMap();
+                vm.setPlate_num(marker.getSnippet());
                 latitudeG = marker.getPosition().latitude;
                 longitudeG = marker.getPosition().longitude;
 

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,7 +25,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.BottomSheetModalFragment;
@@ -113,12 +113,6 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
     private void getDataFromServer() {
 
-        // Showing progress dialog
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Plotting.... Please wait.");
-        pDialog.setCancelable(false);
-        pDialog.show();
-
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -133,17 +127,19 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
         networkAPI = retrofit.create(NetworkAPI.class);
 
-        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), /*"08/03/2017 00:00:00"*/ BottomSheetModalFragment.dateFrom, BottomSheetModalFragment.dateTo, client_table);
-
+        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(),BottomSheetModalFragment.dateFrom, BottomSheetModalFragment.dateTo, client_table);
+        System.out.println(vm.getPlate_num() + BottomSheetModalFragment.dateFrom+ BottomSheetModalFragment.dateTo+ client_table +" JsonArray");
         Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-
-                // success response
-                if (response.body().isJsonArray()) {
-                    JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
+                if (response.body().getAsJsonArray().size() != 0) {
+                    // Showing progress dialog
+                    pDialog = new ProgressDialog(getContext());
+                    pDialog.setMessage("Plotting.... Please wait.");
+                    pDialog.setCancelable(false);
+                    pDialog.show();
 
                     final PolylineOptions polylineOptions = new PolylineOptions();
                     for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
@@ -194,15 +190,14 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                         List<LocationHolder> addArray= (List<LocationHolder>) new Gson()
                                 .fromJson( jsonTextGet , collectionType);*/
 
+                        // Setting the color of the polyline
+                        polylineOptions.color(Color.RED);
 
-                            // Setting the color of the polyline
-                            polylineOptions.color(Color.RED);
+                        // Setting the width of the polyline
+                        polylineOptions.width(3);
 
-                            // Setting the width of the polyline
-                            polylineOptions.width(3);
-
-                        if (lat != null && !lat.equals("null") && (lng != null && !lng.equals("null") || (lat !="" && lat !="") &&
-                                lng != "")&&(lng !="")) {
+                        if (lat != null || !lat.equals("null") || (lng != null && !lng.equals("null") || (lat != "" || (lng != "") ||
+                                (!lat.isEmpty()) || (!lng.isEmpty())))) {
 //                            list_location.add(new LocationHolder(lat, lng, location, remarks));
                             Double d1 = Double.parseDouble(lat);
                             Double d2 = Double.parseDouble(lng);
@@ -210,20 +205,24 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                             polylineOptions.add(new LatLng(d1, d2));
                             createMarker(0, d1, d2, location, remarks);
 
-                            if(i+1 == response.body().getAsJsonArray().size()) {
+                            if (i + 1 == response.body().getAsJsonArray().size()) {
                                 latitude = Double.parseDouble(lat);
                                 longitude = Double.parseDouble(lng);
                                 // Dismiss the progress dialog
-                                if (pDialog.isShowing())
+                                if (pDialog.isShowing()) {
                                     pDialog.dismiss();
+                                }
                             }
                         }
-
                     }
                     // Adding the polyline to the map
                     mMapSnailTrail.addPolyline(polylineOptions);
-                } else {
-                    System.out.println("Not a JSONArray.");
+                } else if (response.body().getAsJsonArray().size() == 0) {
+                    Toast.makeText(getContext(), "No Data to display.", Toast.LENGTH_LONG).show();
+                    pDialog = new ProgressDialog(getContext());
+                    if (pDialog.isShowing()) {
+                        pDialog.dismiss();
+                    }
                 }
             }
 

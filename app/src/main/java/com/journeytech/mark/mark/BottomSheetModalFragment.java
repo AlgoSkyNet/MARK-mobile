@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,9 +61,10 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
             mBottomSheetBehavior.setPeekHeight(500);
             contentView.requestLayout();
         }
-        ImageButton snailtrail = (ImageButton) contentView.findViewById(R.id.snailtrail);
-        ImageButton proximity = (ImageButton) contentView.findViewById(R.id.proximity);
-        ImageButton navigation = (ImageButton) contentView.findViewById(R.id.navigation);
+        Button snailtrail = (Button) contentView.findViewById(R.id.snailtrail);
+        Button proximity = (Button) contentView.findViewById(R.id.proximity);
+        Button navigation = (Button) contentView.findViewById(R.id.navigation);
+
         snailtrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,7 +93,7 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                                                       String weekDayFullName, String weekDayShortName,
                                                       int hour24, int hour12, int min, int sec,
                                                       String AM_PM) {
-                                        min = min - 1;
+
                                         DecimalFormat df = new DecimalFormat("00");
                                         String i_hr = df.format(hour24);
                                         String i_min = df.format(min);

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageButton
+<!--    <ImageButton
         android:id="@+id/snailtrail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -28,5 +28,25 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center_horizontal|center_vertical"
-        app:srcCompat="@drawable/navigation" />
+        app:srcCompat="@drawable/navigation" />-->
+    <Button
+        android:id="@+id/snailtrail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Snail Trail" />
+
+    <Button
+        android:id="@+id/proximity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Proximity" />
+
+    <Button
+        android:id="@+id/navigation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Navigation" />
 </LinearLayout>
