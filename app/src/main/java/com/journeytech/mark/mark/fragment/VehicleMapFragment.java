@@ -246,7 +246,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         mMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
-                .title("Plate no.:")
+                .title("Plate No.")
                 .snippet(Plate_num)
                 .icon(image));
 

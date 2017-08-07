@@ -135,11 +135,17 @@ public class VehicleListFragment extends Fragment {
 
                             JsonElement gps_num_array = response.body().getAsJsonArray().get(i);
                             JsonObject gps_num_obj = gps_num_array.getAsJsonObject();
-                            String gps_num = gps_num_obj.get("gps_num").toString();
+                            String gps_n = gps_num_obj.get("gps_num").toString();
+                            String gps_nString = gps_n;
+                            gps_nString = gps_nString.replace("\"", "");
+                            String gps_num = String.valueOf(gps_nString);
 
                             JsonElement location_array = response.body().getAsJsonArray().get(i);
                             JsonObject location_obj = location_array.getAsJsonObject();
-                            String location = location_obj.get("location").toString();
+                            String locat = location_obj.get("location").toString();
+                            String locatString = locat;
+                            locatString = locatString.replace("\"", "");
+                            String location = String.valueOf(locatString);
 
                             JsonElement date_array = response.body().getAsJsonArray().get(i);
                             JsonObject date_obj = date_array.getAsJsonObject();
