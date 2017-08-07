@@ -278,6 +278,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
                 BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+
                 return true;
             }
         });

@@ -1,6 +1,5 @@
 package com.journeytech.mark.mark.activity;
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,13 +31,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.fragment.ProximityNavigationFragment;
 import com.journeytech.mark.mark.fragment.VehicleListFragment;
 import com.journeytech.mark.mark.fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 
@@ -54,14 +51,6 @@ public class MainActivity extends BaseActivityLocation
 
     public static FragmentManager manager;
     VehicleMapFragment vehicleMapFragment;
-
-    ProximityNavigationFragment pnf;
-
-    TextView tvdist, tvdura;
-
-    MaterialSearchView searchView;
-
-    ProgressDialog pDialog;
 
     public static String status, ucsi_num, client_table, markutype;
 

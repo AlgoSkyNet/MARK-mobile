@@ -13,7 +13,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.journeytech.mark.mark.fragment.ProximityNavigationFragment;
+import com.journeytech.mark.mark.fragment.NavigationFragment;
+import com.journeytech.mark.mark.fragment.ProximityFragment;
 import com.journeytech.mark.mark.fragment.SnailTrailFragment;
 
 import java.text.DecimalFormat;
@@ -21,8 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static com.journeytech.mark.mark.activity.MainActivity.manager;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.latitudeG;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.longitudeG;
 import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
 
 public class BottomSheetModalFragment extends BottomSheetDialogFragment {
@@ -237,9 +236,14 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
         proximity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ProximityNavigationFragment pnf = new ProximityNavigationFragment(getActivity(), getContext());
-                manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();
+                mMapFragment.clear();
+
+//                ProximityFragment.createProximity(MainActivity.getLatitude(), MainActivity.getLongitude());
                 dismiss();
+
+                ProximityFragment pnf = new ProximityFragment(getActivity(), getContext());
+                manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();
+
             }
         });
         navigation.setOnClickListener(new View.OnClickListener() {
@@ -252,7 +256,7 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                 LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
                 LatLng l2 = new LatLng(lat2, long2);
 
-                Double m = ProximityNavigationFragment.distanceBetween(l1, l2);
+                Double m = ProximityFragment.distanceBetween(l1, l2);
                 double km = 1000;
                 double distanceInMeters = m / km;
 
@@ -267,7 +271,7 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                 estimatedDriveTimeInMinutes = estimatedDriveTimeInMinutes / 60;
 
                 tvdura.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");*/
-/*                ProximityNavigationFragment pnf = new ProximityNavigationFragment(getActivity(), getContext());
+/*                ProximityFragment pnf = new ProximityFragment(getActivity(), getContext());
                 manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();*/
 
                 //Get Snail Trail Geo Location for plotting
@@ -275,8 +279,10 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
 
                 mMapFragment.clear();
 
-                ProximityNavigationFragment.createNavigation(latitudeG, longitudeG);
                 dismiss();
+
+                NavigationFragment nf = new NavigationFragment(activity);
+                manager.beginTransaction().replace(R.id.mainLayout, nf).commit();
             }
         });
     }

@@ -50,33 +50,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.latitudeG;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.longitudeG;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProximityNavigationFragment extends Fragment implements OnMapReadyCallback,
+public class NavigationFragment extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener {
 
     private ProgressDialog pDialog;
     private ListView lv;
 
-    public static GoogleMap mMapProximityNavigation;
+    public static GoogleMap mMapNavigation;
     ArrayList<LatLng> MarkerPoints;
     GoogleApiClient mGoogleApiClient;
 
     Context context;
-    static Activity activity;
+    Activity activity;
+
+    public NavigationFragment(Activity a) {
+        this.activity = a;
+    }
 
     static LatLng origin;
-
-    static Double lati = 0.0, longi = 0.0;
-
-    public ProximityNavigationFragment(Activity a, Context c) {
-        this.activity = a;
-        this.context = c;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -110,68 +108,49 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMapProximityNavigation = googleMap;
+        mMapNavigation = googleMap;
+        mMapNavigation.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 7));
 
-        //Initialize Google Play Services
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(context,
+/*        //Initialize Google Play Services
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(activity,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
-                mMapProximityNavigation.setMyLocationEnabled(true);
+                mMapNavigation.setMyLocationEnabled(true);
             }
-        } else {
-            buildGoogleApiClient();
-            mMapProximityNavigation.setMyLocationEnabled(true);
         }
+        else {
+            buildGoogleApiClient();
+            mMapNavigation.setMyLocationEnabled(true);
+        }*/
 
-        Location mLocal = ((MainActivity) getActivity()).getMLocal();
-        origin = new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude());
-        mMapProximityNavigation.addMarker(new MarkerOptions()
-                .position(new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude()))
-                .anchor(0.5f, 0.5f)
-                .title("title")
-                .snippet("snippet")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+        createNavigation(latitudeG, longitudeG);
 
-        mMapProximityNavigation.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 9.0f));
     }
 
-    public static void createProximity(String latitude, String longitude) {
-        Double lat = Double.parseDouble(latitude);
-        Double Longitude = Double.parseDouble(longitude);
+    public void createNavigation(Double latitude, Double longitude) {
 
-        mMapProximityNavigation.addMarker(new MarkerOptions()
-                .position(new LatLng(lat, Longitude))
-                .anchor(0.5f, 0.5f)
-                .title("title")
-                .snippet("snippet")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-
-        mMapProximityNavigation.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, Longitude), 9.0f));
-    }
-
-    public static void createNavigation(Double latitude, Double longitude) {
-
-        //Origin Geo Location
+        //Origin, where you are. Geo Location
         origin = new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude());
 
-        mMapFragment.addMarker(new MarkerOptions()
+        mMapNavigation.addMarker(new MarkerOptions()
                 .position(new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude()))
+//                .position(new LatLng(14.513227, 121.004827))
                 .anchor(0.5f, 0.5f)
-                .title("title")
-                .snippet("snippet")
+                .title("Your Location")
+                .snippet("This is where you are fetch.")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
-        mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 12.0f));
+        mMapNavigation.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 12.0f));
 
         //Passing Snail Trail Geo Location for plotting
         //Destination
-        mMapFragment.addMarker(new MarkerOptions()
+        mMapNavigation.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
-                .title("title")
-                .snippet("snippet")
+                .title("Your Vehicle")
+                .snippet("This is where your vehicle was fetch.")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
         Location locationA = new Location("point A");
@@ -188,8 +167,8 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
         String meter = String.valueOf(distance);
 
         String url = getUrl(origin, new LatLng(latitude, longitude));
-        FetchUrl FetchUrl = new FetchUrl();
-        FetchUrl.execute(url);
+        FetchUrl fetchUrl = new FetchUrl();
+        fetchUrl.execute(url);
     }
 
     public static Double distanceBetween(LatLng point1, LatLng point2) {
@@ -200,7 +179,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
         return SphericalUtil.computeDistanceBetween(point1, point2);
     }
 
-    private static String getUrl(LatLng origin, LatLng dest) {
+    private String getUrl(LatLng origin, LatLng dest) {
 
         // Origin of route
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
@@ -228,7 +207,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
     /**
      * A method to download json data from url
      */
-    private static String downloadUrl(String strUrl) throws IOException {
+    private String downloadUrl(String strUrl) throws IOException {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
@@ -267,7 +246,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
     }
 
     // Fetches data from url passed
-    private static class FetchUrl extends AsyncTask<String, Void, String> {
+    private class FetchUrl extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... url) {
@@ -300,7 +279,7 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
     /**
      * A class to parse the Google Places in JSON format
      */
-    private static class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
         // Parsing the data in non-ui thread
         @Override
@@ -311,17 +290,17 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
 
             try {
                 jObject = new JSONObject(jsonData[0]);
-                Log.d("ParserTask", jsonData[0].toString());
+                Log.d("ParserTask",jsonData[0].toString());
                 DataParser parser = new DataParser();
                 Log.d("ParserTask", parser.toString());
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-                Log.d("ParserTask", "Executing routes");
-                Log.d("ParserTask", routes.toString());
+                Log.d("ParserTask","Executing routes");
+                Log.d("ParserTask",routes.toString());
 
             } catch (Exception e) {
-                Log.d("ParserTask", e.toString());
+                Log.d("ParserTask",e.toString());
                 e.printStackTrace();
             }
             return routes;
@@ -357,21 +336,22 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
                 lineOptions.width(10);
                 lineOptions.color(Color.RED);
 
-                Log.d("onPostExecute", "onPostExecute lineoptions decoded");
+                Log.d("onPostExecute","onPostExecute lineoptions decoded");
 
             }
 
             // Drawing polyline in the Google Map for the i-th route
-            if (lineOptions != null) {
-                mMapFragment.addPolyline(lineOptions);
-            } else {
-                Log.d("onPostExecute", "without Polylines drawn");
+            if(lineOptions != null) {
+                mMapNavigation.addPolyline(lineOptions);
+            }
+            else {
+                Log.d("onPostExecute","without Polylines drawn");
             }
         }
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
+        mGoogleApiClient = new GoogleApiClient.Builder(activity)
 //                .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -432,9 +412,8 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-
-    public boolean checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(context,
+    public boolean checkLocationPermission(){
+        if (ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
@@ -475,20 +454,20 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
 
                     // permission was granted. Do the
                     // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(context,
+                    if (ContextCompat.checkSelfPermission(activity,
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
                         if (mGoogleApiClient == null) {
                             buildGoogleApiClient();
                         }
-                        mMapProximityNavigation.setMyLocationEnabled(true);
+                        mMapNavigation.setMyLocationEnabled(true);
                     }
 
                 } else {
 
                     // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(context, "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "permission denied", Toast.LENGTH_LONG).show();
                 }
                 return;
             }
@@ -497,6 +476,5 @@ public class ProximityNavigationFragment extends Fragment implements OnMapReadyC
             // You can add here other case statements according to your requirement.
         }
     }
-
 
 }
