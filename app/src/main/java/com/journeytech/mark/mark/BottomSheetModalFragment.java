@@ -92,6 +92,30 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                                                       Date dateSelected, int year, String monthFullName,
                                                       String monthShortName, int monthNumber, int date,
                                                       String weekDayFullName, String weekDayShortName,
+                                                      int hour24, int hour12, int min, int sec,
+                                                      String AM_PM) {
+                                        min = min - 1;
+                                        DecimalFormat df = new DecimalFormat("00");
+                                        String i_hr = df.format(hour24);
+                                        String i_min = df.format(min);
+                                        String i_sec = df.format(sec);
+                                        String i_monthNumber = df.format(monthNumber+1);
+                                        String i_calendar_day = df.format(calendarSelected
+                                                .get(Calendar.DAY_OF_MONTH));
+
+                                        dateFrom = (i_monthNumber)
+                                                + "/" + i_calendar_day + "/" + year
+                                                + " " + i_hr + ":" + i_min
+                                                + ":" + i_sec;
+
+                                        tv7.setText(dateFrom);
+                                    }
+
+                                    /*@Override
+                                    public void onSet(Dialog dialog, Calendar calendarSelected,
+                                                      Date dateSelected, int year, String monthFullName,
+                                                      String monthShortName, int monthNumber, int date,
+                                                      String weekDayFullName, String weekDayShortName,
                                                       int hour24, int hour12, int min, int sec, String AM_PM) {
                                         min = min - 1;
                                             DecimalFormat df = new DecimalFormat("00");
@@ -103,12 +127,12 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
 
                                             dateFrom = (i_monthNumber)
                                                     + "/" + (i_calendar_day) + "/" + year
-                                                    + " " + i_hr + ":" + i_min
+                                                    + " " + i_hr + ":" + min
                                                     + ":" + i_sec;
 
                                             tv7.setText(dateFrom);
 
-                                    }
+                                    }*/
 
                                     @Override
                                     public void onCancel() {
@@ -151,11 +175,12 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                                         String i_hr = df.format(hour24);
                                         String i_min = df.format(min);
                                         String i_sec = df.format(sec);
-                                        String i_monthNumber = df.format(dateSelected.getMonth() + 1);
-                                        String i_calendar_day = df.format(dateSelected.getDay() - 1);
+                                        String i_monthNumber = df.format(monthNumber+1);
+                                        String i_calendar_day = df.format(calendarSelected
+                                                .get(Calendar.DAY_OF_MONTH));
 
                                         dateTo = (i_monthNumber)
-                                                + "/" + (i_calendar_day) + "/" + year
+                                                + "/" + i_calendar_day + "/" + year
                                                 + " " + i_hr + ":" + i_min
                                                 + ":" + i_sec;
 
@@ -187,16 +212,21 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                 b5.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (dateFrom == null || dateFrom.equals("null") &&dateTo == null || dateTo.equals("null")) {
-                            Toast.makeText(getContext(), "Date From and Date To is 'empty'.", Toast.LENGTH_LONG).show();
-                        } else if (dateFrom == null || dateFrom.equals("null")) {
-                            Toast.makeText(getContext(), "Please select Date From.", Toast.LENGTH_LONG).show();
-                        } else if(dateTo == null || dateTo.equals("null")) {
-                            Toast.makeText(getContext(), "Please select Date To.", Toast.LENGTH_LONG).show();
-                        } else {
+                        if(dateFrom == null || dateFrom.equals("null")) {
+                            Toast.makeText(getActivity(), "Please select Date From.", Toast.LENGTH_LONG).show();
+                        }
+                        else if(dateTo == null || dateTo.equals("null")) {
+                            Toast.makeText(activity, "Please select Date To.", Toast.LENGTH_LONG).show();
+                        }
+                        else if (dateFrom == null || dateFrom.equals("null") &&dateTo == null || dateTo.equals("null")) {
+                            Toast.makeText(getActivity(), "Date From and Date To is 'empty'.", Toast.LENGTH_LONG).show();
+                        }
+                        else if (dateFrom != null && dateTo != null) {
                             SnailTrailFragment stf = new SnailTrailFragment(getContext(), getActivity());
                             manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
                             dialog.dismiss();
+                        } else {
+                            Toast.makeText(getActivity(), "Invalid date.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
