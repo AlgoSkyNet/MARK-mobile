@@ -218,7 +218,8 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                     // Adding the polyline to the map
                     mMapSnailTrail.addPolyline(polylineOptions);
                 } else if (response.body().getAsJsonArray().size() == 0) {
-                    Toast.makeText(getContext(), "No Data to display.", Toast.LENGTH_LONG).show();
+                    Activity activity = getActivity();
+                    Toast.makeText(activity, "No Data to display.", Toast.LENGTH_LONG).show();
                     pDialog = new ProgressDialog(getContext());
                     if (pDialog.isShowing()) {
                         pDialog.dismiss();

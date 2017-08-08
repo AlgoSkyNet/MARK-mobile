@@ -30,6 +30,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.fragment.VehicleListFragment;
 import com.journeytech.mark.mark.fragment.VehicleMapFragment;
@@ -40,6 +43,9 @@ import com.journeytech.mark.mark.model.Proximity;
 import java.util.ArrayList;
 
 import static com.journeytech.mark.mark.R.id.search;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.list;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.markers;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -63,8 +69,21 @@ public class MainActivity extends BaseActivityLocation
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        centerMarker(query);
         Toast.makeText(this, "You searched for: " + query, Toast.LENGTH_LONG).show();
+        for(Marker m : list) {
+            if(m.getSnippet().equals(query)) {
+                mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9.0f));
+                break; // stop the loop
+            }
+        }
         return true;
+    }
+
+    private void centerMarker(String title) {
+        Marker marker = markers.get(title);
+        mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 13.0f));
+//        mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15f));
     }
 
     @Override

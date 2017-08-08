@@ -243,6 +243,7 @@ public class VehicleListFragment extends Fragment {
                                         mFragment.setArguments(bundle);
                                     }
                                 });
+
                             }
                         }
                     } else {

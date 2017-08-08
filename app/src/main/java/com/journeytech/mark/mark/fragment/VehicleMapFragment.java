@@ -31,6 +31,11 @@ import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.model.VehicleMap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -61,6 +66,9 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
+
+    public static List<Marker> list;
+    public static  Map<String, Marker> markers;
 
     public static Double latitudeG, longitudeG;
 
@@ -243,12 +251,24 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
     public void createMarker(Double latitude, final Double longitude, String Plate_num) {
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
 
-        mMapFragment.addMarker(new MarkerOptions()
+        list = new ArrayList<Marker>();
+        markers = new HashMap<>();
+
+        String markerTitle = "My Marker";
+            Marker marker = mMapFragment.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .title("Plate No.")
+                    .snippet(Plate_num)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            list.add(marker);
+        markers.put(markerTitle, marker); // Add the marker to the hashmap using it's title as the key
+
+/*        mMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
                 .title("Plate No.")
                 .snippet(Plate_num)
-                .icon(image));
+                .icon(image));*/
 
         mMapFragment.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -264,7 +284,10 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 vm = new VehicleMap();
+
+                vm.setSnippet(marker.getSnippet());
                 vm.setPlate_num(marker.getSnippet());
+
                 latitudeG = marker.getPosition().latitude;
                 longitudeG = marker.getPosition().longitude;
 
