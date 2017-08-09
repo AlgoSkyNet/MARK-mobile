@@ -100,10 +100,8 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
 
     }
 
-    Location l;
-
-    public void setLocation(Location loc) {
-        l = loc;
+    public void onBackPressed() {
+        return;
     }
 
     @Override

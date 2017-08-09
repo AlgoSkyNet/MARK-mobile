@@ -114,6 +114,10 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         return v;
     }
 
+    public void onBackPressed() {
+        return;
+    }
+
     private class GetVehicles extends AsyncTask<Void, Void, Void> {
 
         @Override

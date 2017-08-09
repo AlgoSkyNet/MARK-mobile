@@ -67,7 +67,9 @@ public class LocationFetcherService extends Service implements LocationManagerIn
     public void onCreate() {
         super.onCreate();
         mTimer = new Timer();
-        mTimer.schedule(timerTask, 20000, SERVICE_PERIOD);
+        if(mTimer.equals(false)) {
+            mTimer.schedule(timerTask, 20000, SERVICE_PERIOD);
+        }
     }
 
     static TimerTask timerTask = new TimerTask() {

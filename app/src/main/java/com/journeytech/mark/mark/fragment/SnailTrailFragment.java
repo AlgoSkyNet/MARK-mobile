@@ -101,6 +101,10 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
     }
 
+    public void onBackPressed() {
+        return;
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMapSnailTrail = googleMap;

@@ -74,6 +74,10 @@ public class ProximityFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
     }
 
+    public void onBackPressed() {
+        return;
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMapProximity = googleMap;
