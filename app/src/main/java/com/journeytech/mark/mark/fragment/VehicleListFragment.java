@@ -127,9 +127,6 @@ public class VehicleListFragment extends Fragment {
                         JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
                         System.out.println(objectWhichYouNeed);
 
-                        String[] plantNumbersArray=new String[response.body().getAsJsonArray().size()];
-                        pna = new ArrayList();
-
                         for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
                             JsonElement je = response.body().getAsJsonArray().get(i);
                             JsonObject jo = je.getAsJsonObject();
@@ -213,7 +210,7 @@ public class VehicleListFragment extends Fragment {
                                 /**
                                  * Updating parsed JSON data into ListView
                                  * */
-                                final ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
+                                final ListAdapter adapter = new SimpleAdapter(getContext(), vehicle,
                                         R.layout.list_vehicle, new String[]{"plate_num",
                                         "location", "date", "time", "lat", "lng", "engine",
                                         "remarks"},
@@ -235,8 +232,6 @@ public class VehicleListFragment extends Fragment {
                                 });
 
                             }
-//                            pna.add(plate_num);
-//                            plantNumbersArray[i]=plate_num;
                         }
                     } else {
                         System.out.println("Not a JSONArray.");
