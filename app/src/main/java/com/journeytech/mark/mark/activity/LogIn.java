@@ -133,7 +133,7 @@ public class LogIn extends Activity {
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
                 // failure response
-                Toast.makeText(getApplicationContext(), "Failure" + call.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "You have no internet connection.", Toast.LENGTH_SHORT).show();
             }
 
         });

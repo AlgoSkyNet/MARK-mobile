@@ -140,7 +140,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
                 .anchor(0.5f, 0.5f)
                 .title("Your Location")
                 .snippet("This is where you are fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         mMapNavigation.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 12.0f));
 
@@ -151,7 +151,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
                 .anchor(0.5f, 0.5f)
                 .title("Your Vehicle")
                 .snippet("This is where your vehicle was fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         Location locationA = new Location("point A");
 

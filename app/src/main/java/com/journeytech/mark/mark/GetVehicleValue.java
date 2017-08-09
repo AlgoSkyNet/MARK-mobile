@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.fragment_unused.VehicleMapFragment.mMapFragment;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
 
 /**
  * Created by rtyJa on 31/07/2017.

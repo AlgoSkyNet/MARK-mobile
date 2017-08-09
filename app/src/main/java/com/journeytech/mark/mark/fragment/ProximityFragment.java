@@ -25,6 +25,9 @@ import com.journeytech.mark.mark.activity.MainActivity;
 
 import java.util.ArrayList;
 
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.latitudeG;
+import static com.journeytech.mark.mark.fragment.VehicleMapFragment.longitudeG;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -89,6 +92,13 @@ public class ProximityFragment extends Fragment implements OnMapReadyCallback {
             mMapProximityNavigation.setMyLocationEnabled(true);
         }*/
 
+        createProximity(latitudeG, longitudeG);
+
+    }
+
+    public void createProximity(Double latitude, Double longitude) {
+
+        //Origin, where you are. Geo Location
         origin = new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude());
 
         mMapProximity.addMarker(new MarkerOptions()
@@ -96,8 +106,18 @@ public class ProximityFragment extends Fragment implements OnMapReadyCallback {
                 .anchor(0.5f, 0.5f)
                 .title("My Location")
                 .snippet("This is where you are fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 14.0f));
+
+        //Passing Snail Trail Geo Location for plotting
+        //Destination
+        mMapProximity.addMarker(new MarkerOptions()
+                .position(new LatLng(latitude, longitude))
+                .anchor(0.5f, 0.5f)
+                .title("Your Vehicle")
+                .snippet("This is where your vehicle was fetch.")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
     }
 }

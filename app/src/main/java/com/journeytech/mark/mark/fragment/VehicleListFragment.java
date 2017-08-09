@@ -48,6 +48,8 @@ public class VehicleListFragment extends Fragment {
     public static VehicleListMap vlm;
     String a = "";
 
+    ArrayList pna;
+
     public interface NetworkAPI {
         @POST("vehicle_details.php")
         @Headers({"Content-Type:application/json; charset=UTF-8"})
@@ -125,66 +127,54 @@ public class VehicleListFragment extends Fragment {
                         JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
                         System.out.println(objectWhichYouNeed);
 
+                        String[] plantNumbersArray=new String[response.body().getAsJsonArray().size()];
+                        pna = new ArrayList();
+
                         for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
-                            JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
-                            JsonObject plate_num_obj = plate_num_array.getAsJsonObject();
-                            String plate_n = plate_num_obj.get("plate_num").toString();
+                            JsonElement je = response.body().getAsJsonArray().get(i);
+                            JsonObject jo = je.getAsJsonObject();
+
+                            String plate_n = jo.get("plate_num").toString();
                             String plate_nString = plate_n;
                             plate_nString = plate_nString.replace("\"", "");
                             String plate_num = String.valueOf(plate_nString);
 
-                            JsonElement gps_num_array = response.body().getAsJsonArray().get(i);
-                            JsonObject gps_num_obj = gps_num_array.getAsJsonObject();
-                            String gps_n = gps_num_obj.get("gps_num").toString();
+                            String gps_n = jo.get("gps_num").toString();
                             String gps_nString = gps_n;
                             gps_nString = gps_nString.replace("\"", "");
                             String gps_num = String.valueOf(gps_nString);
 
-                            JsonElement location_array = response.body().getAsJsonArray().get(i);
-                            JsonObject location_obj = location_array.getAsJsonObject();
-                            String locat = location_obj.get("location").toString();
+                            String locat = jo.get("location").toString();
                             String locatString = locat;
                             locatString = locatString.replace("\"", "");
                             String location = String.valueOf(locatString);
 
-                            JsonElement date_array = response.body().getAsJsonArray().get(i);
-                            JsonObject date_obj = date_array.getAsJsonObject();
-                            String da = date_obj.get("date").toString();
+                            String da = jo.get("date").toString();
                             String daString = da;
                             daString = daString.replace("\"", "");
                             String date = String.valueOf(daString);
 
-                            JsonElement time_array = response.body().getAsJsonArray().get(i);
-                            JsonObject time_obj = time_array.getAsJsonObject();
-                            String ti = time_obj.get("time").toString();
+                            String ti = jo.get("time").toString();
                             String tiString = ti;
                             tiString = tiString.replace("\"", "");
                             String time = String.valueOf(tiString);
 
-                            JsonElement lat_array = response.body().getAsJsonArray().get(i);
-                            JsonObject lat_obj = lat_array.getAsJsonObject();
-                            String lati = lat_obj.get("lat").toString();
+                            String lati = jo.get("lat").toString();
                             String latiString = lati;
                             latiString = latiString.replace("\"", "");
                             String lat = String.valueOf(latiString);
 
-                            JsonElement lng_array = response.body().getAsJsonArray().get(i);
-                            JsonObject lng_obj = lng_array.getAsJsonObject();
-                            String longi = lng_obj.get("lng").toString();
+                            String longi = jo.get("lng").toString();
                             String longiString = longi;
                             longiString = longiString.replace("\"", "");
                             String lng = String.valueOf(longiString);
 
-                            JsonElement engine_array = response.body().getAsJsonArray().get(i);
-                            JsonObject engine_obj = engine_array.getAsJsonObject();
-                            String en = engine_obj.get("engine").toString();
+                            String en = jo.get("engine").toString();
                             String enString = en;
                             enString = enString.replace("\"", "");
                             String engine = String.valueOf(enString);
 
-                            JsonElement remarks_array = response.body().getAsJsonArray().get(i);
-                            JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                            String re = remarks_obj.get("remarks").toString();
+                            String re = jo.get("remarks").toString();
                             String reString = re;
                             reString = reString.replace("\"", "");
                             String remarks = String.valueOf(reString);
@@ -224,10 +214,10 @@ public class VehicleListFragment extends Fragment {
                                  * Updating parsed JSON data into ListView
                                  * */
                                 final ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
-                                        R.layout.list_vehicle, new String[]{"plate_num", "gps_num",
+                                        R.layout.list_vehicle, new String[]{"plate_num",
                                         "location", "date", "time", "lat", "lng", "engine",
                                         "remarks"},
-                                        new int[]{R.id.plate_num, R.id.gps_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
+                                        new int[]{R.id.plate_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
                                                 R.id.engine, R.id.remarks});
 
                                 lv.setAdapter(adapter);
@@ -245,6 +235,8 @@ public class VehicleListFragment extends Fragment {
                                 });
 
                             }
+//                            pna.add(plate_num);
+//                            plantNumbersArray[i]=plate_num;
                         }
                     } else {
                         System.out.println("Not a JSONArray.");

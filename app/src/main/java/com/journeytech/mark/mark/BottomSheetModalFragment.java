@@ -212,18 +212,15 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onClick(View view) {
                         if(dateFrom == null || dateFrom.equals("null")) {
-                            Toast.makeText(getActivity(), "Please select Date From.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "Please select Date From.", Toast.LENGTH_LONG).show();
                         }
                         else if(dateTo == null || dateTo.equals("null")) {
                             Toast.makeText(activity, "Please select Date To.", Toast.LENGTH_LONG).show();
                         }
                         else if (dateFrom == null || dateFrom.equals("null") &&dateTo == null || dateTo.equals("null")) {
-                            Toast.makeText(getActivity(), "Date From and Date To is 'empty'.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "Date From and Date To is 'empty'.", Toast.LENGTH_LONG).show();
                         }
                         else if (dateFrom != null && dateTo != null) {
-                            mMapFragment.clear();
-
-                            dismiss();
                             SnailTrailFragment stf = new SnailTrailFragment(getContext(), getActivity());
                             manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
                             dialog.dismiss();

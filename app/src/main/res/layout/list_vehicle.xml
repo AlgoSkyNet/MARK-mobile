@@ -39,18 +39,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="2dip"
-            android:paddingTop="6dip"
-            android:text="GPS no.: "
-            android:textColor="#5d5d5d" />
+            android:textColor="#5d5d5d"
+            android:text="Date: "/>
 
         <TextView
-            android:id="@+id/gps_num"
-            android:layout_width="fill_parent"
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="2dip"
-            android:paddingTop="6dip"
-            android:textColor="#5d5d5d" />
+            android:textColor="#5d5d5d"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textColor="#5d5d5d"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,8 +66,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#5d5d5d"
-            android:text="Location: "/>
+            android:text="Location: "
+            android:textColor="#5d5d5d" />
 
         <TextView
             android:id="@+id/location"
@@ -81,69 +86,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#5d5d5d"
-            android:text="Date: "/>
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#5d5d5d"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#5d5d5d"
-            android:text="Time: "/>
-
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#5d5d5d"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#5d5d5d"
-            android:text="Latitude: "/>
+            android:text="Coordinates: "/>
 
         <TextView
             android:id="@+id/latitude"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#5d5d5d"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#5d5d5d"
-            android:text="Longitude: "/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/longitude"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:textColor="#5d5d5d"
             android:textStyle="bold" />
     </LinearLayout>

@@ -8,10 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import com.journeytech.mark.mark.HttpHandler;
 import com.journeytech.mark.mark.R;
@@ -149,7 +146,7 @@ System.out.println(vehicle);
             /**
              * Updating parsed JSON data into ListView
              * */
-            final ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
+/*            final ListAdapter adapter = new SimpleAdapter(getActivity(), vehicle,
                     R.layout.list_vehicle, new String[]{"plate_num", "gps_num",
                     "location", "date", "time", "lat", "lng", "engine",
                     "remarks"},
@@ -168,7 +165,7 @@ System.out.println(vehicle);
                     bundle.putString("geoLoc", adapter.getItem(position).toString());
                     mFragment.setArguments(bundle);
                 }
-            });
+            });*/
 
         }
 

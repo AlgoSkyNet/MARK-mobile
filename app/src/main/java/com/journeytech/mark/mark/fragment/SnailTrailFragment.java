@@ -143,31 +143,25 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
                     final PolylineOptions polylineOptions = new PolylineOptions();
                     for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
+                        JsonElement je = response.body().getAsJsonArray().get(i);
+                        JsonObject jo = je.getAsJsonObject();
 
-                        JsonElement location_array = response.body().getAsJsonArray().get(i);
-                        JsonObject location_obj = location_array.getAsJsonObject();
-                        String loc = location_obj.get("location").toString();
+                        String loc = jo.get("location").toString();
                         String locString = loc;
                         locString = locString.replace("\"", "");
                         String location = String.valueOf(locString);
 
-                        JsonElement lat_array = response.body().getAsJsonArray().get(i);
-                        JsonObject lat_obj = lat_array.getAsJsonObject();
-                        String lati = lat_obj.get("lat").toString();
+                        String lati = jo.get("lat").toString();
                         String latiString = lati;
                         latiString = latiString.replace("\"", "");
                         String lat = String.valueOf(latiString);
 
-                        JsonElement lng_array = response.body().getAsJsonArray().get(i);
-                        JsonObject lng_obj = lng_array.getAsJsonObject();
-                        String longi = lng_obj.get("lng").toString();
+                        String longi = jo.get("lng").toString();
                         String longiString = longi;
                         longiString = longiString.replace("\"", "");
                         String lng = String.valueOf(longiString);
 
-                        JsonElement remarks_array = response.body().getAsJsonArray().get(i);
-                        JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                        String rem = remarks_obj.get("remarks").toString();
+                        String rem = jo.get("remarks").toString();
                         String remString = rem;
                         remString = remString.replace("\"", "");
                         String remarks = String.valueOf(remString);
@@ -206,6 +200,7 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                             createMarker(0, d1, d2, location, remarks);
 
                             if (i + 1 == response.body().getAsJsonArray().size()) {
+                                System.out.println(i + " asap");
                                 latitude = Double.parseDouble(lat);
                                 longitude = Double.parseDouble(lng);
                                 // Dismiss the progress dialog

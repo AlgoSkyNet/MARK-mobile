@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import static com.journeytech.mark.mark.R.id.search;
 import static com.journeytech.mark.mark.fragment.VehicleMapFragment.list;
 import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.markers;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -69,26 +68,27 @@ public class MainActivity extends BaseActivityLocation
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        centerMarker(query);
-        Toast.makeText(this, "You searched for: " + query, Toast.LENGTH_LONG).show();
         for(Marker m : list) {
-            if(m.getSnippet().equals(query)) {
-                mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9.0f));
+            System.out.println(list+m.getSnippet() + m.getTitle() + m.getPosition() + " snippet");
+            if(m.getSnippet().toLowerCase().equals(query)) {
+                Toast.makeText(this, "You searched for: " + query , Toast.LENGTH_SHORT).show();
+                mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 13.0f));
                 break; // stop the loop
+            } else if (!m.getSnippet().toLowerCase().equals(query)){
+                mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 6.0f));
+                Toast.makeText(this, "Invalid Plate No.", Toast.LENGTH_SHORT).show();
             }
         }
-        return true;
-    }
-
-    private void centerMarker(String title) {
-        Marker marker = markers.get(title);
-        mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 13.0f));
-//        mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15f));
+        return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    private void centerMarker(String title) {
+
     }
 
     @Override
@@ -292,12 +292,9 @@ public class MainActivity extends BaseActivityLocation
                 cursor.addRow(new String[]{is, list_vehicle.get(i).getVehicle().toString()});
             }*/
 
-//            Toast.makeText(MainActivity.this, list_vehicle.get(0).getVehicle().toString(), Toast.LENGTH_SHORT).show();
             mSuggestionsAdapter = new SuggestionsAdapter(getSupportActionBar().getThemedContext(), cursor);
         }
-//        Toast.makeText(this, vehicle.get(0).get("plate_num").toString() + "A", Toast.LENGTH_SHORT).show();
         searchView.setSuggestionsAdapter(mSuggestionsAdapter);
-
 
         menu.add("Search")
                 .setIcon(true ? R.drawable.ic_action_action_search : R.drawable.ic_action_action_search)
@@ -444,6 +441,7 @@ public class MainActivity extends BaseActivityLocation
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Closing Activity")
                     .setMessage("Are you sure you want to Log Out?")
+                    .setNegativeButton("No", null)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener()
                     {
                         @Override
@@ -453,9 +451,7 @@ public class MainActivity extends BaseActivityLocation
                         }
 
                     })
-                    .setNegativeButton("No", null)
                     .show();
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

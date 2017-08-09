@@ -32,9 +32,6 @@ import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.model.VehicleMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -67,8 +64,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
 
-    public static List<Marker> list;
-    public static  Map<String, Marker> markers;
+    public static ArrayList<Marker> list = null;
 
     public static Double latitudeG, longitudeG;
 
@@ -177,60 +173,48 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                     JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
                     System.out.println(objectWhichYouNeed + " Object");
 
+                    list = new ArrayList<>();
+
                     for (int i = 0; i < response.body().getAsJsonArray().size(); i++) {
-                        JsonElement plate_num_array = response.body().getAsJsonArray().get(i);
-                        JsonObject plate_num_obj = plate_num_array.getAsJsonObject();
-                        String plate_n = plate_num_obj.get("plate_num").toString();
+                        JsonElement je = response.body().getAsJsonArray().get(i);
+                        JsonObject jo = je.getAsJsonObject();
+
+                        String plate_n = jo.get("plate_num").toString();
                         String plate_nString = plate_n;
                         plate_nString = plate_nString.replace("\"", "");
                         String plate_num = String.valueOf(plate_nString);
 
-                        JsonElement gps_num_array = response.body().getAsJsonArray().get(i);
-                        JsonObject gps_num_obj = gps_num_array.getAsJsonObject();
-                        String gps_num = gps_num_obj.get("gps_num").toString();
+                        String gps_num = jo.get("gps_num").toString();
+                        String location = jo.get("location").toString();
+                        String date = jo.get("date").toString();
+                        String time = jo.get("time").toString();
 
-                        JsonElement location_array = response.body().getAsJsonArray().get(i);
-                        JsonObject location_obj = location_array.getAsJsonObject();
-                        String location = location_obj.get("location").toString();
-
-                        JsonElement date_array = response.body().getAsJsonArray().get(i);
-                        JsonObject date_obj = date_array.getAsJsonObject();
-                        String date = date_obj.get("date").toString();
-
-                        JsonElement time_array = response.body().getAsJsonArray().get(i);
-                        JsonObject time_obj = time_array.getAsJsonObject();
-                        String time = time_obj.get("time").toString();
-
-                        JsonElement lat_array = response.body().getAsJsonArray().get(i);
-                        JsonObject lat_obj = lat_array.getAsJsonObject();
-                        String lati = lat_obj.get("lat").toString();
+                        String lati = jo.get("lat").toString();
                         String latiString = lati;
                         latiString = latiString.replace("\"", "");
                         String lat = String.valueOf(latiString);
 
-                        JsonElement lng_array = response.body().getAsJsonArray().get(i);
-                        JsonObject lng_obj = lng_array.getAsJsonObject();
-                        String longi = lng_obj.get("lng").toString();
+                        String longi = jo.get("lng").toString();
                         String longiString = longi;
                         longiString = longiString.replace("\"", "");
                         String lng = String.valueOf(longiString);
 
-                        JsonElement engine_array = response.body().getAsJsonArray().get(i);
-                        JsonObject engine_obj = engine_array.getAsJsonObject();
-                        String engine = engine_obj.get("engine").toString();
-
-                        JsonElement remarks_array = response.body().getAsJsonArray().get(i);
-                        JsonObject remarks_obj = remarks_array.getAsJsonObject();
-                        String remarks = remarks_obj.get("remarks").toString();
+                        String engine = jo.get("engine").toString();
+                        String remarks = jo.get("remarks").toString();
 
                         if (lat != null && !lat.equals("null")
                                 && (lng != null && !lng.equals("null")
-                                || (lat !="" && lat !="")
-                                && lng != "")&&(lng !="")) {
+                                || (lat != "" && lat != "")
+                                && lng != "") && (lng != "")) {
 
                             Double d = Double.parseDouble(lat);
                             Double d2 = Double.parseDouble(lng);
-                            createMarker(d, d2, plate_num);
+
+                            MarkerOptions opts = createMarker(d, d2, plate_num);
+                            Marker m = mMapFragment.addMarker(opts);
+                            list.add(m);
+
+                            System.out.print(list + " Snippp");
                         }
 
                     }
@@ -248,20 +232,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    public void createMarker(Double latitude, final Double longitude, String Plate_num) {
+    public MarkerOptions createMarker(Double latitude, final Double longitude, String Plate_num) {
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
-
-        list = new ArrayList<Marker>();
-        markers = new HashMap<>();
-
-        String markerTitle = "My Marker";
-            Marker marker = mMapFragment.addMarker(new MarkerOptions()
-                    .position(new LatLng(latitude, longitude))
-                    .title("Plate No.")
-                    .snippet(Plate_num)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-            list.add(marker);
-        markers.put(markerTitle, marker); // Add the marker to the hashmap using it's title as the key
 
 /*        mMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
@@ -299,6 +271,12 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                 return true;
             }
         });
+
+        return new MarkerOptions()
+                .position(new LatLng(latitude, longitude))
+                .title("Plate No.")
+                .snippet(Plate_num)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
     }
 
