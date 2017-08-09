@@ -1,6 +1,8 @@
 package com.journeytech.mark.mark.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -232,11 +234,15 @@ public class VehicleListFragment extends Fragment {
                                 });
 
                             }
+
                         }
+
                     } else {
                         System.out.println("Not a JSONArray.");
                     }
+
                 }
+
 
                 @Override
                 public void onFailure(Call<JsonElement> call, Throwable t) {

@@ -2,6 +2,7 @@ package com.journeytech.mark.mark;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.fragment.NavigationFragment;
 import com.journeytech.mark.mark.fragment.ProximityFragment;
 import com.journeytech.mark.mark.fragment.SnailTrailFragment;
@@ -20,6 +22,7 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.journeytech.mark.mark.activity.LogIn.typeface;
 import static com.journeytech.mark.mark.activity.MainActivity.manager;
 import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
 
@@ -64,6 +67,10 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
         Button snailtrail = (Button) contentView.findViewById(R.id.snailtrail);
         Button proximity = (Button) contentView.findViewById(R.id.proximity);
         Button navigation = (Button) contentView.findViewById(R.id.navigation);
+
+        snailtrail.setTypeface(typeface);
+        proximity.setTypeface(typeface);
+        navigation.setTypeface(typeface);
 
         snailtrail.setOnClickListener(new View.OnClickListener() {
             @Override

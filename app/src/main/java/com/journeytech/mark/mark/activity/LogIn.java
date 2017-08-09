@@ -3,6 +3,7 @@ package com.journeytech.mark.mark.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +32,8 @@ public class LogIn extends Activity {
 
     NetworkAPI networkAPI;
 
+    public static Typeface typeface;
+
     public interface NetworkAPI {
         @POST("authentication.php")
         @Headers({"Content-Type:application/json; charset=UTF-8"})
@@ -49,12 +52,16 @@ public class LogIn extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+        typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
+
         final EditText usr =  (EditText) findViewById(R.id.username);
-
         final EditText pw =  (EditText) findViewById(R.id.password);
-
-
         Button b = (Button) findViewById(R.id.loginButton);
+
+        usr.setTypeface(typeface);
+        pw.setTypeface(typeface);
+        b.setTypeface(typeface);
+
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
