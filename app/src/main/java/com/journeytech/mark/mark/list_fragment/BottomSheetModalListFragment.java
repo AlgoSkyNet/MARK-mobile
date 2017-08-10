@@ -14,9 +14,8 @@ import android.widget.Toast;
 
 import com.journeytech.mark.mark.CustomDateTimePicker;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.list_fragment.NavigationFragment;
-import com.journeytech.mark.mark.list_fragment.ProximityFragment;
-import com.journeytech.mark.mark.list_fragment.SnailTrailFragment;
+import com.journeytech.mark.mark.map_fragment.NavigationMapFragment;
+import com.journeytech.mark.mark.map_fragment.ProximityMapFragment;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -26,15 +25,15 @@ import static com.journeytech.mark.mark.activity.LogIn.typeface;
 import static com.journeytech.mark.mark.activity.MainActivity.manager;
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
 
-public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
+public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
 
-    public static String dateFrom, dateTo;
+    public static String dateFromListFragment = null, dateToListFragment = null;
 
     CustomDateTimePicker custom, custom2;
 
     Activity activity;
 
-    public BottomSheetModalListMapFragment(Activity a) {
+    public BottomSheetModalListFragment(Activity a) {
         this.activity = a;
     }
 
@@ -109,12 +108,12 @@ public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
                                         String i_calendar_day = df.format(calendarSelected
                                                 .get(Calendar.DAY_OF_MONTH));
 
-                                        dateFrom = (i_monthNumber)
+                                        dateFromListFragment = (i_monthNumber)
                                                 + "/" + i_calendar_day + "/" + year
                                                 + " " + i_hr + ":" + i_min
                                                 + ":" + i_sec;
 
-                                        tv7.setText(dateFrom);
+                                        tv7.setText(dateFromListFragment);
                                     }
 
                                     /*@Override
@@ -185,12 +184,12 @@ public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
                                         String i_calendar_day = df.format(calendarSelected
                                                 .get(Calendar.DAY_OF_MONTH));
 
-                                        dateTo = (i_monthNumber)
+                                        dateToListFragment = (i_monthNumber)
                                                 + "/" + i_calendar_day + "/" + year
                                                 + " " + i_hr + ":" + i_min
                                                 + ":" + i_sec;
 
-                                        tv9.setText(dateTo);
+                                        tv9.setText(dateToListFragment);
                                     }
 
                                     @Override
@@ -218,28 +217,27 @@ public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
                 b5.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(dateFrom == null || dateFrom.equals("null")) {
+                        if(dateFromListFragment == null || dateFromListFragment.equals("null")) {
                             showToast("Please select Date From.");
 //                            Toast.makeText(activity, "Please select Date From.", Toast.LENGTH_SHORT).show();
                         }
-                        else if(dateTo == null || dateTo.equals("null")) {
+                        else if(dateToListFragment == null || dateToListFragment.equals("null")) {
                             showToast("Please select Date To.");
 //                            Toast.makeText(activity, "Please select Date To.", Toast.LENGTH_SHORT).show();
-                        }
-                        else if (dateFrom == null || dateFrom.equals("null") && dateTo == null || dateTo.equals("null")) {
+                        } else if (dateFromListFragment == null || dateFromListFragment.equals("null") && dateToListFragment == null || dateToListFragment.equals("null")) {
                             showToast("Date From and Date To is 'empty'.");
 //                            Toast.makeText(activity, "Date From and Date To is 'empty'.", Toast.LENGTH_SHORT).show();
                         }
-                        else if (dateFrom != null && dateTo != null) {
-                            SnailTrailFragment stf = new SnailTrailFragment(getContext(), getActivity());
+                         else if (dateToListFragment == dateFromListFragment) {
+                            showToast("Invalid Date.");
+
+                        }
+                        if (dateFromListFragment != null && dateFromListFragment != null) {
+                            SnailTrailListFragment stf = new SnailTrailListFragment(getContext(), getActivity());
                             manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
                             dialog.dismiss();
-                        } else if (dateFrom != null && dateTo != null && activity != null){
-                            showToast("Invalid Date.");
-//                            Toast.makeText(getActivity(), "Invalid date.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            showToast("Invalid Date.");
                         }
+
                     }
                 });
 
@@ -251,10 +249,10 @@ public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
             public void onClick(View view) {
                 mMapFragment.clear();
 
-//                ProximityFragment.createProximity(MainActivity.getLatitude(), MainActivity.getLongitude());
+//                ProximityListMapFragment.createProximity(MainActivity.getLatitude(), MainActivity.getLongitude());
                 dismiss();
 
-                ProximityFragment pnf = new ProximityFragment(getActivity(), getContext());
+                ProximityMapFragment pnf = new ProximityMapFragment(getActivity(), getContext());
                 manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();
 
             }
@@ -269,7 +267,7 @@ public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
                 LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
                 LatLng l2 = new LatLng(lat2, long2);
 
-                Double m = ProximityFragment.distanceBetween(l1, l2);
+                Double m = ProximityListMapFragment.distanceBetween(l1, l2);
                 double km = 1000;
                 double distanceInMeters = m / km;
 
@@ -284,7 +282,7 @@ public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
                 estimatedDriveTimeInMinutes = estimatedDriveTimeInMinutes / 60;
 
                 tvdura.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");*/
-/*                ProximityFragment pnf = new ProximityFragment(getActivity(), getContext());
+/*                ProximityListMapFragment pnf = new ProximityListMapFragment(getActivity(), getContext());
                 manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();*/
 
                 //Get Snail Trail Geo Location for plotting
@@ -294,7 +292,7 @@ public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
 
                 dismiss();
 
-                NavigationFragment nf = new NavigationFragment(activity);
+                NavigationMapFragment nf = new NavigationMapFragment(activity);
                 manager.beginTransaction().replace(R.id.mainLayout, nf).commit();
             }
         });

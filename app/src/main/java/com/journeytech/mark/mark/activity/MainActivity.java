@@ -39,9 +39,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.journeytech.mark.mark.CustomTypeFaceSpan;
 import com.journeytech.mark.mark.R;
+import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.list_fragment.VehicleListFragment;
 import com.journeytech.mark.mark.map_fragment.VehicleMapFragment;
-import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
 
@@ -50,6 +50,11 @@ import java.util.ArrayList;
 import static com.journeytech.mark.mark.R.id.search;
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.list;
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
+
+import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
+import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateToMapFragment;
+import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
+import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -61,6 +66,8 @@ public class MainActivity extends BaseActivityLocation
 
     public static FragmentManager manager;
     VehicleMapFragment vehicleMapFragment;
+
+    public static MenuItem searchItem;
 
     public static String status, ucsi_num, client_table, markutype;
 
@@ -218,7 +225,7 @@ public class MainActivity extends BaseActivityLocation
             applyFontToMenuItem(mi);
         }
 
-        presser();
+        Search();
 
         initLocationFetching(MainActivity.this);
 
@@ -260,7 +267,7 @@ public class MainActivity extends BaseActivityLocation
         super.onActivityResult(requestCode, resultCode, data);
     }*/
 
-    void presser() {
+    void Search() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerview = navigationView.getHeaderView(0);
 
@@ -331,10 +338,10 @@ public class MainActivity extends BaseActivityLocation
         }
         searchView.setSuggestionsAdapter(mSuggestionsAdapter);
 
-        menu.add("Search")
-                .setIcon(true ? R.drawable.ic_action_action_search : R.drawable.ic_action_action_search)
-                .setActionView(searchView)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        searchItem = menu.add("Search");
+        searchItem.setIcon(true ? R.drawable.ic_action_action_search : R.drawable.ic_action_action_search);
+        searchItem.setActionView(searchView);
+        searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
         return true;
     }
@@ -369,6 +376,13 @@ public class MainActivity extends BaseActivityLocation
             VehicleMapFragment vehicleMapFragment = new VehicleMapFragment(MainActivity.this, MainActivity.this);
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
+
+            searchItem.setVisible(true);
+            dateFromMapFragment = null;
+            dateToMapFragment = null;
+
+            dateFromListFragment = null;
+            dateToListFragment = null;
 
         /*if (id == R.id.snailtrail) {
             tvdist = (TextView) findViewById(R.id.tvDistance);

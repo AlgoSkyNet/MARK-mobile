@@ -133,7 +133,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         public View getInfoContents(final Marker marker) {
            View v = activity.getLayoutInflater().inflate(R.layout.marker_popup, null);
 
-/*            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalMapFragment();
+/*            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalListFragment();
             bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());*/
 /*             Button b = (Button) v.findViewById(R.id.button2);
             b.setOnClickListener(new Button.OnClickListener() {

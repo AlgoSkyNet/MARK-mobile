@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +53,7 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
 
     TextView tv2, tv4, tv6;
 
-    public static Double latitudeG, longitudeG;
+    public static Double latitudeListMap, longitudeListMap;
 
     public static VehicleMap vm;
 
@@ -134,14 +133,15 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
                 vm = new VehicleMap();
 
                 vm.setSnippet(marker.getSnippet());
+                //How do we get the Plate no. of the click marker
                 vm.setPlate_num(marker.getSnippet());
 
-                latitudeG = marker.getPosition().latitude;
-                longitudeG = marker.getPosition().longitude;
+                latitudeListMap = marker.getPosition().latitude;
+                longitudeListMap = marker.getPosition().longitude;
 
                 marker.showInfoWindow();
 
-                BottomSheetModalListMapFragment bottomSheetDialogFragment = new BottomSheetModalListMapFragment(activity);
+                BottomSheetModalListFragment bottomSheetDialogFragment = new BottomSheetModalListFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
                 return true;
             }

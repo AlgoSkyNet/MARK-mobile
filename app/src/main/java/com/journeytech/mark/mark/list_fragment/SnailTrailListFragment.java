@@ -41,11 +41,11 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListMapFragment.dateFrom;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListMapFragment.dateTo;
+import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
+import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.vm;
 
-public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
+public class SnailTrailListFragment extends Fragment implements OnMapReadyCallback {
 
     private ProgressDialog pDialog;
 
@@ -59,7 +59,7 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
     public static Double latitude, longitude;
 
-    public SnailTrailFragment(Context c, Activity a) {
+    public SnailTrailListFragment(Context c, Activity a) {
         context = c;
         activity = a;
     }
@@ -132,8 +132,8 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
         networkAPI = retrofit.create(NetworkAPI.class);
 
-        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), dateFrom, dateTo, client_table);
-        System.out.println(vm.getPlate_num() + dateFrom+ dateTo+ client_table +" JsonArray");
+        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), dateFromListFragment, dateToListFragment, client_table);
+        System.out.println(vm.getPlate_num() + dateFromListFragment+ dateToListFragment+ client_table +" JsonArray");
         Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
         call.enqueue(new Callback<JsonElement>() {
@@ -287,7 +287,7 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void showToast(String msg) {
-        if (SnailTrailFragment.this.isVisible() && msg != null & activity == null)
+        if (SnailTrailListFragment.this.isVisible() && msg != null & activity == null)
             Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

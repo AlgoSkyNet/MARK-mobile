@@ -1,6 +1,7 @@
 package com.journeytech.mark.mark.list_fragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -35,6 +36,7 @@ import retrofit2.http.POST;
 
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
 import static com.journeytech.mark.mark.activity.MainActivity.markutype;
+import static com.journeytech.mark.mark.activity.MainActivity.searchItem;
 
 public class VehicleListFragment extends Fragment {
 
@@ -66,6 +68,13 @@ public class VehicleListFragment extends Fragment {
             this.client_table = client_table;
             this.markutype = markutype;
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        searchItem.setVisible(false);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.list_fragment;
+package com.journeytech.mark.mark.map_fragment;
 
 
 import android.Manifest;
@@ -50,14 +50,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeG;
-import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeG;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.latitudeG;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.longitudeG;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NavigationFragment extends Fragment implements OnMapReadyCallback,
+public class NavigationMapFragment extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener {
 
     private ProgressDialog pDialog;
@@ -70,7 +70,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
     Context context;
     Activity activity;
 
-    public NavigationFragment(Activity a) {
+    public NavigationMapFragment(Activity a) {
         this.activity = a;
     }
 

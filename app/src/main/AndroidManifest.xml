@@ -45,6 +45,7 @@
         <service android:name=".getaccuratelocation.LocationFetcherService" />
 
         <activity android:name=".activity.LogIn" />
+        <activity android:name=".activity.Main2Activity"></activity>
     </application>
 
 </manifest>

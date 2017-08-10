@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.map_fragment;
+package com.journeytech.mark.mark.list_fragment;
 
 
 import android.app.Activity;
@@ -25,14 +25,15 @@ import com.journeytech.mark.mark.activity.MainActivity;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.latitudeG;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.longitudeG;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProximityFragment extends Fragment implements OnMapReadyCallback {
+public class ProximityListMapFragment extends Fragment implements OnMapReadyCallback {
 
     private ProgressDialog pDialog;
     private ListView lv;
@@ -48,7 +49,7 @@ public class ProximityFragment extends Fragment implements OnMapReadyCallback {
 
     static Double lati = 0.0, longi = 0.0;
 
-    public ProximityFragment(Activity a, Context c) {
+    public ProximityListMapFragment(Activity a, Context c) {
         this.activity = a;
         this.context = c;
     }
@@ -96,7 +97,7 @@ public class ProximityFragment extends Fragment implements OnMapReadyCallback {
             mMapProximityNavigation.setMyLocationEnabled(true);
         }*/
 
-        createProximity(latitudeG, longitudeG);
+        createProximity(latitudeListMap, longitudeListMap);
 
     }
 
