@@ -1,8 +1,6 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.list_fragment;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -73,6 +71,10 @@ public class VehicleListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+/*        MainActivity csActivity;
+        csActivity = (MainActivity) getActivity();
+        csActivity.getSupportActionBar().hide();*/
 
     }
 
@@ -257,7 +259,6 @@ public class VehicleListFragment extends Fragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            System.out.println(vehicle + "Vehicle1");
 
             // Dismiss the progress dialog
             if (pDialog.isShowing())

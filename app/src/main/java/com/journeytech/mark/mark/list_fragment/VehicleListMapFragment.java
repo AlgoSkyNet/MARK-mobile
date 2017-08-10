@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.list_fragment;
 
 
 import android.app.Activity;
@@ -25,14 +25,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.model.VehicleHolder;
+import com.journeytech.mark.mark.model.VehicleMap;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.fragment.VehicleListFragment.vlm;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
 
 
 /**
@@ -54,6 +53,10 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     String catcher = "";
 
     TextView tv2, tv4, tv6;
+
+    public static Double latitudeG, longitudeG;
+
+    public static VehicleMap vm;
 
     public VehicleListMapFragment(Context c, Activity a) {
         context = c;
@@ -102,14 +105,14 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         mMapVehicleListMapFragment.setBuildingsEnabled(true);
         mMapVehicleListMapFragment.getUiSettings().setZoomControlsEnabled(true);
 
-        final Double lati = Double.parseDouble(vlm.getLati());
-        final Double longi = Double.parseDouble(vlm.getLongi());
+        final Double lati = Double.parseDouble(VehicleListFragment.vlm.getLati());
+        final Double longi = Double.parseDouble(VehicleListFragment.vlm.getLongi());
 
-        mMapVehicleListMapFragment.addMarker(new MarkerOptions()
+        m = mMapVehicleListMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(lati, longi))
                 .anchor(0.5f, 0.5f)
-                .title("Location: " +vlm.getLoc())
-                .snippet("Engine: " + vlm.getEngine())
+                .title("Location: " + VehicleListFragment.vlm.getLoc())
+                .snippet("Engine: " + VehicleListFragment.vlm.getEngine())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
 //        mMapVehicleListMapFragment.
@@ -121,29 +124,38 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
             }
         });
 
-        mMapVehicleListMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lati, longi), 16.0f));
+        mMapVehicleListMapFragment.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lati, longi), 15.0f));
+        bounceMarker();
 
         mMapVehicleListMapFragment.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
             @Override
             public boolean onMarkerClick(final Marker marker) {
+                vm = new VehicleMap();
+
+                vm.setSnippet(marker.getSnippet());
+                vm.setPlate_num(marker.getSnippet());
+
+                latitudeG = marker.getPosition().latitude;
+                longitudeG = marker.getPosition().longitude;
 
                 marker.showInfoWindow();
-                bounceMarker(marker);
 
-                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment(activity);
+                BottomSheetModalListMapFragment bottomSheetDialogFragment = new BottomSheetModalListMapFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
                 return true;
             }
         });
 
-        String a = vlm.getDate() + " " + vlm.getTime();
+        String a = VehicleListFragment.vlm.getDate() + " " + VehicleListFragment.vlm.getTime();
         tv2.setText(a);
-        tv4.setText(vlm.getEngine());
-        tv6.setText(vlm.getRemarks());
+        tv4.setText(VehicleListFragment.vlm.getEngine());
+        tv6.setText(VehicleListFragment.vlm.getRemarks());
     }
 
-    private void bounceMarker (final Marker marker) {
+    Marker m;
+
+    private void bounceMarker() {
         final Handler handler = new Handler();
         final long startTime = SystemClock.uptimeMillis();
         final long duration = 2000;
@@ -152,13 +164,11 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
             @Override
             public void run() {
                 long elapsed = SystemClock.uptimeMillis() - startTime;
-                float t = Math.max(1 - interpolator.getInterpolation((float) elapsed/duration), 0);
-                marker.setAnchor(0.5f, 1.0f +  t);
+                float t = Math.max(1 - interpolator.getInterpolation((float) elapsed / duration), 0);
+                m.setAnchor(0.5f, 1.0f + t);
 
                 if (t > 0.0) {
                     handler.postDelayed(this, 25);
-                } else {
-                    bounceMarker(marker);
                 }
             }
         });

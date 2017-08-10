@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.list_fragment;
 
 
 import android.Manifest;
@@ -50,8 +50,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.latitudeG;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.longitudeG;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeG;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeG;
 
 
 /**

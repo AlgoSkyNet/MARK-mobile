@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.map_fragment;
 
 
 import android.app.Activity;
@@ -27,7 +27,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.R;
 
 import okhttp3.OkHttpClient;
@@ -41,8 +40,10 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
+import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFrom;
+import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateTo;
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.vm;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.vm;
 
 public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
@@ -131,8 +132,8 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
         networkAPI = retrofit.create(NetworkAPI.class);
 
-        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(),BottomSheetModalFragment.dateFrom, BottomSheetModalFragment.dateTo, client_table);
-        System.out.println(vm.getPlate_num() + BottomSheetModalFragment.dateFrom+ BottomSheetModalFragment.dateTo+ client_table +" JsonArray");
+        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), dateFrom, dateTo, client_table);
+        System.out.println(vm.getPlate_num() + dateFrom+ dateTo+ client_table +" JsonArray");
         Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
         call.enqueue(new Callback<JsonElement>() {
@@ -218,7 +219,8 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
                     mMapSnailTrail.addPolyline(polylineOptions);
                 } else if (response.body().getAsJsonArray().size() == 0) {
                     Activity activity = getActivity();
-                    Toast.makeText(activity, "No Data to display.", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(activity, "No Data to display.", Toast.LENGTH_LONG).show();
+                    showToast("No Data to display.");
                     pDialog = new ProgressDialog(getContext());
                     if (pDialog.isShowing()) {
                         pDialog.dismiss();
@@ -282,5 +284,10 @@ public class SnailTrailFragment extends Fragment implements OnMapReadyCallback {
 
             return v;
         }
+    }
+
+    public void showToast(String msg) {
+        if (SnailTrailFragment.this.isVisible() && msg != null & activity == null)
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

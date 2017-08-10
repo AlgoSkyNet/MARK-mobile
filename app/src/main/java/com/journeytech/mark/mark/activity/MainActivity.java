@@ -39,8 +39,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.journeytech.mark.mark.CustomTypeFaceSpan;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.fragment.VehicleListFragment;
-import com.journeytech.mark.mark.fragment.VehicleMapFragment;
+import com.journeytech.mark.mark.list_fragment.VehicleListFragment;
+import com.journeytech.mark.mark.map_fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
@@ -48,8 +48,8 @@ import com.journeytech.mark.mark.model.Proximity;
 import java.util.ArrayList;
 
 import static com.journeytech.mark.mark.R.id.search;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.list;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.list;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -147,6 +147,7 @@ public class MainActivity extends BaseActivityLocation
             markutype = (String) b.get("markutype");
 //            Toast.makeText(getApplicationContext(), status + ucsi_num, Toast.LENGTH_LONG).show();
         }
+
 /*        searchView = (MaterialSearchView) findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
@@ -194,6 +195,10 @@ public class MainActivity extends BaseActivityLocation
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView name = (TextView) headerView.findViewById(R.id.name);
+        name.setText(ucsi_num);
 
         //Set typeface roboto font to Navigation Text
         Menu m = navigationView.getMenu();

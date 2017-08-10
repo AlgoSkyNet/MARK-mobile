@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.list_fragment;
 
 
 import android.app.Activity;
@@ -25,8 +25,8 @@ import com.journeytech.mark.mark.activity.MainActivity;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.latitudeG;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.longitudeG;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeG;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeG;
 
 
 /**

@@ -29,8 +29,8 @@ import com.journeytech.mark.mark.model.VehicleHolder;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.fragment.VehicleListFragment.vlm;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
+import static com.journeytech.mark.mark.list_fragment.VehicleListFragment.vlm;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
 
 
 /**
@@ -176,7 +176,7 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
                 marker.showInfoWindow();
                 bounceMarker(marker);
 
-/*                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment();
+/*                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalMapFragment();
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());*/
                 return true;
             }

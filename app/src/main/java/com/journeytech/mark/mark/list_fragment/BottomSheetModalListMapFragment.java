@@ -1,8 +1,7 @@
-package com.journeytech.mark.mark;
+package com.journeytech.mark.mark.list_fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -13,10 +12,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.journeytech.mark.mark.activity.MainActivity;
-import com.journeytech.mark.mark.fragment.NavigationFragment;
-import com.journeytech.mark.mark.fragment.ProximityFragment;
-import com.journeytech.mark.mark.fragment.SnailTrailFragment;
+import com.journeytech.mark.mark.CustomDateTimePicker;
+import com.journeytech.mark.mark.R;
+import com.journeytech.mark.mark.list_fragment.NavigationFragment;
+import com.journeytech.mark.mark.list_fragment.ProximityFragment;
+import com.journeytech.mark.mark.list_fragment.SnailTrailFragment;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -24,9 +24,9 @@ import java.util.Date;
 
 import static com.journeytech.mark.mark.activity.LogIn.typeface;
 import static com.journeytech.mark.mark.activity.MainActivity.manager;
-import static com.journeytech.mark.mark.fragment.VehicleMapFragment.mMapFragment;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
 
-public class BottomSheetModalFragment extends BottomSheetDialogFragment {
+public class BottomSheetModalListMapFragment extends BottomSheetDialogFragment {
 
     public static String dateFrom, dateTo;
 
@@ -34,7 +34,7 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
 
     Activity activity;
 
-    public BottomSheetModalFragment(Activity a) {
+    public BottomSheetModalListMapFragment(Activity a) {
         this.activity = a;
     }
 
@@ -219,20 +219,26 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onClick(View view) {
                         if(dateFrom == null || dateFrom.equals("null")) {
-                            Toast.makeText(activity, "Please select Date From.", Toast.LENGTH_LONG).show();
+                            showToast("Please select Date From.");
+//                            Toast.makeText(activity, "Please select Date From.", Toast.LENGTH_SHORT).show();
                         }
                         else if(dateTo == null || dateTo.equals("null")) {
-                            Toast.makeText(activity, "Please select Date To.", Toast.LENGTH_LONG).show();
+                            showToast("Please select Date To.");
+//                            Toast.makeText(activity, "Please select Date To.", Toast.LENGTH_SHORT).show();
                         }
-                        else if (dateFrom == null || dateFrom.equals("null") &&dateTo == null || dateTo.equals("null")) {
-                            Toast.makeText(activity, "Date From and Date To is 'empty'.", Toast.LENGTH_LONG).show();
+                        else if (dateFrom == null || dateFrom.equals("null") && dateTo == null || dateTo.equals("null")) {
+                            showToast("Date From and Date To is 'empty'.");
+//                            Toast.makeText(activity, "Date From and Date To is 'empty'.", Toast.LENGTH_SHORT).show();
                         }
                         else if (dateFrom != null && dateTo != null) {
                             SnailTrailFragment stf = new SnailTrailFragment(getContext(), getActivity());
                             manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
                             dialog.dismiss();
+                        } else if (dateFrom != null && dateTo != null && activity != null){
+                            showToast("Invalid Date.");
+//                            Toast.makeText(getActivity(), "Invalid date.", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(getActivity(), "Invalid date.", Toast.LENGTH_LONG).show();
+                            showToast("Invalid Date.");
                         }
                     }
                 });
@@ -292,6 +298,11 @@ public class BottomSheetModalFragment extends BottomSheetDialogFragment {
                 manager.beginTransaction().replace(R.id.mainLayout, nf).commit();
             }
         });
+    }
+
+    public void showToast(String msg) {
+        if (msg != null && activity != null)
+            Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
     }
 
 }

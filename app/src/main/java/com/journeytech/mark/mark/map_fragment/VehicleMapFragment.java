@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.fragment;
+package com.journeytech.mark.mark.map_fragment;
 
 
 import android.app.Activity;
@@ -26,7 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.journeytech.mark.mark.BottomSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.model.VehicleMap;
@@ -269,7 +268,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
                 marker.showInfoWindow();
 
-                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalFragment(activity);
+                BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetModalMapFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
 
                 return true;
