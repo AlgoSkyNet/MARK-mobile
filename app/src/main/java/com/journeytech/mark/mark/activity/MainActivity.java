@@ -14,7 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
@@ -47,14 +46,12 @@ import com.journeytech.mark.mark.model.Proximity;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.R.id.search;
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.list;
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
-
-import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
-import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateToMapFragment;
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
+import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
+import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateToMapFragment;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.list;
+import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
 
 public class MainActivity extends BaseActivityLocation
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
@@ -225,7 +222,7 @@ public class MainActivity extends BaseActivityLocation
             applyFontToMenuItem(mi);
         }
 
-        Search();
+//        Search();
 
         initLocationFetching(MainActivity.this);
 
@@ -267,7 +264,7 @@ public class MainActivity extends BaseActivityLocation
         super.onActivityResult(requestCode, resultCode, data);
     }*/
 
-    void Search() {
+/*    void Search() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerview = navigationView.getHeaderView(0);
 
@@ -297,9 +294,9 @@ public class MainActivity extends BaseActivityLocation
                 return true;
             }
         };
-        et.setOnQueryTextListener(queryTextListener);
 
-    }
+        et.setOnQueryTextListener(queryTextListener);
+    }*/
 
     @Override
     public void onBackPressed() {
