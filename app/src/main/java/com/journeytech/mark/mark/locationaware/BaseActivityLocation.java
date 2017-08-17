@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.getaccuratelocation;
+package com.journeytech.mark.mark.locationaware;
 
 import android.Manifest;
 import android.app.Activity;
@@ -17,10 +17,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.LocationRequest;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.getaccuratelocation.location.LocationManagerInterface;
-import com.journeytech.mark.mark.getaccuratelocation.location.SmartLocationManager;
-import com.journeytech.mark.mark.getaccuratelocation.permission.PermissionManager;
-import com.journeytech.mark.mark.getaccuratelocation.permission.PermissionManagerInterface;
+import com.journeytech.mark.mark.locationaware.location.LocationManagerInterface;
+import com.journeytech.mark.mark.locationaware.location.SmartLocationManager;
+import com.journeytech.mark.mark.locationaware.permission.PermissionManager;
+import com.journeytech.mark.mark.locationaware.permission.PermissionManagerInterface;
 
 import static android.R.string.ok;
 

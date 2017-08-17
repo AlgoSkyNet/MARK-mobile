@@ -33,8 +33,9 @@
         android:id="@+id/snailtrail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="30dp"
-        android:paddingBottom="30dp"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
+        android:layout_margin="15dp"
         android:layout_weight="1"
         android:text="Snail Trail" />
 
@@ -42,8 +43,10 @@
         android:id="@+id/proximity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="30dp"
-        android:paddingBottom="30dp"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
         android:layout_weight="1"
         android:text="Proximity" />
 
@@ -51,8 +54,9 @@
         android:id="@+id/navigation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="30dp"
-        android:paddingBottom="30dp"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
+        android:layout_margin="15dp"
         android:layout_weight="1"
         android:text="Navigation" />
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ import retrofit2.http.POST;
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
-import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.vm;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.plate_num;
 
 public class SnailTrailListFragment extends Fragment implements OnMapReadyCallback {
 
@@ -103,6 +104,11 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
     }
 
     public void onBackPressed() {
+        FragmentManager manager;
+        VehicleListMapFragment vehicleListMapFragment;
+        vehicleListMapFragment = new VehicleListMapFragment(getActivity(), getActivity());
+        manager = getFragmentManager();
+        manager.beginTransaction().replace(R.id.mainLayout, vehicleListMapFragment).commit();
         return;
     }
 
@@ -132,8 +138,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
 
         networkAPI = retrofit.create(NetworkAPI.class);
 
-        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), dateFromListFragment, dateToListFragment, client_table);
-        System.out.println(vm.getPlate_num() + dateFromListFragment+ dateToListFragment+ client_table +" JsonArray");
+        SnailTrailPojo loginRequest = new SnailTrailPojo(plate_num, dateFromListFragment, dateToListFragment, client_table);
         Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
         call.enqueue(new Callback<JsonElement>() {

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
@@ -27,7 +29,6 @@ import java.util.ArrayList;
 
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.longitudeG;
 
 
 /**
@@ -76,6 +77,11 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
     }
 
     public void onBackPressed() {
+        FragmentManager manager;
+        VehicleListMapFragment vehicleListMapFragment;
+        vehicleListMapFragment = new VehicleListMapFragment(getActivity(), getActivity());
+        manager = getFragmentManager();
+        manager.beginTransaction().replace(R.id.mainLayout, vehicleListMapFragment).commit();
         return;
     }
 
@@ -116,13 +122,21 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
         mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 14.0f));
 
         //Passing Snail Trail Geo Location for plotting
-        //Destination
+        //Vehicle - Destination
         mMapProximity.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
                 .title("Your Vehicle")
                 .snippet("This is where your vehicle was fetch.")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+        mMapProximity.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                return true;
+            }
+        });
 
     }
 }

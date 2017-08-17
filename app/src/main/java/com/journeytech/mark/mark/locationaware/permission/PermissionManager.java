@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.getaccuratelocation.permission;
+package com.journeytech.mark.mark.locationaware.permission;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import static com.journeytech.mark.mark.getaccuratelocation.permission.Enums.REQ_CODE;
+import static com.journeytech.mark.mark.locationaware.permission.Enums.REQ_CODE;
 
 
 public class PermissionManager implements RequestPermissionsResultInterface{

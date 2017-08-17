@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +13,14 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
-import com.journeytech.mark.mark.model.VehicleListMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,14 +42,15 @@ import static com.journeytech.mark.mark.activity.MainActivity.searchItem;
 
 public class VehicleListFragment extends Fragment {
 
-    private ProgressDialog pDialog;
+    ProgressDialog pDialog;
     private ListView lv;
+    ListAdapter adapter;
+    final Handler handler = new Handler();
 
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
 
     public ArrayList<HashMap<String, String>> vehicle = new ArrayList<>();
-    public static VehicleListMap vlm;
     String a = "";
 
     ArrayList pna;
@@ -81,9 +84,20 @@ public class VehicleListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-/*        MainActivity csActivity;
+        MainActivity csActivity;
         csActivity = (MainActivity) getActivity();
-        csActivity.getSupportActionBar().hide();*/
+        csActivity.getSupportActionBar().setTitle("Vehicle List");
+
+        Runnable refresh = new Runnable() {
+            @Override
+            public void run() {
+                vehicle.clear();
+                new GetVehicles().execute();
+                handler.postDelayed(this, 60 * 1000);
+            }
+        };
+
+        handler.postDelayed(refresh, 60 * 1000);
 
     }
 
@@ -110,6 +124,10 @@ public class VehicleListFragment extends Fragment {
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
+
+            if(lv.getCount() != 0) {
+                lv.setAdapter(null);
+            }
         }
 
         @Override
@@ -206,24 +224,13 @@ public class VehicleListFragment extends Fragment {
 
                                 a = details.get("date");
 
-                                vlm = new VehicleListMap();
-
-                                vlm.setPlate_num(plate_num);
-                                vlm.setLoc(location);
-                                vlm.setDate(date);
-                                vlm.setEngine(engine);
-                                vlm.setLati(lat);
-                                vlm.setLongi(lng);
-                                vlm.setRemarks(remarks);
-                                vlm.setTime(time);
-
                                 // adding vehicle to vehicle list
                                 vehicle.add(details);
 
                                 /**
                                  * Updating parsed JSON data into ListView
                                  * */
-                                final ListAdapter adapter = new SimpleAdapter(getContext(), vehicle,
+                                adapter = new SimpleAdapter(getActivity(), vehicle,
                                         R.layout.list_vehicle, new String[]{"plate_num",
                                         "location", "date", "time", "lat", "lng", "engine",
                                         "remarks"},
@@ -232,17 +239,54 @@ public class VehicleListFragment extends Fragment {
 
                                 lv.setAdapter(adapter);
 
+//                                ((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
+
                                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> adapterView, View v, int position, long l) {
-                                        Fragment mFragment = new VehicleListMapFragment(getActivity(), getActivity());
-                                        getFragmentManager().beginTransaction().replace(R.id.mainLayout, mFragment).commit();
+
+                                        TextView plate_n = (TextView) v.findViewById(R.id.plate_num);
+                                        TextView dat = (TextView) v.findViewById(R.id.date);
+                                        TextView tim = (TextView) v.findViewById(R.id.time);
+                                        TextView loc = (TextView) v.findViewById(R.id.location);
+                                        TextView lat = (TextView) v.findViewById(R.id.latitude);
+                                        TextView lng = (TextView) v.findViewById(R.id.longitude);
+                                        TextView eng = (TextView) v.findViewById(R.id.engine);
+                                        TextView rem = (TextView) v.findViewById(R.id.remarks);
+
+                                        String plate_num = plate_n.getText().toString();
+                                        String date = dat.getText().toString();
+                                        String time = tim.getText().toString();
+                                        String location = loc.getText().toString();
+                                        String latitude = lat.getText().toString();
+                                        String longitude = lng.getText().toString();
+                                        String engine = eng.getText().toString();
+                                        String remarks = rem.getText().toString();
 
                                         Bundle bundle = new Bundle();
-                                        bundle.putString("geoLoc", adapter.getItem(position).toString());
-                                        mFragment.setArguments(bundle);
+                                        bundle.putString("plate_num", plate_num);
+                                        bundle.putString("date", date);
+                                        bundle.putString("time", time);
+                                        bundle.putString("location", location);
+                                        bundle.putString("latitude", latitude);
+                                        bundle.putString("longitude", longitude);
+                                        bundle.putString("engine", engine);
+                                        bundle.putString("remarks", remarks);
+
+
+                                        if((!latitude.equals("") && latitude != null) || (!longitude.equals("") && longitude != null) )
+                                        {
+                                            Fragment mFragment = new VehicleListMapFragment(getActivity(), getActivity());
+                                            getFragmentManager().beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, mFragment).commit();
+
+                                            mFragment.setArguments(bundle);
+                                        } else {
+                                            Toast.makeText(getContext(), "Invalid Data.", Toast.LENGTH_LONG).show();
+                                        }
                                     }
                                 });
+
+
 
                             }
 

@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.getaccuratelocation;
+package com.journeytech.mark.mark.locationaware;
 
 import android.app.Activity;
 import android.app.Service;
@@ -8,7 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
-import com.journeytech.mark.mark.getaccuratelocation.location.LocationManagerInterface;
+import com.journeytech.mark.mark.locationaware.location.LocationManagerInterface;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,9 +67,7 @@ public class LocationFetcherService extends Service implements LocationManagerIn
     public void onCreate() {
         super.onCreate();
         mTimer = new Timer();
-        if(mTimer.equals(false)) {
-            mTimer.schedule(timerTask, 20000, SERVICE_PERIOD);
-        }
+        mTimer.schedule(timerTask, 20000, SERVICE_PERIOD);
     }
 
     static TimerTask timerTask = new TimerTask() {

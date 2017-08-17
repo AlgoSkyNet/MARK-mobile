@@ -52,7 +52,6 @@ import java.util.List;
 
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.longitudeG;
 
 
 /**
@@ -99,10 +98,6 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
 
-    }
-
-    public void onBackPressed() {
-        return;
     }
 
     @Override

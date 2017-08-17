@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.getaccuratelocation;
+package com.journeytech.mark.mark.locationaware;
 
 import android.app.Application;
 import android.content.Context;

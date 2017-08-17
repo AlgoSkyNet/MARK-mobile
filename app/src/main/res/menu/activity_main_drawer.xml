@@ -8,7 +8,7 @@
             android:title="Vehicle List" />
         <item
             android:id="@+id/map"
-            android:icon="@drawable/vehicle_list"
+            android:icon="@drawable/map"
             android:title="Map" />
         <!--<item
             android:id="@+id/snailtrail"
@@ -28,12 +28,12 @@
         <menu>
             <item
                 android:id="@+id/account"
-                android:icon="@drawable/vehicle_list"
+                android:icon="@drawable/invi"
                 android:title="Account" />
             <item
                 android:id="@+id/sign_out"
-                android:icon="@drawable/vehicle_list"
-                android:title="SIGN OUT" />
+                android:icon="@drawable/invi"
+                android:title="Sign Out" />
         </menu>
     </item>
 

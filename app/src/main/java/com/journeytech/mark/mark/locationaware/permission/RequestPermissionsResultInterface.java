@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.getaccuratelocation.permission;
+package com.journeytech.mark.mark.locationaware.permission;
 
 public interface RequestPermissionsResultInterface
 {

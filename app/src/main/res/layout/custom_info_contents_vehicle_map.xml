@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:padding="@dimen/activity_horizontal_margin">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -16,41 +16,37 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/textView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:paddingBottom="2dip"
                 android:paddingTop="6dip"
                 android:text="Plate no.: "
-                android:textColor="@color/colorBlack"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:id="@+id/textView12" />
+                android:textColor="#5d5d5d" />
 
             <TextView
                 android:id="@+id/plate_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
-                android:paddingBottom="2dip"
-                android:paddingTop="6dip"
-                android:textColor="@color/colorBlack"
-                android:textSize="18sp"
+                android:textColor="#5d5d5d"
                 android:textStyle="bold"
-                android:layout_alignParentTop="true"
+                android:layout_alignBaseline="@+id/textView12"
+                android:layout_alignBottom="@+id/textView12"
                 android:layout_toRightOf="@+id/textView12"
                 android:layout_toEndOf="@+id/textView12" />
 
-<!--            <TextView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:fontFamily="sans-serif"
-                android:paddingBottom="2dip"
-                android:paddingTop="6dip"
-                android:textColor="@color/colorBlack"
-                android:textSize="18sp"
-                android:text=">"
-                android:textStyle="bold" />-->
+            <!--            <TextView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:fontFamily="sans-serif"
+                            android:paddingBottom="2dip"
+                            android:paddingTop="6dip"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="18sp"
+                            android:text=">"
+                            android:textStyle="bold" />-->
 
         </RelativeLayout>
 
@@ -108,20 +104,9 @@
                 android:layout_toRightOf="@+id/textView11"
                 android:layout_toLeftOf="@+id/arrow_right" />
 
-            <ImageView
-                android:id="@+id/arrow_right"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:gravity="right"
-                android:elevation="7dp"
-                android:src="@drawable/arrow_right"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
-
         </RelativeLayout>
 
-        <LinearLayout
+  <!--      <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -150,7 +135,7 @@
                 android:textColor="#5d5d5d"
                 android:textStyle="bold" />
 
-        </LinearLayout>
+        </LinearLayout>-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -186,7 +171,7 @@
                 android:textColor="#5d5d5d" />
 
             <TextView
-                android:id="@+id/remarks"
+                android:id="@+id/rema"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"

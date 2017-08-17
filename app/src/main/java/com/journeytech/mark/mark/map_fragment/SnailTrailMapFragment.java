@@ -40,8 +40,8 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
-import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
+import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
 import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateToMapFragment;
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.vm;
 
@@ -58,6 +58,8 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
     static Activity activity;
 
     public static Double latitude, longitude;
+
+    Response<JsonElement> response_last;
 
     public SnailTrailMapFragment(Context c, Activity a) {
         context = c;
@@ -102,10 +104,6 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
-    public void onBackPressed() {
-        return;
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMapSnailTrail = googleMap;
@@ -139,7 +137,11 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+
+                response_last = response;
+
                 if (response.body().getAsJsonArray().size() != 0) {
+
                     // Showing progress dialog
                     pDialog = new ProgressDialog(getContext());
                     pDialog.setMessage("Plotting.... Please wait.");
@@ -202,7 +204,7 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
                             Double d2 = Double.parseDouble(lng);
                             // Setting points of polyline
                             polylineOptions.add(new LatLng(d1, d2));
-                            createMarker(0, d1, d2, location, remarks);
+                            createMarker(i, d1, d2, location, remarks);
 
                             if (i + 1 == response.body().getAsJsonArray().size()) {
                                 System.out.println(i + " asap");
@@ -241,6 +243,11 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
         // Adding the taped point to the ArrayList
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
 
+        if (index == 1)
+            image = BitmapDescriptorFactory.fromResource(R.drawable.start);
+        else if (index == response_last.body().getAsJsonArray().size() - 1){
+            image = BitmapDescriptorFactory.fromResource(R.drawable.end);
+        }
         mMapSnailTrail.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)

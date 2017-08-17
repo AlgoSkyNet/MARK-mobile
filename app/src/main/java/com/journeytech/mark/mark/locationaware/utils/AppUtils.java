@@ -1,9 +1,12 @@
-package com.journeytech.mark.mark.getaccuratelocation.utils;
+package com.journeytech.mark.mark.locationaware.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+/**
+ * Created by SyedRazaMehdi on 8/15/2016.
+ */
 public class AppUtils {
 
 

@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -38,8 +37,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.journeytech.mark.mark.CustomTypeFaceSpan;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.getaccuratelocation.BaseActivityLocation;
 import com.journeytech.mark.mark.list_fragment.VehicleListFragment;
+import com.journeytech.mark.mark.locationaware.BaseActivityLocation;
+import com.journeytech.mark.mark.map_fragment.AlarmSheetModalMapFragment;
 import com.journeytech.mark.mark.map_fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
@@ -141,6 +141,9 @@ public class MainActivity extends BaseActivityLocation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        getSupportActionBar().
+
+
         Intent iin= getIntent();
         Bundle b = iin.getExtras();
 
@@ -183,11 +186,12 @@ public class MainActivity extends BaseActivityLocation
         p = new Proximity();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "This is a notification Message", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                AlarmSheetModalMapFragment bottomSheetDialogFragment = new AlarmSheetModalMapFragment();
+                bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
             }
         });
 
@@ -202,7 +206,7 @@ public class MainActivity extends BaseActivityLocation
 
         View headerView = navigationView.getHeaderView(0);
         TextView name = (TextView) headerView.findViewById(R.id.name);
-        name.setText(ucsi_num);
+        name.setText(/*ucsi_num*/ "");
 
         //Set typeface roboto font to Navigation Text
         Menu m = navigationView.getMenu();
@@ -369,6 +373,12 @@ public class MainActivity extends BaseActivityLocation
             VehicleListFragment vehicleFragment = new VehicleListFragment();
             manager = getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.mainLayout, vehicleFragment).commit();
+
+            dateFromMapFragment = null;
+            dateToMapFragment = null;
+
+            dateFromListFragment = null;
+            dateToListFragment = null;
         } else if (id == R.id.map) {
             VehicleMapFragment vehicleMapFragment = new VehicleMapFragment(MainActivity.this, MainActivity.this);
             FragmentManager manager = getSupportFragmentManager();
@@ -410,7 +420,7 @@ public class MainActivity extends BaseActivityLocation
                 LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
                 LatLng l2 = new LatLng(lat2, long2);
 
-                Double m = VehicleMapFragment.distanceBetween(l1, l2);
+                Double m = VehicleMapFragment.DistanceBetween(l1, l2);
                 double km = 1000;
                 double distanceInMeters = m / km;
 
@@ -456,7 +466,7 @@ public class MainActivity extends BaseActivityLocation
             LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
             LatLng l2 = new LatLng(lat2, long2);
 
-            Double m = VehicleMapFragment.distanceBetween(l1, l2);
+            Double m = VehicleMapFragment.DistanceBetween(l1, l2);
             double km = 1000;
             double distanceInMeters = m / km;
 

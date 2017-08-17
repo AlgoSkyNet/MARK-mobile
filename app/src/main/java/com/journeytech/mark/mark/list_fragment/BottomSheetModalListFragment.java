@@ -9,13 +9,12 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.journeytech.mark.mark.CustomDateTimePicker;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.map_fragment.NavigationMapFragment;
-import com.journeytech.mark.mark.map_fragment.ProximityMapFragment;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -81,9 +80,16 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                 dialog.setContentView(R.layout.date_time);
                 dialog.setCancelable(false);
 
-                final TextView tv7 = (TextView) dialog.findViewById(R.id.textView7);
-                Button btn3 = (Button) dialog.findViewById(R.id.button3);
-                btn3.setOnClickListener(new View.OnClickListener() {
+                TextView close = (TextView) dialog.findViewById(R.id.close);
+                close.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                final Button et2 = (Button) dialog.findViewById(R.id.editText2);
+                et2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View arg0) {
                         if (getActivity() == null) {
                             System.out.println("yes");
@@ -113,7 +119,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                                                 + " " + i_hr + ":" + i_min
                                                 + ":" + i_sec;
 
-                                        tv7.setText(dateFromListFragment);
+                                        et2.setText(dateFromListFragment);
                                     }
 
                                     /*@Override
@@ -160,9 +166,8 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                     }
                 });
 
-                final TextView tv9 = (TextView) dialog.findViewById(R.id.textView9);
-                Button b4 = (Button) dialog.findViewById(R.id.button4);
-                b4.setOnClickListener(new View.OnClickListener() {
+                final Button et3 = (Button) dialog.findViewById(R.id.editText3);
+                et3.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         final FragmentManager manager = getFragmentManager();
@@ -189,7 +194,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                                                 + " " + i_hr + ":" + i_min
                                                 + ":" + i_sec;
 
-                                        tv9.setText(dateToListFragment);
+                                        et3.setText(dateToListFragment);
                                     }
 
                                     @Override
@@ -213,7 +218,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                 });
 
 
-                Button b5 = (Button) dialog.findViewById(R.id.button5);
+                ImageButton b5 = (ImageButton) dialog.findViewById(R.id.button5);
                 b5.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -234,7 +239,8 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                         }
                         if (dateFromListFragment != null && dateFromListFragment != null) {
                             SnailTrailListFragment stf = new SnailTrailListFragment(getContext(), getActivity());
-                            manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
+                            manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, stf).commit();
+
                             dialog.dismiss();
                         }
 
@@ -252,8 +258,8 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
 //                ProximityListMapFragment.createProximity(MainActivity.getLatitude(), MainActivity.getLongitude());
                 dismiss();
 
-                ProximityMapFragment pnf = new ProximityMapFragment(getActivity(), getContext());
-                manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();
+                ProximityListMapFragment plmf = new ProximityListMapFragment(getActivity(), getContext());
+                manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, plmf).commit();
 
             }
         });
@@ -267,7 +273,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                 LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
                 LatLng l2 = new LatLng(lat2, long2);
 
-                Double m = ProximityListMapFragment.distanceBetween(l1, l2);
+                Double m = ProximityListMapFragment.DistanceBetween(l1, l2);
                 double km = 1000;
                 double distanceInMeters = m / km;
 
@@ -292,8 +298,8 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
 
                 dismiss();
 
-                NavigationMapFragment nf = new NavigationMapFragment(activity);
-                manager.beginTransaction().replace(R.id.mainLayout, nf).commit();
+                NavigationListMapFragment nlmf = new NavigationListMapFragment(activity);
+                manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, nlmf).commit();
             }
         });
     }

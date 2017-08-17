@@ -100,10 +100,6 @@ public class NavigationMapFragment extends Fragment implements OnMapReadyCallbac
 
     }
 
-    public void onBackPressed() {
-        return;
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMapNavigation = googleMap;

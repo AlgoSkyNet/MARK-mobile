@@ -123,25 +123,21 @@ public class CustomDateTimePicker implements View.OnClickListener {
         linear_bottom.setGravity(Gravity.CENTER);
 
         btn_set = new Button(activity);
+        btn_set.setHeight(25);
         btn_set.setLayoutParams(button_params);
         btn_set.setText("Set");
         btn_set.setId(SET);
-        btn_set.setHeight(12);
+/*        btn_set.setHeight(12);
         LinearLayout.LayoutParams set = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         set.setMargins(0, 0, 0, 5);
-        btn_set.setLayoutParams(set);
+        btn_set.setLayoutParams(set);*/
         btn_set.setOnClickListener(this);
 
         btn_cancel = new Button(activity);
         btn_cancel.setLayoutParams(button_params);
         btn_cancel.setText("Cancel");
         btn_cancel.setId(CANCEL);
-        btn_cancel.setHeight(12);
-        LinearLayout.LayoutParams cancel = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        cancel.setMargins(0, 0, 0, 5);
-        btn_cancel.setLayoutParams(cancel);
         btn_cancel.setOnClickListener(this);
 
         linear_bottom.addView(btn_set);

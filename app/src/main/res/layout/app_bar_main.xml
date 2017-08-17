@@ -30,14 +30,33 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <TextView
+        android:id="@+id/counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:text="460"
+        android:elevation="7dp"
+        android:textColorHighlight="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
+        android:layout_marginBottom="35dp"
+        android:layout_gravity="bottom|end" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_gravity="top|left"
+        android:elevation="0dp"
+        app:backgroundTint="@color/white"
+        app:borderWidth="0dp"
+        app:fabSize="normal"
+        app:layout_anchor="@+id/include2"
+        app:layout_anchorGravity="bottom|right"
+        app:srcCompat="@drawable/email" />
+
+    <include
+        android:id="@+id/include2"
+        layout="@layout/content_main" />
 
 </android.support.design.widget.CoordinatorLayout>

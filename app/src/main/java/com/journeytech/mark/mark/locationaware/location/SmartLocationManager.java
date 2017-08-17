@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.getaccuratelocation.location;
+package com.journeytech.mark.mark.locationaware.location;
 
 import android.Manifest;
 import android.app.Activity;
@@ -56,7 +56,7 @@ public class SmartLocationManager implements
     private GoogleApiClient mGoogleApiClient;
     private LocationManagerInterface mLocationManagerInterface;
 
-    private LocationManager locationManager;
+    private android.location.LocationManager locationManager;
     private android.location.LocationListener locationListener;
 
     boolean isGPSEnabled;
@@ -190,7 +190,7 @@ public class SmartLocationManager implements
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             getLocationUsingAndroidAPIOneTimeGps();
         } else {
-            setNewLocation(getBetterLocation(location, mLocationFetched), mLocationFetched);
+//            setNewLocation(getBetterLocation(location, mLocationFetched), mLocationFetched);
         }
     }
 
@@ -244,8 +244,8 @@ public class SmartLocationManager implements
         } else {
             if (locationManager != null && locationListener != null) {
                 if (Build.VERSION.SDK_INT >= 23 &&
-                        ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                        ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
                 try {
@@ -269,8 +269,8 @@ public class SmartLocationManager implements
 
     public void captureLocation() {
         if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         try {
@@ -297,8 +297,8 @@ public class SmartLocationManager implements
                 } else {
                     setNewLocation(getBetterLocation(location, mLocationFetched), mLocationFetched);
                 }
-                /*locationManager.removeUpdates(locationListener);
-                locationManager = null;*/
+                locationManager.removeUpdates(locationListener);
+                locationManager = null;
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -314,8 +314,8 @@ public class SmartLocationManager implements
 
     public Location getAccurateLocation() {
         if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
         try {
@@ -361,8 +361,8 @@ public class SmartLocationManager implements
         // Remove the listener you previously added
         if (locationManager != null && locationListener != null) {
             if (Build.VERSION.SDK_INT >= 23 &&
-                    ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             try {
@@ -471,8 +471,8 @@ public class SmartLocationManager implements
         Location lastKnownLocation = null;
         // Or use LocationManager.GPS_PROVIDER
         if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return lastKnownLocation;
         }
         try {
@@ -567,8 +567,8 @@ public class SmartLocationManager implements
             return mLastLocationFetched;
         }
         if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
         if (mProviderType == SmartLocationManager.GPS_PROVIDER) {

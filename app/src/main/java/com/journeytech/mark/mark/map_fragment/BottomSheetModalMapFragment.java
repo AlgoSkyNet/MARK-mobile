@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,9 +81,17 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                 dialog.setContentView(R.layout.date_time);
                 dialog.setCancelable(false);
 
-                final TextView tv7 = (TextView) dialog.findViewById(R.id.textView7);
-                Button btn3 = (Button) dialog.findViewById(R.id.button3);
-                btn3.setOnClickListener(new View.OnClickListener() {
+                ImageView close = (ImageView) dialog.findViewById(R.id.close);
+                close.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+//                Button btn3 = (Button) dialog.findViewById(R.id.button3);
+                final EditText et2 = (EditText) dialog.findViewById(R.id.editText2);
+                et2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View arg0) {
                         if (getActivity() == null) {
                             System.out.println("yes");
@@ -111,7 +121,7 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                                                 + " " + i_hr + ":" + i_min
                                                 + ":" + i_sec;
 
-                                        tv7.setText(dateFromMapFragment);
+                                        et2.setText(dateFromMapFragment);
                                     }
 
                                     /*@Override
@@ -158,9 +168,9 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                     }
                 });
 
-                final TextView tv9 = (TextView) dialog.findViewById(R.id.textView9);
-                Button b4 = (Button) dialog.findViewById(R.id.button4);
-                b4.setOnClickListener(new View.OnClickListener() {
+//                Button b4 = (Button) dialog.findViewById(R.id.button4);
+                final EditText et3 = (EditText) dialog.findViewById(R.id.editText3);
+                et3.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         final FragmentManager manager = getFragmentManager();
@@ -187,7 +197,7 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                                                 + " " + i_hr + ":" + i_min
                                                 + ":" + i_sec;
 
-                                        tv9.setText(dateToMapFragment);
+                                        et3.setText(dateToMapFragment);
                                     }
 
                                     @Override
@@ -211,7 +221,7 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                 });
 
 
-                Button b5 = (Button) dialog.findViewById(R.id.button5);
+                ImageView b5 = (ImageView) dialog.findViewById(R.id.button5);
                 b5.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -265,7 +275,7 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                 LatLng l1 = new LatLng(p.getLatitude(), p.getLongitude());
                 LatLng l2 = new LatLng(lat2, long2);
 
-                Double m = ProximityListMapFragment.distanceBetween(l1, l2);
+                Double m = ProximityListMapFragment.DistanceBetween(l1, l2);
                 double km = 1000;
                 double distanceInMeters = m / km;
 

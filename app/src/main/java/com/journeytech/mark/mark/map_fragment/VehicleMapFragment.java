@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -67,6 +68,16 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
     public static Double latitudeG, longitudeG;
 
+    public String plate_num;
+    public String gps_num;
+    public static String location;
+    public String date;
+    public String time;
+    public String lat;
+    public String lng;
+    public String engine;
+    public String remarks;
+
     public VehicleMapFragment(Context c, Activity a) {
         context = c;
         activity = a;
@@ -106,6 +117,11 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_contact_us, container, false);
 
+        MainActivity csActivity;
+        csActivity = (MainActivity) getActivity();
+        csActivity.getSupportActionBar().setTitle("Map View");
+
+
         Bundle arguments = getArguments();
 //        lati =  arguments.getDouble("Lat");
 //        longi = arguments.getDouble("Long");
@@ -127,6 +143,7 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
+            pDialog.setMax(100);
 
         }
 
@@ -185,25 +202,34 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
                         String plate_n = jo.get("plate_num").toString();
                         String plate_nString = plate_n;
                         plate_nString = plate_nString.replace("\"", "");
-                        String plate_num = String.valueOf(plate_nString);
+                        plate_num = String.valueOf(plate_nString);
 
-                        String gps_num = jo.get("gps_num").toString();
-                        String location = jo.get("location").toString();
-                        String date = jo.get("date").toString();
-                        String time = jo.get("time").toString();
+                        gps_num = jo.get("gps_num").toString();
+
+                        String dat = jo.get("date").toString();
+                        date = dat.replace("\"", "");
+
+                        String tim = jo.get("time").toString();
+                        time = tim.replace("\"", "");
+
+                        String loca = jo.get("location").toString();
+                        location = loca.replace("\"", "");
 
                         String lati = jo.get("lat").toString();
                         String latiString = lati;
                         latiString = latiString.replace("\"", "");
-                        String lat = String.valueOf(latiString);
+                        lat = String.valueOf(latiString);
 
                         String longi = jo.get("lng").toString();
                         String longiString = longi;
                         longiString = longiString.replace("\"", "");
-                        String lng = String.valueOf(longiString);
+                        lng = String.valueOf(longiString);
 
-                        String engine = jo.get("engine").toString();
-                        String remarks = jo.get("remarks").toString();
+                        String engi = jo.get("engine").toString();
+                        engine = engi.replace("\"", "");
+
+                        String remar = jo.get("remarks").toString();
+                        remarks = remar.replace("\"", "");
 
                         if (lat != null && !lat.equals("null")
                                 && (lng != null && !lng.equals("null")
@@ -260,7 +286,6 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(final Marker marker) {
                 vm = new VehicleMap();
 
-                vm.setSnippet(marker.getSnippet());
                 vm.setPlate_num(marker.getSnippet());
 
                 latitudeG = marker.getPosition().latitude;
@@ -275,13 +300,46 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        mMapFragment.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+
         return new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .title("Plate No.")
                 .snippet(Plate_num)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+    }
+
+    class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        public MarkerInfoWindowAdapter() {
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(final Marker marker) {
+            View v = getActivity().getLayoutInflater().inflate(R.layout.custom_info_contents_vehicle_map, null);
+            TextView plate_nu = (TextView) v.findViewById(R.id.plate_num);
+            TextView dat = (TextView) v.findViewById(R.id.date);
+            TextView tim = (TextView) v.findViewById(R.id.time);
+            TextView loc = (TextView) v.findViewById(R.id.location);
+            TextView engin = (TextView) v.findViewById(R.id.engine);
+            TextView remark = (TextView) v.findViewById(R.id.rema);
+            plate_nu.setText(plate_num);
+            dat.setText(date);
+            tim.setText(time);
+            loc.setText(location);
+            engin.setText(engine);
+            remark.setText(remarks);
+
+            return v;
+        }
 
     }
+
 
     public void onMapReady(GoogleMap googleMap) {
         mMapFragment = googleMap;
@@ -302,8 +360,9 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         mMapFragment.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMapFragment.setTrafficEnabled(true);
         mMapFragment.setIndoorEnabled(true);
+        mMapFragment.getUiSettings().setMyLocationButtonEnabled(true);
         mMapFragment.setBuildingsEnabled(true);
-        mMapFragment.getUiSettings().setZoomControlsEnabled(true);
+        mMapFragment.getUiSettings().setZoomControlsEnabled(false);
 
         //set marker here
     }
