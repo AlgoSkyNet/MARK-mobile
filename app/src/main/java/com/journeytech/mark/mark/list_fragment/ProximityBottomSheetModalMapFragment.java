@@ -1,4 +1,4 @@
-package com.journeytech.mark.mark.map_fragment;
+package com.journeytech.mark.mark.list_fragment;
 
 import android.app.Dialog;
 import android.os.Build;
@@ -16,9 +16,14 @@ import com.journeytech.mark.mark.activity.MainActivity;
 
 import java.text.DecimalFormat;
 
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.latitudeG;
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.longitudeG;
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.vm;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.date;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.engine;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.location;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.plate_num;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.remarks;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.time;
 
 public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragment {
     private BottomSheetBehavior.BottomSheetCallback
@@ -47,14 +52,16 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
 
         View contentView = View.inflate(getContext(), R.layout.proximity_bottomsheet3, null);
 
-        TextView plate_num = (TextView) contentView.findViewById(R.id.plate_num);
+        TextView plate_n = (TextView) contentView.findViewById(R.id.plate_num);
         TextView distance = (TextView) contentView.findViewById(R.id.TVDistance);
-        TextView time = (TextView) contentView.findViewById(R.id.TVTime);
-        plate_num.setText(capitalize(vm.getPlate_num().toLowerCase()));
+        TextView tim = (TextView) contentView.findViewById(R.id.TVTime);
+        plate_n.setText("PLATE NO.: " +plate_num+ "\n"+
+                        "LAST SEEN: "+date+ " "+time + "\n" +
+                        "LOCATION: "+location+"\n"+
+                        "ENGINE: " + engine + "\n"+
+                        "REMARKS: "+ remarks);
 
-        System.out.println(vm.getPlate_num()+ " VVVm");
-
-        LatLng l1 = new LatLng(latitudeG, longitudeG);
+        LatLng l1 = new LatLng(latitudeListMap, longitudeListMap);
         LatLng l2 = new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude());
 
         Double m = DistanceBetween.distanceBetween(l1, l2);
@@ -71,7 +78,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
         Double estimatedDriveTimeInMinutes = m / speedIs10MetersPerMinute;
         estimatedDriveTimeInMinutes = estimatedDriveTimeInMinutes / 60;
 
-        time.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");
+        tim.setText(df.format(estimatedDriveTimeInMinutes).toString() + " min.");
 
         dialog.setContentView(contentView);
     }

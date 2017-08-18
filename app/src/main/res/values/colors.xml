@@ -7,4 +7,5 @@
     <color name="cardBackgroundColor">#FFFFFFFF</color>
     <color name="red">#FF0000</color>
     <color name="white">#FFFFFF</color>
+    <color name="deep_pink">#FF1493</color>
 </resources>

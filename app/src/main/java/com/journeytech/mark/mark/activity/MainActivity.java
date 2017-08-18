@@ -1,5 +1,6 @@
 package com.journeytech.mark.mark.activity;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -67,6 +68,8 @@ public class MainActivity extends BaseActivityLocation
     public static MenuItem searchItem;
 
     public static String status, ucsi_num, client_table, markutype;
+
+    Activity ac;
 
     private static final String[] COLUMNS = {
             BaseColumns._ID,

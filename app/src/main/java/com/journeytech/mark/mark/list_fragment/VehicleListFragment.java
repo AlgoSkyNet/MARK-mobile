@@ -113,21 +113,25 @@ public class VehicleListFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        vehicle.clear();
+    }
+
     private class GetVehicles extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
-            // Showing progress dialog
-            pDialog = new ProgressDialog(getActivity());
+/*            // Showing progress dialog
+            pDialog = new ProgressDialog(getContext());
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
-            pDialog.show();
+            pDialog.show();*/
 
-            if(lv.getCount() != 0) {
-                lv.setAdapter(null);
-            }
         }
 
         @Override
@@ -313,9 +317,9 @@ public class VehicleListFragment extends Fragment {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            // Dismiss the progress dialog
+/*            // Dismiss the progress dialog
             if (pDialog.isShowing())
-                pDialog.dismiss();
+                pDialog.dismiss();*/
         }
     }
 }

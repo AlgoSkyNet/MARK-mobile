@@ -1,45 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:background="@color/colorPrimary"
-        android:paddingTop="8dp"
-        android:paddingStart="16dp"
+        android:paddingBottom="8dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp">
+        android:paddingStart="16dp"
+        android:paddingTop="8dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/bottom_sheet_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Proximity"
                 android:textColor="@android:color/white"
-                android:textSize="19sp"/>
+                android:textSize="19sp" />
 
-            <TextView
-                android:id="@+id/tvLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Location dummy 1234 1234"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:layout_marginTop="5dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:orientation="horizontal"
+                android:paddingBottom="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/map1">
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_distance_white" />
+
+                    <TextView
+                        android:id="@+id/TVDistance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:text="0 km"
+                        android:textSize="18dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_clock_white" />
+
+                    <TextView
+                        android:id="@+id/TVTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 min"
+                        android:textSize="18dp"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
 
-<!--        <TextView
+        <!--        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="5 min"
@@ -51,65 +89,22 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/plate_num"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="My Location"
-        android:textAllCaps="true"
-        android:textSize="25sp" />
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/map1"
-        android:layout_marginBottom="0dp"
-        android:paddingBottom="0dp">
+        android:layout_height="120dp">>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/plate_num"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" >
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="Plate No."
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+    </RelativeLayout>
+    <![CDATA[>
 
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:src="@drawable/ic_distance" />
-
-            <TextView
-                android:id="@+id/tvDistance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:text="0 km"
-                android:textSize="18dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" >
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                android:src="@drawable/ic_clock" />
-
-            <TextView
-                android:id="@+id/tvTime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:text="0 min"
-                android:textSize="18dp" />
-        </LinearLayout>
-
-<!--        <LinearLayout
+        ]]><!--        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -178,5 +173,5 @@
                 android:textSize="22dp" />
         </LinearLayout>-->
 
-    </LinearLayout>
 </LinearLayout>
+

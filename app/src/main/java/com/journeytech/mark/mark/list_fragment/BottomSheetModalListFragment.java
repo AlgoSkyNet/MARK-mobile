@@ -9,7 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,7 +81,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                 dialog.setContentView(R.layout.date_time);
                 dialog.setCancelable(false);
 
-                TextView close = (TextView) dialog.findViewById(R.id.close);
+                ImageView close = (ImageView) dialog.findViewById(R.id.close);
                 close.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -88,7 +89,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                     }
                 });
 
-                final Button et2 = (Button) dialog.findViewById(R.id.editText2);
+                final TextView et2 = (TextView) dialog.findViewById(R.id.editText2);
                 et2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View arg0) {
                         if (getActivity() == null) {
@@ -166,7 +167,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                     }
                 });
 
-                final Button et3 = (Button) dialog.findViewById(R.id.editText3);
+                final TextView et3 = (TextView) dialog.findViewById(R.id.editText3);
                 et3.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -218,7 +219,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
                 });
 
 
-                ImageButton b5 = (ImageButton) dialog.findViewById(R.id.button5);
+                ImageView b5 = (ImageView) dialog.findViewById(R.id.button5);
                 b5.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

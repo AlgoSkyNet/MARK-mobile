@@ -4,6 +4,7 @@ package com.journeytech.mark.mark.list_fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -50,13 +51,15 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     static Activity activity;
 
     public static String plate_num = "", latitude, longitude;
-    String date, time, location, engine, remarks;
+    public static String date, time, location, engine, remarks;
 
     TextView tv2, tv4, tv6;
 
     public static Double latitudeListMap, longitudeListMap;
 
     Marker m;
+
+    Handler handler = new Handler();
 
     public VehicleListMapFragment(Context c, Activity a) {
         context = c;
@@ -100,6 +103,16 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         tv4.setText(engine);
         tv6.setText(remarks);
 
+/*        Runnable refresh = new Runnable() {
+            @Override
+            public void run() {
+                new GetVehicles().execute();
+                handler.postDelayed(this, 60 * 1000);
+            }
+        };
+
+        handler.postDelayed(refresh, 60 * 1000);*/
+
         return v;
     }
 
@@ -120,10 +133,37 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         mMapVehicleListMapFragment.clear();
 
         setUpMap();
+
+//        new GetMap().execute();
+    }
+
+    private class GetMap extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+
+        }
     }
 
     /*set up map*/
     private void setUpMap() {
+        mMapVehicleListMapFragment.clear();
         mMapVehicleListMapFragment.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMapVehicleListMapFragment.setTrafficEnabled(true);
         mMapVehicleListMapFragment.setIndoorEnabled(true);
@@ -189,8 +229,9 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
             View v = getActivity().getLayoutInflater().inflate(R.layout.custom_info_contents_list_vehicle_map, null);
             TextView title = (TextView) v.findViewById(R.id.title);
             TextView snippet = (TextView) v.findViewById(R.id.snippet);
+            snippet.setVisibility(View.GONE);
             title.setText("Location: " + location);
-            snippet.setText("Engine: " + engine);
+//            snippet.setText("Engine: " + engine);
 
             return v;
         }

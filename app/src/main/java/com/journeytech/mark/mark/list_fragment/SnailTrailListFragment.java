@@ -60,6 +60,8 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
 
     public static Double latitude, longitude;
 
+    Response<JsonElement> response_last;
+
     public SnailTrailListFragment(Context c, Activity a) {
         context = c;
         activity = a;
@@ -144,6 +146,9 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+
+                response_last = response;
+
                 if (response.body().getAsJsonArray().size() != 0) {
                     // Showing progress dialog
                     pDialog = new ProgressDialog(getContext());
@@ -207,7 +212,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                             Double d2 = Double.parseDouble(lng);
                             // Setting points of polyline
                             polylineOptions.add(new LatLng(d1, d2));
-                            createMarker(0, d1, d2, location, remarks);
+                            createMarker(i, d1, d2, location, remarks);
 
                             if (i + 1 == response.body().getAsJsonArray().size()) {
                                 System.out.println(i + " asap");
@@ -245,6 +250,12 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
     public void createMarker(int index, Double latitude, Double longitude, String location, String remarks) {
         // Adding the taped point to the ArrayList
         BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
+
+        if (index == 1)
+            image = BitmapDescriptorFactory.fromResource(R.drawable.start);
+        else if (index == response_last.body().getAsJsonArray().size() - 1){
+            image = BitmapDescriptorFactory.fromResource(R.drawable.end);
+        }
 
         mMapSnailTrail.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))

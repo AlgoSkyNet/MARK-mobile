@@ -248,6 +248,7 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
         else if (index == response_last.body().getAsJsonArray().size() - 1){
             image = BitmapDescriptorFactory.fromResource(R.drawable.end);
         }
+
         mMapSnailTrail.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)

@@ -2,6 +2,7 @@ package com.journeytech.mark.mark.map_fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -9,7 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +32,8 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
     CustomDateTimePicker custom, custom2;
 
     Activity activity;
+
+    Context context;
 
     public BottomSheetModalMapFragment(Activity a) {
         this.activity = a;
@@ -90,7 +92,8 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                 });
 
 //                Button btn3 = (Button) dialog.findViewById(R.id.button3);
-                final EditText et2 = (EditText) dialog.findViewById(R.id.editText2);
+                final TextView et2 = (TextView) dialog.findViewById(R.id.editText2);
+
                 et2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View arg0) {
                         if (getActivity() == null) {
@@ -169,10 +172,14 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                 });
 
 //                Button b4 = (Button) dialog.findViewById(R.id.button4);
-                final EditText et3 = (EditText) dialog.findViewById(R.id.editText3);
+                final TextView et3 = (TextView) dialog.findViewById(R.id.editText3);
                 et3.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+/*                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(et3.getWindowToken(), 0);*/
+
                         final FragmentManager manager = getFragmentManager();
                         custom2 = new
                                 CustomDateTimePicker(activity,
@@ -242,7 +249,7 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                         }
                         if (dateFromMapFragment != null && dateToMapFragment != null) {
                             SnailTrailMapFragment stf = new SnailTrailMapFragment(getContext(), getActivity());
-                            manager.beginTransaction().replace(R.id.mainLayout, stf).commit();
+                            manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, stf).commit();
                             dialog.dismiss();
                         }
 
@@ -261,7 +268,7 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                 dismiss();
 
                 ProximityMapFragment pnf = new ProximityMapFragment(getActivity(), getContext());
-                manager.beginTransaction().replace(R.id.mainLayout, pnf).commit();
+                manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, pnf).commit();
 
             }
         });
@@ -301,7 +308,7 @@ public class BottomSheetModalMapFragment extends BottomSheetDialogFragment {
                 dismiss();
 
                 NavigationMapFragment nf = new NavigationMapFragment(activity);
-                manager.beginTransaction().replace(R.id.mainLayout, nf).commit();
+                manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, nf).commit();
             }
         });
     }
