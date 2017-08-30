@@ -344,6 +344,10 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
             distanc.setText(distance);
             tim.setText(duration);
 
+            if(distanc.getText().toString().equals(null) || distanc.getText().toString() == "") {
+                dismiss();
+            }
+
         }
     }
 

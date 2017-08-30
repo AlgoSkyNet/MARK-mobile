@@ -317,7 +317,7 @@ public class VehicleListFragment extends Fragment {
                                         if((!latitude.equals("") && latitude != null) || (!longitude.equals("") && longitude != null) )
                                         {
                                             Fragment mFragment = new VehicleListMapFragment();
-                                            getFragmentManager().beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, mFragment).commit();
+                                            getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.mainLayout, mFragment).commit();
 
                                             mFragment.setArguments(bundle);
                                         } else {
