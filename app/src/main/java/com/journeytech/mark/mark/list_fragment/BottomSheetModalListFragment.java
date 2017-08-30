@@ -90,8 +90,8 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
 
                 dismiss();
 
-                ProximityListMapFragment plmf = new ProximityListMapFragment(getActivity(), getContext());
-                manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, plmf).commit();
+                ProximityListMapFragment plmf = new ProximityListMapFragment();
+                manager.beginTransaction().replace(R.id.mainLayout, plmf).commit();
 
             }
         });

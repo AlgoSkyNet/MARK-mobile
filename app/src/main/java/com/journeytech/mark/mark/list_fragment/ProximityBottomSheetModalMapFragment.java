@@ -47,17 +47,19 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
     // GPSTracker class
     GPSTracker gps;
 
-    TextView distanc, tim;
+    public static TextView distanc, tim;
 
     ArrayList<LatLng> markerPoints;
 
-    Handler handler = new Handler();
+    public static Handler handler = new Handler();
+
+    public static Runnable refresh;
 
     public static String distan;
 
     ProgressDialog pDialog;
 
-    Runnable refresh;
+
 
     private BottomSheetBehavior.BottomSheetCallback
             mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -100,6 +102,30 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
                 "ENGINE: " + engine + "\n" +
                 "REMARKS: " + remarks);
 
+        Double lati = Double.parseDouble(latitudeListMap);
+        Double longi = Double.parseDouble(longitudeListMap);
+
+        LatLng l1 = new LatLng(lati, longi);
+
+        // create class object
+        gps = new GPSTracker(getContext());
+
+
+            double latitudeGPS = gps.getLatitude();
+            double longitudeGPS = gps.getLongitude();
+
+            LatLng l2 = new LatLng(latitudeGPS, longitudeGPS);
+
+            LatLng origin = l1;
+            LatLng dest = l2;
+
+            // Getting URL to the Google Directions API
+            String url = getDirectionsUrl(origin, dest);
+
+            DownloadTask downloadTask = new DownloadTask();
+
+            // Start downloading json data from Google Directions API
+            downloadTask.execute(url);
 
         refresh = new Runnable() {
             @Override
@@ -132,43 +158,8 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
 
         handler.postDelayed(refresh, 60 * 1000);
 
-        Double lati = Double.parseDouble(latitudeListMap);
-        Double longi = Double.parseDouble(longitudeListMap);
-
-        LatLng l1 = new LatLng(lati, longi);
-
-        // create class object
-        gps = new GPSTracker(getContext());
-
-        // check if GPS enabled
-        if (gps.canGetLocation()) {
-
-            double latitudeGPS = gps.getLatitude();
-            double longitudeGPS = gps.getLongitude();
-
-            LatLng l2 = new LatLng(latitudeGPS, longitudeGPS);
-
-            LatLng origin = l1;
-            LatLng dest = l2;
-
-            // Getting URL to the Google Directions API
-            String url = getDirectionsUrl(origin, dest);
-
-            DownloadTask downloadTask = new DownloadTask();
-
-            // Start downloading json data from Google Directions API
-            downloadTask.execute(url);
-
-        } else {
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
-        }
-
         dialog.setContentView(contentView);
     }
-
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
 
         // Origin of route
@@ -309,6 +300,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
             PolylineOptions lineOptions = null;
             MarkerOptions markerOptions = new MarkerOptions();
             String duration = "";
+            String distance = "";
 
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
@@ -323,7 +315,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
                     HashMap<String, String> point = path.get(j);
 
                     if (j == 0) {    // Get distance from the list
-                        distan = (String) point.get("distance");
+                        distance = (String) point.get("distance");
                         continue;
                     } else if (j == 1) { // Get duration from the list
                         duration = (String) point.get("duration");
@@ -339,9 +331,10 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
 
             }
 
-            distanc.setText(distan);
+            distanc.setText(distance);
             tim.setText(duration);
 
         }
     }
+
 }

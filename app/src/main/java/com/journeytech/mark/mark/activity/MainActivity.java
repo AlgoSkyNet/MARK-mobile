@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.CustomTypeFaceSpan;
+import com.journeytech.mark.mark.GPSTracker;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.list_fragment.VehicleListFragment;
 import com.journeytech.mark.mark.AlarmSheetModalFragment;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
         SearchView.OnSuggestionListener {
 
+    public static Toolbar toolbar;
+
     public Proximity p;
 
     ArrayList<LocationHolder> al = new ArrayList<LocationHolder>();
@@ -84,6 +87,8 @@ public class MainActivity extends AppCompatActivity
     public FloatingActionButton fab;
 
     public static TextView counter;
+
+    GPSTracker gps;
 
     private String baseUrl = "http://mark.journeytech.com.ph/mobile_api/test/";
     private NetworkAPI networkAPI;
@@ -174,7 +179,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         _context = this;
@@ -182,6 +187,17 @@ public class MainActivity extends AppCompatActivity
         counter = (TextView) findViewById(R.id.counter);
 
 //        getSupportActionBar().
+
+        // create class object
+        gps = new GPSTracker(MainActivity.this);
+
+        // check if GPS enabled
+        if (gps.canGetLocation()) {} else {
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
 
         Intent iin= getIntent();
         Bundle b = iin.getExtras();

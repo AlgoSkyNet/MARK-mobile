@@ -104,7 +104,7 @@ public class GPSTracker extends Service implements LocationListener {
 
 		return location;
 	}
-	
+
 	/**
 	 * Stop using GPS listener
 	 * Calling this function will stop using GPS in your app
@@ -112,9 +112,9 @@ public class GPSTracker extends Service implements LocationListener {
 	public void stopUsingGPS(){
 		if(locationManager != null){
 			locationManager.removeUpdates(GPSTracker.this);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Function to get latitude
 	 * */
@@ -122,11 +122,11 @@ public class GPSTracker extends Service implements LocationListener {
 		if(location != null){
 			latitude = location.getLatitude();
 		}
-		
+
 		// return latitude
 		return latitude;
 	}
-	
+
 	/**
 	 * Function to get longitude
 	 * */
@@ -134,11 +134,11 @@ public class GPSTracker extends Service implements LocationListener {
 		if(location != null){
 			longitude = location.getLongitude();
 		}
-		
+
 		// return longitude
 		return longitude;
 	}
-	
+
 	/**
 	 * Function to check GPS/wifi enabled
 	 * @return boolean
@@ -146,37 +146,34 @@ public class GPSTracker extends Service implements LocationListener {
 	public boolean canGetLocation() {
 		return this.canGetLocation;
 	}
-	
+
 	/**
 	 * Function to show settings alert dialog
 	 * On pressing Settings button will lauch Settings Options
 	 * */
 	public void showSettingsAlert(){
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(_context);
-   	 
-        // Setting Dialog Title
-        alertDialog.setTitle("GPS is settings");
- 
-        // Setting Dialog Message
-        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
- 
-        // On pressing Settings button
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            	Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            	_context.startActivity(intent);
-            }
-        });
- 
-        // on pressing cancel button
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            dialog.cancel();
-            }
-        });
- 
-        // Showing Alert Message
-        alertDialog.show();
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				_context);
+		alertDialogBuilder
+				.setMessage("GPS is disabled in your device. Enable it?")
+				.setCancelable(false)
+				.setPositiveButton("Enable GPS",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+												int id) {
+								Intent callGPSSettingIntent = new Intent(
+										android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+								_context.startActivity(callGPSSettingIntent);
+							}
+						});
+		alertDialogBuilder.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		AlertDialog alert = alertDialogBuilder.create();
+		alert.show();
 	}
 
 	@Override

@@ -4,14 +4,17 @@ package com.journeytech.mark.mark.list_fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,11 +25,26 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.journeytech.mark.mark.DirectionsJSONParser;
 import com.journeytech.mark.mark.GPSTracker;
 import com.journeytech.mark.mark.R;
 
-import java.util.ArrayList;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static com.journeytech.mark.mark.activity.MainActivity._context;
+import static com.journeytech.mark.mark.list_fragment.ProximityBottomSheetModalMapFragment.distanc;
+import static com.journeytech.mark.mark.list_fragment.ProximityBottomSheetModalMapFragment.tim;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
 
@@ -36,26 +54,12 @@ import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.lon
  */
 public class ProximityListMapFragment extends Fragment implements OnMapReadyCallback {
 
-    private ProgressDialog pDialog;
-    private ListView lv;
-
     public static GoogleMap mMapProximity;
     ArrayList<LatLng> MarkerPoints;
-    GoogleApiClient mGoogleApiClient;
-
-    Context context;
-    static Activity activity;
 
     static LatLng origin;
 
-    static Double lati = 0.0, longi = 0.0;
-
     GPSTracker gps;
-
-    public ProximityListMapFragment(Activity a, Context c) {
-        this.activity = a;
-        this.context = c;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,6 +71,9 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
         // Initializing
         MarkerPoints = new ArrayList<LatLng>();
 
+        ProximityBottomSheetModalMapFragment bottomSheetDialogFragment = new ProximityBottomSheetModalMapFragment();
+        bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+
         return v;
     }
 
@@ -77,17 +84,6 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
 
-        ProximityBottomSheetModalMapFragment bottomSheetDialogFragment = new ProximityBottomSheetModalMapFragment();
-        bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
-    }
-
-    public void onBackPressed() {
-        FragmentManager manager;
-        VehicleListMapFragment vehicleListMapFragment;
-        vehicleListMapFragment = new VehicleListMapFragment();
-        manager = getFragmentManager();
-        manager.beginTransaction().replace(R.id.mainLayout, vehicleListMapFragment).commit();
-        return;
     }
 
     @Override
@@ -106,21 +102,18 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
 
         gps = new GPSTracker(getContext());
 
-        // check if GPS enabled
-        if(gps.canGetLocation()){
+        double latitudeGPS = gps.getLatitude();
+        double longitudeGPS = gps.getLongitude();
 
-            double latitudeGPS = gps.getLatitude();
-            double longitudeGPS = gps.getLongitude();
+        //Origin, where you are. Geo Location
+        origin = new LatLng(latitudeGPS, longitudeGPS);
 
-            //Origin, where you are. Geo Location
-            origin = new LatLng(latitudeGPS, longitudeGPS);
-
-            mMapProximity.addMarker(new MarkerOptions()
-                    .position(new LatLng(latitudeGPS, longitudeGPS))
-                    .anchor(0.5f, 0.5f)
-                    .title("My Location")
-                    .snippet("This is where you are fetch.")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+        mMapProximity.addMarker(new MarkerOptions()
+                .position(new LatLng(latitudeGPS, longitudeGPS))
+                .anchor(0.5f, 0.5f)
+                .title("My Location")
+                .snippet("This is where you are fetch.")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
 
             /*Integer cam = Integer.parseInt(distan);
             if(cam <= 50) {
@@ -140,12 +133,6 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
                 mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 4.0f));
             }*/
 
-        }else{
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
-        }
 
         //Passing Snail Trail Geo Location for plotting
         //Vehicle - Destination

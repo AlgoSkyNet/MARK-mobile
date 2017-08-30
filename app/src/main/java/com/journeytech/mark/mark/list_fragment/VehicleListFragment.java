@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ import retrofit2.http.POST;
 import static com.journeytech.mark.mark.activity.MainActivity._context;
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
 import static com.journeytech.mark.mark.activity.MainActivity.markutype;
+import static com.journeytech.mark.mark.activity.MainActivity.toolbar;
 
 public class VehicleListFragment extends Fragment {
 
@@ -127,9 +129,7 @@ public class VehicleListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MainActivity csActivity;
-        csActivity = (MainActivity) getActivity();
-        csActivity.getSupportActionBar().setTitle("Vehicle List");
+        toolbar.setTitle(R.string.vehicleList);
 
         refresh = new Runnable() {
             @Override

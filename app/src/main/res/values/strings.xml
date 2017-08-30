@@ -16,6 +16,7 @@
 
     <string name="okay">Done</string>
     <string name="cancel">Cancel</string>
+    <string name="vehicleList">Vehicle List</string>
 
     <string-array name="query_suggestions">
         <item>Android</item>

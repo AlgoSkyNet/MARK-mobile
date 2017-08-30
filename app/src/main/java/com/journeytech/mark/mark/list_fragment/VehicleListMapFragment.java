@@ -52,6 +52,8 @@ import retrofit2.http.POST;
 
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
 import static com.journeytech.mark.mark.activity.MainActivity.counter;
+import static com.journeytech.mark.mark.list_fragment.ProximityBottomSheetModalMapFragment.handler;
+import static com.journeytech.mark.mark.list_fragment.ProximityBottomSheetModalMapFragment.refresh;
 
 
 /**
@@ -98,6 +100,41 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
             this.client_table = client_table;
             this.plateno = plate_num;
         }
+    }
+
+    @Override
+    public void onDetach() {
+        handler.removeCallbacks(refresh);
+        super.onDetach();
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean visible)
+    {
+        super.setUserVisibleHint(visible);
+        if (visible && isResumed())
+        {
+            onResume();
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (!getUserVisibleHint())
+        {
+            return;
+        }
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmSheetVehicleListMapModalFragment bottomSheetDialogFragment = new AlarmSheetVehicleListMapModalFragment();
+                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+            }
+        });
     }
 
     @Override
@@ -199,35 +236,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         });
     }
 
-    @Override
-    public void setUserVisibleHint(boolean visible)
-    {
-        super.setUserVisibleHint(visible);
-        if (visible && isResumed())
-        {
-            onResume();
-        }
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        if (!getUserVisibleHint())
-        {
-            return;
-        }
-
-        MainActivity mainActivity = (MainActivity)getActivity();
-        mainActivity.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlarmSheetVehicleListMapModalFragment bottomSheetDialogFragment = new AlarmSheetVehicleListMapModalFragment();
-                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
-            }
-        });
-    }
-
     public void onMapReady(GoogleMap googleMap) {
         mMapVehicleListMapFragment = googleMap;
 
@@ -236,28 +244,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
 
         setUpMap();
 
-    }
-
-    private class GetMap extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-
-
-        }
     }
 
     /*set up map*/
