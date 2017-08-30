@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
+import com.journeytech.mark.mark.GPSTracker;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.drawroute.DataParser;
@@ -50,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.journeytech.mark.mark.activity.MainActivity._context;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
 
@@ -69,6 +71,8 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
 
     Context context;
     Activity activity;
+
+    GPSTracker gps;
 
     public NavigationListMapFragment(Activity a) {
         this.activity = a;
@@ -119,50 +123,68 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
             mMapNavigation.setMyLocationEnabled(true);
         }*/
 
-        createNavigation(latitudeListMap, longitudeListMap);
+        final Double lati = Double.parseDouble(latitudeListMap);
+        final Double longi = Double.parseDouble(longitudeListMap);
+
+        createNavigation(lati, longi);
 
     }
 
     public void createNavigation(Double latitude, Double longitude) {
 
-        //Origin, where you are. Geo Location
-        origin = new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude());
+        // create class object
+        gps = new GPSTracker(getContext());
 
-        mMapNavigation.addMarker(new MarkerOptions()
-                .position(new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude()))
-//                .position(new LatLng(14.513227, 121.004827))
-                .anchor(0.5f, 0.5f)
-                .title("Your Location")
-                .snippet("This is where you are fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        // check if GPS enabled
+        if(gps.canGetLocation()){
 
-        mMapNavigation.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 12.0f));
+            double latitudeGPS = gps.getLatitude();
+            double longitudeGPS = gps.getLongitude();
 
-        //Passing Snail Trail Geo Location for plotting
-        //Destination
-        mMapNavigation.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .anchor(0.5f, 0.5f)
-                .title("Your Vehicle")
-                .snippet("This is where your vehicle was fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            //Origin, where you are. Geo Location
+            origin = new LatLng(latitudeGPS, longitudeGPS);
 
-        Location locationA = new Location("point A");
+            mMapNavigation.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitudeGPS, longitudeGPS))
+                    .anchor(0.5f, 0.5f)
+                    .title("Your Location")
+                    .snippet("This is where you are fetch.")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-        locationA.setLatitude(MainActivity.getLatitude());
-        locationA.setLongitude(MainActivity.getLongitude());
+            mMapNavigation.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 12.0f));
 
-        Location locationB = new Location("point B");
+            //Passing Snail Trail Geo Location for plotting
+            //Destination
+            mMapNavigation.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .title("Your Vehicle")
+                    .snippet("This is where your vehicle was fetch.")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-        locationB.setLatitude(latitude);
-        locationB.setLongitude(longitude);
+            Location locationA = new Location("point A");
 
-        float distance = locationA.distanceTo(locationB);
-        String meter = String.valueOf(distance);
+            locationA.setLatitude(latitudeGPS);
+            locationA.setLongitude(longitudeGPS);
 
-        String url = getUrl(origin, new LatLng(latitude, longitude));
-        FetchUrl fetchUrl = new FetchUrl();
-        fetchUrl.execute(url);
+            Location locationB = new Location("point B");
+
+            locationB.setLatitude(latitude);
+            locationB.setLongitude(longitude);
+
+            float distance = locationA.distanceTo(locationB);
+            String meter = String.valueOf(distance);
+
+            String url = getUrl(origin, new LatLng(latitude, longitude));
+            FetchUrl fetchUrl = new FetchUrl();
+            fetchUrl.execute(url);
+        }else{
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
+
     }
 
     public static Double distanceBetween(LatLng point1, LatLng point2) {
@@ -407,7 +429,7 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(activity,
+        if (ContextCompat.checkSelfPermission(_context,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 

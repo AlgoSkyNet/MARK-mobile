@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.journeytech.mark.mark.GPSTracker;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 
@@ -48,6 +50,9 @@ public class ProximityMapFragment extends Fragment implements OnMapReadyCallback
     static LatLng origin;
 
     static Double lati = 0.0, longi = 0.0;
+
+    // GPSTracker class
+    GPSTracker gps;
 
     public ProximityMapFragment(Activity a, Context c) {
         this.activity = a;
@@ -102,15 +107,30 @@ public class ProximityMapFragment extends Fragment implements OnMapReadyCallback
 
     public void createProximity(Double latitude, Double longitude) {
 
-        //Origin, where you are. Geo Location
-        origin = new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude());
+        // create class object
+        gps = new GPSTracker(getContext());
 
-        mMapProximity.addMarker(new MarkerOptions()
-                .position(new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude()))
-                .anchor(0.5f, 0.5f)
-                .title("My Location")
-                .snippet("This is where you are fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        // check if GPS enabled
+        if(gps.canGetLocation()){
+
+            double latitudeGPS = gps.getLatitude();
+            double longitudeGPS = gps.getLongitude();
+
+            //Origin, where you are. Geo Location
+            origin = new LatLng(latitudeGPS, longitudeGPS);
+
+            mMapProximity.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitudeGPS, longitudeGPS))
+                    .anchor(0.5f, 0.5f)
+                    .title("My Location")
+                    .snippet("This is where you are fetch.")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+        }else{
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
 
         mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 14.0f));
 

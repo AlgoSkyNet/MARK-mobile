@@ -2,22 +2,17 @@ package com.journeytech.mark.mark.map_fragment;
 
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.journeytech.mark.mark.AlarmSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.model.VehicleMap;
@@ -49,9 +45,9 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
-import static com.journeytech.mark.mark.R.id.engine;
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
 import static com.journeytech.mark.mark.activity.MainActivity.markutype;
+import static com.journeytech.mark.mark.activity.MainActivity.searchItem;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,6 +76,12 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
     public static String[] container;
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        searchItem.setVisible(false);
+    }
 
     public VehicleMapFragment(Context c, Activity a) {
         context = c;
@@ -110,7 +112,6 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
-
     }
 
     @Override
@@ -124,6 +125,8 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         csActivity = (MainActivity) getActivity();
         csActivity.getSupportActionBar().setTitle("Map View");
 
+        //Search appCompat Activity icon false
+        searchItem.setVisible(false);
 
         Bundle arguments = getArguments();
 //        lati =  arguments.getDouble("Lat");
@@ -132,8 +135,33 @@ public class VehicleMapFragment extends Fragment implements OnMapReadyCallback {
         return v;
     }
 
-    public void onBackPressed() {
-        return;
+    @Override
+    public void setUserVisibleHint(boolean visible)
+    {
+        super.setUserVisibleHint(visible);
+        if (visible && isResumed())
+        {
+            onResume();
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (!getUserVisibleHint())
+        {
+            return;
+        }
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmSheetModalFragment bottomSheetDialogFragment = new AlarmSheetModalFragment();
+                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+            }
+        });
     }
 
     private class GetVehicles extends AsyncTask<Void, Void, Void> {

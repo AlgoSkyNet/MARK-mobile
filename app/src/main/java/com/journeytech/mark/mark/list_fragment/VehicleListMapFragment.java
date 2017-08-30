@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,13 +27,31 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.journeytech.mark.mark.AlarmSheetModalFragment;
+import com.journeytech.mark.mark.AlarmSheetVehicleListMapModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.model.VehicleHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+
+import static com.journeytech.mark.mark.activity.MainActivity.client_table;
+import static com.journeytech.mark.mark.activity.MainActivity.counter;
 
 
 /**
@@ -50,20 +70,34 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     Context context;
     static Activity activity;
 
-    public static String plate_num = "", latitude, longitude;
+    public static String plate_num = "";
     public static String date, time, location, engine, remarks;
 
     TextView tv2, tv4, tv6;
 
-    public static Double latitudeListMap, longitudeListMap;
+    public static String latitudeListMap, longitudeListMap;
 
     Marker m;
 
-    Handler handler = new Handler();
+    private String baseUrl = "http://mark.journeytech.com.ph/mobile_api/test/";
+    private NetworkAPI networkAPI;
 
-    public VehicleListMapFragment(Context c, Activity a) {
-        context = c;
-        activity = a;
+    private interface NetworkAPI {
+        @POST("alarm_api.php")
+        @Headers({"Content-Type:application/json; charset=UTF-8"})
+        Call<JsonElement> alarm(@Body AlarmPojo body);
+    }
+
+    private static class AlarmPojo {
+        String client_table;
+        String ucsi_num;
+        String plateno;
+
+        private AlarmPojo(String client_table, String ucsi_num, String plate_num) {
+            this.ucsi_num = ucsi_num;
+            this.client_table = client_table;
+            this.plateno = plate_num;
+        }
     }
 
     @Override
@@ -81,10 +115,21 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
 
         MainActivity csActivity;
         csActivity = (MainActivity) getActivity();
-        csActivity.getSupportActionBar().setTitle("Map View");
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_vehicle_list_map, container, false);
+        Button traffic = (Button) v.findViewById(R.id.traffic);
+        traffic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mMapVehicleListMapFragment.isTrafficEnabled() == false) {
+                    mMapVehicleListMapFragment.setTrafficEnabled(true);
+                } else {
+                    mMapVehicleListMapFragment.setTrafficEnabled(false);
+                }
+            }
+        });
+
         tv2 = (TextView) v.findViewById(R.id.tv2);
         tv4 = (TextView) v.findViewById(R.id.tv4);
         tv6 = (TextView) v.findViewById(R.id.tv6);
@@ -93,8 +138,8 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         date = getArguments().getString("date");
         time = getArguments().getString("time");
         location = getArguments().getString("location");
-        latitude = getArguments().getString("latitude");
-        longitude = getArguments().getString("longitude");
+        latitudeListMap = getArguments().getString("latitude");
+        longitudeListMap = getArguments().getString("longitude");
         engine = getArguments().getString("engine");
         remarks = getArguments().getString("remarks");
 
@@ -103,38 +148,94 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
         tv4.setText(engine);
         tv6.setText(remarks);
 
-/*        Runnable refresh = new Runnable() {
-            @Override
-            public void run() {
-                new GetVehicles().execute();
-                handler.postDelayed(this, 60 * 1000);
-            }
-        };
+        csActivity.getSupportActionBar().setTitle("Map View - " + plate_num);
 
-        handler.postDelayed(refresh, 60 * 1000);*/
+        BottomSheetModalListFragment bottomSheetDialogFragment = new BottomSheetModalListFragment(activity);
+        bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+
+        Counter();
 
         return v;
     }
 
-/*    @Override
-    public void onDetach() {
-        FragmentManager manager;
-        VehicleListFragment vehicleListFragment;
-        vehicleListFragment = new VehicleListFragment();
-        manager = getFragmentManager();
-        manager.beginTransaction().replace(R.id.mainLayout, vehicleListFragment).commit();
-        super.onDetach();
-    }*/
+    void Counter() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        httpClient.addInterceptor(logging);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
+
+        networkAPI = retrofit.create(NetworkAPI.class);
+
+        AlarmPojo alarm = new AlarmPojo(client_table, MainActivity.ucsi_num, plate_num);
+
+        Call<JsonElement> call = networkAPI.alarm(alarm);
+
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                // success response
+                if (response.body().isJsonObject()) {
+                    JsonObject data = response.body().getAsJsonObject();
+
+                    JsonElement count = data.get("count");
+                    counter.setText(count.toString());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                // failure response
+                System.out.println(call.toString());
+            }
+
+        });
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean visible)
+    {
+        super.setUserVisibleHint(visible);
+        if (visible && isResumed())
+        {
+            onResume();
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (!getUserVisibleHint())
+        {
+            return;
+        }
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmSheetVehicleListMapModalFragment bottomSheetDialogFragment = new AlarmSheetVehicleListMapModalFragment();
+                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+            }
+        });
+    }
 
     public void onMapReady(GoogleMap googleMap) {
         mMapVehicleListMapFragment = googleMap;
 
-        mMapFragment.clear();
-        mMapVehicleListMapFragment.clear();
+//        mMapFragment.clear();
+//        mMapVehicleListMapFragment.clear();
 
         setUpMap();
 
-//        new GetMap().execute();
     }
 
     private class GetMap extends AsyncTask<Void, Void, Void> {
@@ -147,8 +248,6 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
 
         @Override
         protected Void doInBackground(Void... arg0) {
-
-
 
             return null;
         }
@@ -165,19 +264,18 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
     private void setUpMap() {
         mMapVehicleListMapFragment.clear();
         mMapVehicleListMapFragment.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMapVehicleListMapFragment.setTrafficEnabled(true);
         mMapVehicleListMapFragment.setIndoorEnabled(true);
         mMapVehicleListMapFragment.setBuildingsEnabled(true);
         mMapVehicleListMapFragment.getUiSettings().setZoomControlsEnabled(false);
 
-        final Double lati = Double.parseDouble(latitude);
-        final Double longi = Double.parseDouble(longitude);
+        final Double lati = Double.parseDouble(latitudeListMap);
+        final Double longi = Double.parseDouble(longitudeListMap);
 
         m = mMapVehicleListMapFragment.addMarker(new MarkerOptions()
                 .position(new LatLng(lati, longi))
                 .anchor(0.5f, 0.5f)
                 .visible(true)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         mMapVehicleListMapFragment.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -186,16 +284,13 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
             }
         });
 
-        mMapVehicleListMapFragment.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lati, longi), 15.0f));
+        mMapVehicleListMapFragment.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lati, longi), 19.0f));
         bounceMarker();
 
         mMapVehicleListMapFragment.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                latitudeListMap = marker.getPosition().latitude;
-                longitudeListMap = marker.getPosition().longitude;
-
                 BottomSheetModalListFragment bottomSheetDialogFragment = new BottomSheetModalListFragment(activity);
                 bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
 

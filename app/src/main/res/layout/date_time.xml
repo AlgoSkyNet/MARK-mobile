@@ -41,14 +41,14 @@
                     android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="From: ">
+                    android:text="Date From: ">
                 </TextView>
 
                 <TextView
                     android:id="@+id/editText2"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:text="______________________________________"
+                    android:text="________________________________"
                     android:textColor="@color/colorBlack"
                     android:textAllCaps="true"
                     android:ems="10" />
@@ -66,13 +66,13 @@
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="To: " />
+                    android:text="Date To: " />
 
                 <TextView
                     android:id="@+id/editText3"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:text="______________________________________"
+                    android:text="________________________________"
                     android:textColor="@color/colorBlack"
                     android:textAllCaps="true"
                     android:ems="10" />

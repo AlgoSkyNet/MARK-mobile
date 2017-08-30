@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -77,6 +80,14 @@ public class LogIn extends Activity {
         });
 
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.moveTaskToBack(true);
+        finish();
+    }
+
 
     public void loginRequest_validate(String username, String password){
 

@@ -1,6 +1,5 @@
 package com.journeytech.mark.mark.activity;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,7 +7,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +17,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
@@ -34,18 +33,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.CustomTypeFaceSpan;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.list_fragment.VehicleListFragment;
-import com.journeytech.mark.mark.locationaware.BaseActivityLocation;
-import com.journeytech.mark.mark.map_fragment.AlarmSheetModalMapFragment;
+import com.journeytech.mark.mark.AlarmSheetModalFragment;
 import com.journeytech.mark.mark.map_fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
 
 import java.util.ArrayList;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
@@ -54,7 +64,7 @@ import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.list;
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.mMapFragment;
 
-public class MainActivity extends BaseActivityLocation
+public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener,
         SearchView.OnSuggestionListener {
 
@@ -63,13 +73,36 @@ public class MainActivity extends BaseActivityLocation
     ArrayList<LocationHolder> al = new ArrayList<>();
 
     public static FragmentManager manager;
-    VehicleMapFragment vehicleMapFragment;
+    VehicleListFragment vehicleListFragment;
 
     public static MenuItem searchItem;
 
     public static String status, ucsi_num, client_table, markutype;
 
-    Activity ac;
+    public static Context _context;
+
+    public FloatingActionButton fab;
+
+    public static TextView counter;
+
+    private String baseUrl = "http://mark.journeytech.com.ph/mobile_api/test/";
+    private NetworkAPI networkAPI;
+
+    private interface NetworkAPI {
+        @POST("alarm_api.php")
+        @Headers({"Content-Type:application/json; charset=UTF-8"})
+        Call<JsonElement> alarm(@Body AlarmPojo body);
+    }
+
+    private static class AlarmPojo {
+        String client_table;
+        String ucsi_num;
+
+        private AlarmPojo(String client_table, String ucsi_num) {
+            this.ucsi_num = ucsi_num;
+            this.client_table = client_table;
+        }
+    }
 
     private static final String[] COLUMNS = {
             BaseColumns._ID,
@@ -87,7 +120,7 @@ public class MainActivity extends BaseActivityLocation
                 mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 13.0f));
                 break; // stop the loop
             } else if (!m.getSnippet().toLowerCase().equals(query)){
-                mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 6.0f));
+//                mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 6.0f));
                 Toast.makeText(this, "Invalid Plate No.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -144,8 +177,11 @@ public class MainActivity extends BaseActivityLocation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        getSupportActionBar().
+        _context = this;
 
+        counter = (TextView) findViewById(R.id.counter);
+
+//        getSupportActionBar().
 
         Intent iin= getIntent();
         Bundle b = iin.getExtras();
@@ -188,15 +224,18 @@ public class MainActivity extends BaseActivityLocation
         searchView.setVoiceSearch(true);*/
         p = new Proximity();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlarmSheetModalMapFragment bottomSheetDialogFragment = new AlarmSheetModalMapFragment();
+                AlarmSheetModalFragment bottomSheetDialogFragment = new AlarmSheetModalFragment();
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
             }
         });
+
+        TextView counter = (TextView) findViewById(R.id.counter);
+        counter.setText("");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -231,11 +270,52 @@ public class MainActivity extends BaseActivityLocation
 
 //        Search();
 
-        initLocationFetching(MainActivity.this);
-
-        vehicleMapFragment = new VehicleMapFragment(getApplicationContext(), this);
+        vehicleListFragment = new VehicleListFragment();
         manager = getSupportFragmentManager();
-//        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
+        manager.beginTransaction().replace(R.id.mainLayout, vehicleListFragment).commit();
+
+        Counter();
+    }
+
+    void Counter() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        httpClient.addInterceptor(logging);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
+
+        networkAPI = retrofit.create(NetworkAPI.class);
+
+        AlarmPojo alarm = new AlarmPojo(client_table, MainActivity.ucsi_num);
+
+        Call<JsonElement> call = networkAPI.alarm(alarm);
+
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                // success response
+                if (response.body().isJsonObject()) {
+                    JsonObject data = response.body().getAsJsonObject();
+
+                    JsonElement count = data.get("count");
+                    counter.setText(count.toString());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                // failure response
+                System.out.println(call.toString());
+            }
+
+        });
     }
 
     private void applyFontToMenuItem(MenuItem mi) {
@@ -347,6 +427,8 @@ public class MainActivity extends BaseActivityLocation
         searchItem.setActionView(searchView);
         searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
+        searchItem.setVisible(false);
+
         return true;
     }
 
@@ -382,6 +464,9 @@ public class MainActivity extends BaseActivityLocation
 
             dateFromListFragment = null;
             dateToListFragment = null;
+
+            Counter();
+
         } else if (id == R.id.map) {
             VehicleMapFragment vehicleMapFragment = new VehicleMapFragment(MainActivity.this, MainActivity.this);
             FragmentManager manager = getSupportFragmentManager();
@@ -393,6 +478,8 @@ public class MainActivity extends BaseActivityLocation
 
             dateFromListFragment = null;
             dateToListFragment = null;
+
+            Counter();
 
         /*if (id == R.id.snailtrail) {
             tvdist = (TextView) findViewById(R.id.tvDistance);
@@ -505,8 +592,10 @@ public class MainActivity extends BaseActivityLocation
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent ii=new Intent(MainActivity.this, LogIn.class);
-                            startActivity(ii);
+                            Intent intent = new Intent(MainActivity.this, LogIn.class);// New activity
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish(); // Call once you redirect to another activity
                         }
 
                     })
@@ -519,53 +608,4 @@ public class MainActivity extends BaseActivityLocation
         return true;
     }
 
-    @Override
-    public void locationFetched(Location mLocal, Location oldLocation, String time, String locationProvider) {
-        super.locationFetched(mLocal, oldLocation, time, locationProvider);
-        p.setLatitude(mLocal.getLatitude());
-        p.setLongitude(mLocal.getLongitude());
-
-        setLatitude(mLocal.getLatitude());
-        setLongitude(mLocal.getLongitude());
-
-//        vehicleMapFragment.setLocation(mLocal);
-
-        //After initLocationFetching.
-        Bundle bundle = new Bundle();
-        bundle.putDouble("Lat", mLocal.getLatitude());
-        bundle.putDouble("Long", mLocal.getLongitude());
-        vehicleMapFragment.setArguments(bundle);
-
-        manager.beginTransaction().replace(R.id.mainLayout, vehicleMapFragment).commit();
-
-    }
-
-    public static Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public static Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-
-    public Location getMLocal() {
-        return MLocal;
-    }
-
-    public void setMLocal(Location MLocal) {
-        this.MLocal = MLocal;
-    }
-
-    Location MLocal;
-    static Double latitude = 0.0;
-    static Double longitude = 0.0;
 }

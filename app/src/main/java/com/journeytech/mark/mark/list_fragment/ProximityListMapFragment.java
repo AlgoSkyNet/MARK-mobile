@@ -22,8 +22,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.journeytech.mark.mark.GPSTracker;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.activity.MainActivity;
 
 import java.util.ArrayList;
 
@@ -49,6 +49,8 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
     static LatLng origin;
 
     static Double lati = 0.0, longi = 0.0;
+
+    GPSTracker gps;
 
     public ProximityListMapFragment(Activity a, Context c) {
         this.activity = a;
@@ -82,7 +84,7 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
     public void onBackPressed() {
         FragmentManager manager;
         VehicleListMapFragment vehicleListMapFragment;
-        vehicleListMapFragment = new VehicleListMapFragment(getActivity(), getActivity());
+        vehicleListMapFragment = new VehicleListMapFragment();
         manager = getFragmentManager();
         manager.beginTransaction().replace(R.id.mainLayout, vehicleListMapFragment).commit();
         return;
@@ -93,36 +95,57 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
         mMapProximity = googleMap;
         mMapProximity.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 5));
 
-/*        //Initialize Google Play Services
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient();
-                mMapProximityNavigation.setMyLocationEnabled(true);
-            }
-        } else {
-            buildGoogleApiClient();
-            mMapProximityNavigation.setMyLocationEnabled(true);
-        }*/
+        final Double lati = Double.parseDouble(latitudeListMap);
+        final Double longi = Double.parseDouble(longitudeListMap);
 
-        createProximity(latitudeListMap, longitudeListMap);
+        createProximity(lati, longi);
 
     }
 
     public void createProximity(Double latitude, Double longitude) {
 
-        //Origin, where you are. Geo Location
-        origin = new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude());
+        gps = new GPSTracker(getContext());
 
-        mMapProximity.addMarker(new MarkerOptions()
-                .position(new LatLng(MainActivity.getLatitude(), MainActivity.getLongitude()))
-                .anchor(0.5f, 0.5f)
-                .title("My Location")
-                .snippet("This is where you are fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        // check if GPS enabled
+        if(gps.canGetLocation()){
 
-        mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 14.0f));
+            double latitudeGPS = gps.getLatitude();
+            double longitudeGPS = gps.getLongitude();
+
+            //Origin, where you are. Geo Location
+            origin = new LatLng(latitudeGPS, longitudeGPS);
+
+            mMapProximity.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitudeGPS, longitudeGPS))
+                    .anchor(0.5f, 0.5f)
+                    .title("My Location")
+                    .snippet("This is where you are fetch.")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+
+            /*Integer cam = Integer.parseInt(distan);
+            if(cam <= 50) {
+                mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 14.0f));
+            }
+            else if(cam >= 100) {
+                mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 13.0f));
+            }  else if(cam >= 200) {
+                mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 11.0f));
+            } else if(cam >= 400) {
+                mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 9.0f));
+            } else if(cam >= 600) {
+                mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 7.0f));
+            } else if(cam >= 800) {
+                mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 5.0f));
+            } else if(cam >= 1000) {
+                mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 4.0f));
+            }*/
+
+        }else{
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
 
         //Passing Snail Trail Geo Location for plotting
         //Vehicle - Destination

@@ -1,9 +1,10 @@
-package com.journeytech.mark.mark.map_fragment;
+package com.journeytech.mark.mark.list_fragment;
 
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.maps.android.ui.IconGenerator;
 import com.journeytech.mark.mark.R;
 
 import okhttp3.OkHttpClient;
@@ -41,11 +43,11 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
-import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
-import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateToMapFragment;
-import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.vm;
+import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
+import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
+import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.plate_num;
 
-public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallback {
+public class SnailTrailDatesFragment extends Fragment implements OnMapReadyCallback {
 
     private ProgressDialog pDialog;
 
@@ -61,7 +63,7 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
 
     Response<JsonElement> response_last;
 
-    public SnailTrailMapFragment(Context c, Activity a) {
+    public SnailTrailDatesFragment(Context c, Activity a) {
         context = c;
         activity = a;
     }
@@ -107,10 +109,9 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMapSnailTrail = googleMap;
-        // Remove asynctask since you are already using retrofit enqueue
-        // new GetSnailTrail().execute();
-        //Create a new method to call api using retrofit
+
         getDataFromServer();
+
         mMapSnailTrail.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 6));
     }
 
@@ -130,8 +131,8 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
 
         networkAPI = retrofit.create(NetworkAPI.class);
 
-        SnailTrailPojo loginRequest = new SnailTrailPojo(vm.getPlate_num(), dateFromMapFragment, dateToMapFragment, client_table);
-        System.out.println(vm.getPlate_num() + dateFromMapFragment+ dateToMapFragment+ client_table +" JsonArray");
+        SnailTrailPojo loginRequest = new SnailTrailPojo(plate_num, dateFromListFragment, dateToListFragment, client_table);
+        System.out.println(plate_num + dateFromListFragment+ dateToListFragment+ client_table +" JsonArray");
         Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
         call.enqueue(new Callback<JsonElement>() {
@@ -172,24 +173,6 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
                         String remString = rem;
                         remString = remString.replace("\"", "");
                         String remarks = String.valueOf(remString);
-
-/*                        SharedPreferences preferences = getActivity().getSharedPreferences("AppPrefs", MODE_PRIVATE);
-                        SharedPreferences.Editor prefsEditor = preferences.edit();
-
-                        Gson gson = new Gson();
-
-                        String jsonText = gson.toJson(list_location);
-                        prefsEditor.putString("key", jsonText);
-                        prefsEditor.commit();
-
-                        //Retrieve SharedPreferences
-                        SharedPreferences myPrefs;
-                        myPrefs = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
-                        String jsonTextGet = myPrefs.getString("key", null);
-
-                        Type collectionType = new TypeToken<List<LocationHolder>>(){}.getType();
-                        List<LocationHolder> addArray= (List<LocationHolder>) new Gson()
-                                .fromJson( jsonTextGet , collectionType);*/
 
                         // Setting the color of the polyline
                         polylineOptions.color(Color.RED);
@@ -240,24 +223,39 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
     }
 
     public void createMarker(int index, Double latitude, Double longitude, String location, String remarks) {
-        // Adding the taped point to the ArrayList
-        BitmapDescriptor image = BitmapDescriptorFactory.fromResource(R.drawable.bus);
+        index = index + 1;
+        String text = String.valueOf(index);
 
-        if (index == 1)
+        BitmapDescriptor image = BitmapDescriptorFactory.fromResource(index);
+
+        IconGenerator tc = new IconGenerator(getContext());
+        Bitmap bmp = tc.makeIcon(text);
+
+        if (index == 1) {
             image = BitmapDescriptorFactory.fromResource(R.drawable.start);
-        else if (index == response_last.body().getAsJsonArray().size() - 1 ){
+            mMapSnailTrail.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .title(location)
+                    .snippet(remarks)
+                    .icon(image));
+        }else if (index == response_last.body().getAsJsonArray().size() - 1){
             image = BitmapDescriptorFactory.fromResource(R.drawable.end);
+            mMapSnailTrail.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .title(location)
+                    .snippet(remarks)
+                    .icon(image));
+        }else {
+            mMapSnailTrail.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .title(location)
+                    .snippet(remarks)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bmp)));
         }
-
-        mMapSnailTrail.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .anchor(0.5f, 0.5f)
-                .title(location)
-                .snippet(remarks)
-                .icon(image));
-
         mMapSnailTrail.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15.0f));
-
         mMapSnailTrail.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -266,36 +264,8 @@ public class SnailTrailMapFragment extends Fragment implements OnMapReadyCallbac
         });
     }
 
-    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-
-        public MarkerInfoWindowAdapter() {
-        }
-
-        @Override
-        public View getInfoWindow(Marker marker) {
-            return null;
-        }
-
-        @Override
-        public View getInfoContents(final Marker marker) {
-            View v = getActivity().getLayoutInflater().inflate(R.layout.marker_popup, null);
-            Button b = (Button) v.findViewById(R.id.button2);
-            b.setOnClickListener(new Button.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    marker.hideInfoWindow();
-                }
-            });
-            TextView markerLabel = (TextView) v.findViewById(R.id.textView2);
-            markerLabel.setText("");
-
-            return v;
-        }
-    }
-
     public void showToast(String msg) {
-        if (SnailTrailMapFragment.this.isVisible() && msg != null & activity == null)
+        if (SnailTrailDatesFragment.this.isVisible() && msg != null & activity == null)
             Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

@@ -54,12 +54,13 @@
 
         </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/last_seen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
@@ -72,17 +73,34 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:textColor="#5d5d5d"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/last_seen"
+                android:layout_toEndOf="@+id/last_seen" />
 
             <TextView
                 android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:fontFamily="sans-serif"
+                android:layout_marginLeft="5dp"
                 android:textColor="#5d5d5d"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textStyle="bold"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/date"
+                android:layout_toEndOf="@+id/date" />
+
+            <ImageView
+                android:id="@+id/arrow_right"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:gravity="right"
+                android:elevation="7dp"
+                android:src="@drawable/arrow_right"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -105,19 +123,7 @@
                 android:textColor="#5d5d5d"
                 android:textStyle="bold"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/textView11"
-                android:layout_toLeftOf="@+id/arrow_right" />
-
-            <ImageView
-                android:id="@+id/arrow_right"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:gravity="right"
-                android:elevation="7dp"
-                android:src="@drawable/arrow_right"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
+                android:layout_toRightOf="@+id/textView11" />
 
         </RelativeLayout>
 
@@ -130,6 +136,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
+                android:visibility="gone"
                 android:text="Coordinates: "
                 android:textColor="#5d5d5d" />
 
@@ -137,6 +144,7 @@
                 android:id="@+id/latitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:fontFamily="sans-serif"
                 android:textColor="#5d5d5d"
                 android:textStyle="bold" />
@@ -145,6 +153,7 @@
                 android:id="@+id/longitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginLeft="5dp"
                 android:fontFamily="sans-serif"
                 android:textColor="#5d5d5d"
@@ -160,6 +169,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:fontFamily="sans-serif"
                 android:text="Engine: "
                 android:textColor="#5d5d5d" />
@@ -168,6 +178,7 @@
                 android:id="@+id/engine"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:fontFamily="sans-serif"
                 android:textColor="#5d5d5d"
                 android:textStyle="bold" />
@@ -181,6 +192,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:fontFamily="sans-serif"
                 android:text="Remarks: "
                 android:textColor="#5d5d5d" />
@@ -190,6 +202,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
+                android:visibility="gone"
                 android:textColor="#5d5d5d"
                 android:textStyle="bold" />
         </LinearLayout>

@@ -39,10 +39,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 import com.journeytech.mark.mark.HttpHandler;
-import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.drawroute.DataParser;
+import com.journeytech.mark.mark.model.LocationHolder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -370,7 +369,6 @@ public class VehicleDetailsProximityNavigationFragment extends Fragment implemen
             mMap.setMyLocationEnabled(true);
         }
 
-        Location mLocal = ((MainActivity) getActivity()).getMLocal();
         origin = new LatLng(lati, longi);
         mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lati, longi))

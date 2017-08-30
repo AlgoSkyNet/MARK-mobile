@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.journeytech.mark.mark.AlarmSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 
@@ -36,9 +37,9 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
+import static com.journeytech.mark.mark.activity.MainActivity._context;
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
 import static com.journeytech.mark.mark.activity.MainActivity.markutype;
-import static com.journeytech.mark.mark.activity.MainActivity.searchItem;
 
 public class VehicleListFragment extends Fragment {
 
@@ -54,6 +55,8 @@ public class VehicleListFragment extends Fragment {
     String a = "";
 
     ArrayList pna;
+
+    Runnable refresh;
 
     public interface NetworkAPI {
         @POST("vehicle_details.php")
@@ -77,7 +80,47 @@ public class VehicleListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        searchItem.setVisible(false);
+//        searchItem.setVisible(false);
+    }
+
+    @Override
+    public void onDetach() {
+        handler.removeCallbacks(refresh);
+        super.onDetach();
+
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean visible)
+    {
+        super.setUserVisibleHint(visible);
+        if (visible && isResumed())
+        {
+            onResume();
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        //This will clear the vehicle list.
+        vehicle.clear();
+
+        if (!getUserVisibleHint())
+        {
+            return;
+        }
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmSheetModalFragment bottomSheetDialogFragment = new AlarmSheetModalFragment();
+                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
+            }
+        });
     }
 
     @Override
@@ -88,7 +131,7 @@ public class VehicleListFragment extends Fragment {
         csActivity = (MainActivity) getActivity();
         csActivity.getSupportActionBar().setTitle("Vehicle List");
 
-        Runnable refresh = new Runnable() {
+        refresh = new Runnable() {
             @Override
             public void run() {
                 vehicle.clear();
@@ -113,24 +156,17 @@ public class VehicleListFragment extends Fragment {
         return v;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        vehicle.clear();
-    }
-
     private class GetVehicles extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
-/*            // Showing progress dialog
-            pDialog = new ProgressDialog(getContext());
+            // Showing progress dialog
+            pDialog = new ProgressDialog(_context);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
-            pDialog.show();*/
+            pDialog.show();
 
         }
 
@@ -155,8 +191,10 @@ public class VehicleListFragment extends Fragment {
             Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
             call.enqueue(new Callback<JsonElement>() {
+
                 @Override
                 public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+
                     // success response
                     if (response.body().isJsonArray()) {
                         JsonArray objectWhichYouNeed = response.body().getAsJsonArray();
@@ -234,7 +272,7 @@ public class VehicleListFragment extends Fragment {
                                 /**
                                  * Updating parsed JSON data into ListView
                                  * */
-                                adapter = new SimpleAdapter(getActivity(), vehicle,
+                                adapter = new SimpleAdapter(_context, vehicle,
                                         R.layout.list_vehicle, new String[]{"plate_num",
                                         "location", "date", "time", "lat", "lng", "engine",
                                         "remarks"},
@@ -248,7 +286,6 @@ public class VehicleListFragment extends Fragment {
                                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> adapterView, View v, int position, long l) {
-
                                         TextView plate_n = (TextView) v.findViewById(R.id.plate_num);
                                         TextView dat = (TextView) v.findViewById(R.id.date);
                                         TextView tim = (TextView) v.findViewById(R.id.time);
@@ -277,10 +314,9 @@ public class VehicleListFragment extends Fragment {
                                         bundle.putString("engine", engine);
                                         bundle.putString("remarks", remarks);
 
-
                                         if((!latitude.equals("") && latitude != null) || (!longitude.equals("") && longitude != null) )
                                         {
-                                            Fragment mFragment = new VehicleListMapFragment(getActivity(), getActivity());
+                                            Fragment mFragment = new VehicleListMapFragment();
                                             getFragmentManager().beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, mFragment).commit();
 
                                             mFragment.setArguments(bundle);
@@ -289,8 +325,6 @@ public class VehicleListFragment extends Fragment {
                                         }
                                     }
                                 });
-
-
 
                             }
 
@@ -317,9 +351,9 @@ public class VehicleListFragment extends Fragment {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-/*            // Dismiss the progress dialog
+            // Dismiss the progress dialog
             if (pDialog.isShowing())
-                pDialog.dismiss();*/
+                pDialog.dismiss();
         }
     }
 }
