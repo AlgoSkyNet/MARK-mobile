@@ -63,7 +63,6 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void setupDialog(final Dialog dialog, int style) {
         super.setupDialog(dialog, style);

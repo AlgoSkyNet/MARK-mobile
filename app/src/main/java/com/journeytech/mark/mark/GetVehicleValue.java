@@ -82,7 +82,7 @@ public class GetVehicleValue extends AsyncTask<Void, Void, Void> {
                 // Getting JSON Array node
                 JSONArray contacts = jsonObj.getJSONArray("snailtrail_data");
 
-                list_location = new ArrayList<>();
+                list_location = new ArrayList<LocationHolder>();
                 for (int i = 0; i < contacts.length(); i++) {
                     JSONObject jb = contacts.getJSONObject(i);
                     account = jb.getString("account");

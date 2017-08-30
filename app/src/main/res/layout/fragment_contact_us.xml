@@ -37,6 +37,82 @@
         android:layout_alignParentRight="true"
         android:id="@+id/imageView" />
 
+
+    <RelativeLayout
+        android:id="@+id/rl"
+        android:layout_width="fill_parent"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorAccent"
+        android:visibility="invisible" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp" >
+
+            <AutoCompleteTextView
+                android:id="@+id/etOrigin"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@android:color/transparent"
+                android:hint="Choose a starting point..." />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/dotted" />
+
+            <AutoCompleteTextView
+                android:id="@+id/etDestination"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:hint="Choose a destination..." />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/btnFindPath"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="36dp"
+            android:src="@drawable/ic_send_grey600_48dp"
+            android:layout_height="36dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/durationTimeRL"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:visibility="invisible" >
+
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="137dp"
+            android:layout_marginRight="137dp" />
+
+        <TextView
+            android:id="@+id/tvDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tvDuration"
+            android:layout_marginLeft="188dp"
+            android:layout_marginStart="188dp" />
+    </RelativeLayout>
+
+
+
+
     <!--    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"

@@ -67,7 +67,7 @@ public class ProximityMapFragment extends Fragment implements OnMapReadyCallback
         View v = inflater.inflate(R.layout.fragment_contact_us, container, false);
 
         // Initializing
-        MarkerPoints = new ArrayList<>();
+        MarkerPoints = new ArrayList<LatLng>();
 
         return v;
     }

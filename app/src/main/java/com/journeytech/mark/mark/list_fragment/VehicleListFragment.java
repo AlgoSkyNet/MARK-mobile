@@ -51,7 +51,7 @@ public class VehicleListFragment extends Fragment {
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/";
     public static NetworkAPI networkAPI;
 
-    public ArrayList<HashMap<String, String>> vehicle = new ArrayList<>();
+    public ArrayList<HashMap<String, String>> vehicle = new ArrayList<HashMap<String, String>>();
     String a = "";
 
     ArrayList pna;
@@ -251,7 +251,7 @@ public class VehicleListFragment extends Fragment {
 
                             if (lat != null && !lat.equals("null") || (lng != null && !lng.equals("null"))) {
                                 // tmp hash map for detail [single]
-                                HashMap<String, String> details = new HashMap<>();
+                                HashMap<String, String> details = new HashMap<String, String>();
 
                                 // adding each child node to HashMap key => value
                                 details.put("plate_num", plate_num);

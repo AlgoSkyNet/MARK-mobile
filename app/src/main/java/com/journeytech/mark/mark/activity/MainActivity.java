@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
 
     public Proximity p;
 
-    ArrayList<LocationHolder> al = new ArrayList<>();
+    ArrayList<LocationHolder> al = new ArrayList<LocationHolder>();
 
     public static FragmentManager manager;
     VehicleListFragment vehicleListFragment;

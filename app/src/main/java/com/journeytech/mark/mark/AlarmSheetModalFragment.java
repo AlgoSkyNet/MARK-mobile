@@ -37,7 +37,7 @@ public class AlarmSheetModalFragment extends BottomSheetDialogFragment {
     public static String baseUrl = "http://mark.journeytech.com.ph/mobile_api/test/";
     public static AlarmSheetModalFragment.NetworkAPI networkAPI;
     private ListView lv;
-    ArrayList<HashMap<String, String>> alarms = new ArrayList<>();
+    ArrayList<HashMap<String, String>> alarms = new ArrayList<HashMap<String, String>>();
 
 
     private interface NetworkAPI {
@@ -139,7 +139,7 @@ public class AlarmSheetModalFragment extends BottomSheetDialogFragment {
                             String msg_type = String.valueOf(alString);
 
                             // tmp hash map for detail [single]
-                            HashMap<String, String> details = new HashMap<>();
+                            HashMap<String, String> details = new HashMap<String, String>();
 
                             // adding each child node to HashMap key => value
                             details.put("plate_num", plate_num);

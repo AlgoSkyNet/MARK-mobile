@@ -87,11 +87,8 @@ public class NavigationMapFragment extends Fragment implements OnMapReadyCallbac
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_contact_us, container, false);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        }
         // Initializing
-        MarkerPoints = new ArrayList<>();
+        MarkerPoints = new ArrayList<LatLng>();
 
         return v;
     }
@@ -329,7 +326,7 @@ public class NavigationMapFragment extends Fragment implements OnMapReadyCallbac
 
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<>();
+                points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
 
                 // Fetching i-th route

@@ -102,7 +102,7 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
 
                 dismiss();
 
-                NavigationListMapFragment nlmf = new NavigationListMapFragment(activity);
+                NavigationListMapFragment nlmf = new NavigationListMapFragment();
                 manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, nlmf).commit();
             }
         });
