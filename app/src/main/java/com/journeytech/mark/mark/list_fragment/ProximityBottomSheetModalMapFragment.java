@@ -110,6 +110,8 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
         // create class object
         gps = new GPSTracker(getContext());
 
+        // check if GPS enabled
+        if (gps.canGetLocation()) {
 
             double latitudeGPS = gps.getLatitude();
             double longitudeGPS = gps.getLongitude();
@@ -126,6 +128,14 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
 
             // Start downloading json data from Google Directions API
             downloadTask.execute(url);
+
+        } else {
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
+
 
         refresh = new Runnable() {
             @Override

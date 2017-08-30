@@ -88,8 +88,6 @@ public class MainActivity extends AppCompatActivity
 
     public static TextView counter;
 
-    GPSTracker gps;
-
     private String baseUrl = "http://mark.journeytech.com.ph/mobile_api/test/";
     private NetworkAPI networkAPI;
 
@@ -187,17 +185,6 @@ public class MainActivity extends AppCompatActivity
         counter = (TextView) findViewById(R.id.counter);
 
 //        getSupportActionBar().
-
-        // create class object
-        gps = new GPSTracker(MainActivity.this);
-
-        // check if GPS enabled
-        if (gps.canGetLocation()) {} else {
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
-        }
 
         Intent iin= getIntent();
         Bundle b = iin.getExtras();
