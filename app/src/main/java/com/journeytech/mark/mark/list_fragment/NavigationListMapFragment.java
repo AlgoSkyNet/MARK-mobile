@@ -15,10 +15,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,20 +34,26 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.SphericalUtil;
 import com.journeytech.mark.mark.AlarmSheetModalFragment;
 import com.journeytech.mark.mark.GPSTracker;
+import com.journeytech.mark.mark.PlaceAutoCompleteAdapter;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 import com.journeytech.mark.mark.drawroute.DataParser;
@@ -74,14 +85,25 @@ import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.lon
 public class NavigationListMapFragment extends Fragment implements OnMapReadyCallback, DirectionFinderListener {
 
     public static GoogleMap mMapNavigation;
-    private RelativeLayout rl, durationTimeRL;
+    private RelativeLayout durationTimeRL;
+    private CardView rl;
     private ImageView btnFindPath;
-    private EditText etOrigin;
-    private EditText etDestination;
+    private AutoCompleteTextView etOrigin;
+    private AutoCompleteTextView etDestination;
     private List<Marker> originMarkers = new ArrayList<Marker>();
     private List<Marker> destinationMarkers = new ArrayList<Marker>();
     private List<Polyline> polylinePaths = new ArrayList<Polyline>();
     private ProgressDialog progressDialog;
+
+    protected LatLng start;
+    protected LatLng end;
+
+    private static final String LOG_TAG = "MyActivity";
+
+    private PlaceAutoCompleteAdapter mAdapter;
+    protected GoogleApiClient mGoogleApiClient;
+    private static final LatLngBounds BOUNDS_JAMAICA= new LatLngBounds(new LatLng(-57.965341647205726, 144.9987719580531),
+            new LatLng(72.77492067739843, -9.998857788741589));
 
     @Override
     public void onResume()
@@ -114,19 +136,137 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
 
-        rl = (RelativeLayout) view.findViewById(R.id.rl);
+        mAdapter = new PlaceAutoCompleteAdapter(_context, android.R.layout.simple_list_item_1,
+                mGoogleApiClient, BOUNDS_JAMAICA, null);
+
+        rl = (CardView) view.findViewById(R.id.rl);
         durationTimeRL = (RelativeLayout) view.findViewById(R.id.durationTimeRL);
         rl.setVisibility(View.VISIBLE);
         durationTimeRL.setVisibility(View.VISIBLE);
 
         btnFindPath = (ImageView) getActivity().findViewById(R.id.btnFindPath);
-        etOrigin = (EditText) getActivity().findViewById(R.id.etOrigin);
-        etDestination = (EditText) getActivity().findViewById(R.id.etDestination);
+        etOrigin = (AutoCompleteTextView) getActivity().findViewById(R.id.etOrigin);
+        etDestination = (AutoCompleteTextView) getActivity().findViewById(R.id.etDestination);
 
         btnFindPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendRequest();
+            }
+        });
+
+        etOrigin.setAdapter(mAdapter);
+        etDestination.setAdapter(mAdapter);
+
+        etOrigin.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                final PlaceAutoCompleteAdapter.PlaceAutocomplete item = mAdapter.getItem(position);
+                final String placeId = String.valueOf(item.placeId);
+                Log.i(LOG_TAG, "Autocomplete item selected: " + item.description);
+
+            /*
+             Issue a request to the Places Geo Data API to retrieve a Place object with additional
+              details about the place.
+              */
+                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
+                        .getPlaceById(mGoogleApiClient, placeId);
+                placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
+                    @Override
+                    public void onResult(PlaceBuffer places) {
+                        if (!places.getStatus().isSuccess()) {
+                            // Request did not complete successfully
+                            Log.e(LOG_TAG, "Place query did not complete. Error: " + places.getStatus().toString());
+                            places.release();
+                            return;
+                        }
+                        // Get the Place object from the buffer.
+                        final Place place = places.get(0);
+
+                        start=place.getLatLng();
+                    }
+                });
+
+            }
+        });
+        etDestination.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                final PlaceAutoCompleteAdapter.PlaceAutocomplete item = mAdapter.getItem(position);
+                final String placeId = String.valueOf(item.placeId);
+                Log.i(LOG_TAG, "Autocomplete item selected: " + item.description);
+
+            /*
+             Issue a request to the Places Geo Data API to retrieve a Place object with additional
+              details about the place.
+              */
+                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
+                        .getPlaceById(mGoogleApiClient, placeId);
+                placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
+                    @Override
+                    public void onResult(PlaceBuffer places) {
+                        if (!places.getStatus().isSuccess()) {
+                            // Request did not complete successfully
+                            Log.e(LOG_TAG, "Place query did not complete. Error: " + places.getStatus().toString());
+                            places.release();
+                            return;
+                        }
+                        // Get the Place object from the buffer.
+                        final Place place = places.get(0);
+
+                        end=place.getLatLng();
+                    }
+                });
+
+            }
+        });
+
+        /*
+        These text watchers set the start and end points to null because once there's
+        * a change after a value has been selected from the dropdown
+        * then the value has to reselected from dropdown to get
+        * the correct location.
+        * */
+        etOrigin.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int startNum, int before, int count) {
+                if (start != null) {
+                    start = null;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        etDestination.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+                if(end!=null)
+                {
+                    end=null;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -165,7 +305,6 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
         }
         mMapNavigation.setMyLocationEnabled(true);
         mMapNavigation.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 7));
-
 
     }
 
@@ -216,8 +355,8 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
 
             PolylineOptions polylineOptions = new PolylineOptions().
                     geodesic(true).
-                    color(Color.BLUE).
-                    width(10);
+                    color(Color.RED).
+                    width(8);
 
             for (int i = 0; i < route.points.size(); i++)
                 polylineOptions.add(route.points.get(i));
@@ -225,5 +364,4 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
             polylinePaths.add(mMapNavigation.addPolyline(polylineOptions));
         }
     }
-
 }
