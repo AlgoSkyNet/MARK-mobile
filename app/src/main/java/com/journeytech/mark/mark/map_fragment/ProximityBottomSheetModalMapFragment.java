@@ -45,6 +45,15 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
 
     TextView distanc, tim;
 
+    Runnable refresh;
+
+    @Override
+    public void onDestroyView() {
+        handler.removeCallbacks(refresh);
+        super.onDestroyView();
+
+    }
+
     private BottomSheetBehavior.BottomSheetCallback
             mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
         @Override
@@ -76,7 +85,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
 
         System.out.println(vm.getPlate_num() + " VVVm");
 
-        Runnable refresh = new Runnable() {
+        refresh = new Runnable() {
             @Override
             public void run() {
                 getProximity();

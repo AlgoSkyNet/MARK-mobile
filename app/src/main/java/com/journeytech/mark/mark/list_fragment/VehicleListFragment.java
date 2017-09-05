@@ -86,9 +86,9 @@ public class VehicleListFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
+    public void onDestroyView() {
         handler.removeCallbacks(refresh);
-        super.onDetach();
+        super.onDestroyView();
 
     }
 

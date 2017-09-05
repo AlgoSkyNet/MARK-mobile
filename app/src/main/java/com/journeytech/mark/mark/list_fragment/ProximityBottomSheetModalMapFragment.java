@@ -137,8 +137,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
             gps.showSettingsAlert();
         }
 
-
-        /*refresh = new Runnable() {
+        refresh = new Runnable() {
             @Override
             public void run() {
                 Double lati = Double.parseDouble(latitudeListMap);
@@ -167,7 +166,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
             }
         };
 
-        handler.postDelayed(refresh, 60 * 1000);*/
+        handler.postDelayed(refresh, 60 * 1000);
 
         dialog.setContentView(contentView);
     }
