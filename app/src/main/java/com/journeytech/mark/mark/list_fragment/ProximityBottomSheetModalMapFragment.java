@@ -82,9 +82,10 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
     }
 
     @Override
-    public void onDetach() {
+    public void onDestroyView() {
         handler.removeCallbacks(refresh);
-        super.onDetach();
+        super.onDestroyView();
+
     }
 
     @Override
@@ -137,7 +138,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
         }
 
 
-        refresh = new Runnable() {
+        /*refresh = new Runnable() {
             @Override
             public void run() {
                 Double lati = Double.parseDouble(latitudeListMap);
@@ -166,7 +167,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
             }
         };
 
-        handler.postDelayed(refresh, 60 * 1000);
+        handler.postDelayed(refresh, 60 * 1000);*/
 
         dialog.setContentView(contentView);
     }

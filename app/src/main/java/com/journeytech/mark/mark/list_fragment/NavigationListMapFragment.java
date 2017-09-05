@@ -1,6 +1,5 @@
 package com.journeytech.mark.mark.list_fragment;
 
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -8,6 +7,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,11 +41,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -60,6 +64,9 @@ import com.journeytech.mark.mark.drawroute.DataParser;
 import com.journeytech.mark.mark.modules.DirectionFinder;
 import com.journeytech.mark.mark.modules.DirectionFinderListener;
 import com.journeytech.mark.mark.modules.Route;
+import com.journeytech.mark.mark.route.AbstractRouting;
+import com.journeytech.mark.mark.route.RouteException;
+import com.journeytech.mark.mark.route.Routing;
 
 import org.json.JSONObject;
 
@@ -74,6 +81,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.content.Context.LOCATION_SERVICE;
 import static com.journeytech.mark.mark.activity.MainActivity._context;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
@@ -82,7 +90,7 @@ import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.lon
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NavigationListMapFragment extends Fragment implements OnMapReadyCallback, DirectionFinderListener {
+public class NavigationListMapFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, OnMapReadyCallback, DirectionFinderListener {
 
     public static GoogleMap mMapNavigation;
     private RelativeLayout durationTimeRL;
@@ -99,9 +107,11 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
     protected LatLng end;
 
     private static final String LOG_TAG = "MyActivity";
-
-    private PlaceAutoCompleteAdapter mAdapter;
     protected GoogleApiClient mGoogleApiClient;
+    private PlaceAutoCompleteAdapter mAdapter;
+    private List<Polyline> polylines;
+    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
+
     private static final LatLngBounds BOUNDS_JAMAICA= new LatLngBounds(new LatLng(-57.965341647205726, 144.9987719580531),
             new LatLng(72.77492067739843, -9.998857788741589));
 
@@ -133,11 +143,9 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
-
-        mAdapter = new PlaceAutoCompleteAdapter(_context, android.R.layout.simple_list_item_1,
-                mGoogleApiClient, BOUNDS_JAMAICA, null);
 
         rl = (CardView) view.findViewById(R.id.rl);
         durationTimeRL = (RelativeLayout) view.findViewById(R.id.durationTimeRL);
@@ -155,8 +163,16 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
             }
         });
 
+        mAdapter = new PlaceAutoCompleteAdapter(_context, android.R.layout.simple_list_item_1,
+                mGoogleApiClient, BOUNDS_JAMAICA, null);
+
         etOrigin.setAdapter(mAdapter);
         etDestination.setAdapter(mAdapter);
+
+       /*
+        * Sets the start and destination points based on the values selected
+        * from the autocomplete text views.
+        * */
 
         etOrigin.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -223,7 +239,7 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
             }
         });
 
-        /*
+       /*
         These text watchers set the start and end points to null because once there's
         * a change after a value has been selected from the dropdown
         * then the value has to reselected from dropdown to get
@@ -306,6 +322,85 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
         mMapNavigation.setMyLocationEnabled(true);
         mMapNavigation.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.405888, 123.273419), 7));
 
+       /*
+        * Updates the bounds being used by the auto complete adapter based on the position of the
+        * map.
+        * */
+        /*mMapNavigation.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition position) {
+                LatLngBounds bounds = mMapNavigation.getProjection().getVisibleRegion().latLngBounds;
+                mAdapter.setBounds(bounds);
+            }
+        });
+
+
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(18.013610, -77.498803));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+
+        mMapNavigation.moveCamera(center);
+        mMapNavigation.animateCamera(zoom);
+
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 5000, 0,
+                new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+
+                        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
+                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+
+                        mMapNavigation.moveCamera(center);
+                        mMapNavigation.animateCamera(zoom);
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                    }
+
+                    @Override
+                    public void onProviderEnabled(String provider) {
+
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String provider) {
+
+                    }
+                });
+
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                3000, 0, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
+                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+
+                        mMapNavigation.moveCamera(center);
+                        mMapNavigation.animateCamera(zoom);
+
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                    }
+
+                    @Override
+                    public void onProviderEnabled(String provider) {
+
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String provider) {
+
+                    }
+                });*/
+
     }
 
     @Override
@@ -363,5 +458,122 @@ public class NavigationListMapFragment extends Fragment implements OnMapReadyCal
 
             polylinePaths.add(mMapNavigation.addPolyline(polylineOptions));
         }
+    }
+
+    public void route()
+    {
+        if(start==null || end==null)
+        {
+            if(start==null)
+            {
+                if(etOrigin.getText().length()>0)
+                {
+                    etOrigin.setError("Choose location from dropdown.");
+                }
+                else
+                {
+                    Toast.makeText(_context,"Please choose a starting point.",Toast.LENGTH_SHORT).show();
+                }
+            }
+            if(end==null)
+            {
+                if(etDestination.getText().length()>0)
+                {
+                    etDestination.setError("Choose location from dropdown.");
+                }
+                else
+                {
+                    Toast.makeText(_context,"Please choose a destination.",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        else
+        {
+            progressDialog = ProgressDialog.show(_context, "Please wait.",
+                    "Fetching route information.", true);
+            Routing routing = new Routing.Builder()
+                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .alternativeRoutes(true)
+                    .waypoints(start, end)
+                    .build();
+            routing.execute();
+        }
+    }
+
+    public void onRoutingFailure(RouteException e) {
+        // The Routing request failed
+        progressDialog.dismiss();
+        if(e != null) {
+            Toast.makeText(_context, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(_context, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onRoutingStart() {
+        // The Routing Request starts
+    }
+
+    public void onRoutingSuccess(List<Route> route, int shortestRouteIndex)
+    {
+        progressDialog.dismiss();
+        CameraUpdate center = CameraUpdateFactory.newLatLng(start);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+
+        mMapNavigation.moveCamera(center);
+
+
+        if(polylines.size()>0) {
+            for (Polyline poly : polylines) {
+                poly.remove();
+            }
+        }
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map.
+        for (int i = 0; i <route.size(); i++) {
+
+            //In case of more than 5 alternative routes
+            int colorIndex = i % COLORS.length;
+
+            PolylineOptions polyOptions = new PolylineOptions();
+            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+            polyOptions.width(10 + i * 3);
+            Polyline polyline = mMapNavigation.addPolyline(polyOptions);
+            polylines.add(polyline);
+
+        }
+
+        // Start marker
+        MarkerOptions options = new MarkerOptions();
+        options.position(start);
+        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.start));
+        mMapNavigation.addMarker(options);
+
+        // End marker
+        options = new MarkerOptions();
+        options.position(end);
+        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.end));
+        mMapNavigation.addMarker(options);
+
+    }
+
+    public void onRoutingCancelled() {
+        Log.i(LOG_TAG, "Routing was cancelled.");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+        Log.v(LOG_TAG,connectionResult.toString());
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 }
