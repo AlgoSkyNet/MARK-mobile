@@ -126,8 +126,17 @@ public class NavigationListMapFragment extends Fragment implements GoogleApiClie
         }
 
         MainActivity mainActivity = (MainActivity)getActivity();
-        mainActivity.fab.setVisibility(View.GONE);
-        mainActivity.counter.setVisibility(View.GONE);
+        mainActivity.fab.setVisibility(View.INVISIBLE);
+        mainActivity.counter.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.fab.setVisibility(View.VISIBLE);
+        mainActivity.counter.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -436,8 +445,8 @@ public class NavigationListMapFragment extends Fragment implements GoogleApiClie
 
         for (Route route : routes) {
             mMapNavigation.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
-            ((TextView) getActivity().findViewById(R.id.tvDuration)).setText(route.duration.text);
-            ((TextView) getActivity().findViewById(R.id.tvDistance)).setText(route.distance.text);
+//            ((TextView) getActivity().findViewById(R.id.tvDuration)).setText(route.duration.text);
+//            ((TextView) getActivity().findViewById(R.id.tvDistance)).setText(route.distance.text);
 
             originMarkers.add(mMapNavigation.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.start))
