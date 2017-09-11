@@ -2,15 +2,19 @@ package com.journeytech.mark.mark.list_fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -24,6 +28,7 @@ import com.journeytech.mark.mark.AlarmSheetModalFragment;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.activity.MainActivity;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -54,6 +59,8 @@ public class VehicleListFragment extends Fragment {
     public static NetworkAPI networkAPI;
 
     public ArrayList<HashMap<String, String>> vehicle = new ArrayList<HashMap<String, String>>();
+    HashMap<String, String> details;
+
     String a = "";
 
     ArrayList pna;
@@ -150,12 +157,45 @@ public class VehicleListFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_vehicle, container, false);
         lv = (ListView) v.findViewById(R.id.list);
+/*        ColorDrawable sage = new ColorDrawable(this.getResources().getColor(R.color.colorAccent));
+        lv.setDivider(sage);
+        lv.setDividerHeight(1);*/
+
+/*        getViewByPosition(1, lv);
+
+
+        if (position%4 == 0){
+            textView.setBackgroundColor(Color.parseColor("#1e86cf"));
+        } else if (position%4 == 1){
+            textView.setBackgroundColor(Color.parseColor("#2ca0ea"));
+        } else if (position%4 == 2){
+            textView.setBackgroundColor(Color.parseColor("#2cc4ea"));
+        } else if (position%4 == 3){
+            textView.setBackgroundColor(Color.parseColor("#2ceae3"));
+        }*/
 
         new GetVehicles().execute();
 
         return v;
     }
 
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+    private int getRandomColor() {
+        SecureRandom rgen = new SecureRandom();
+        return Color.HSVToColor(150, new float[]{
+                rgen.nextInt(359), 1, 1
+        });
+    }
     private class GetVehicles extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -250,8 +290,9 @@ public class VehicleListFragment extends Fragment {
                             String remarks = String.valueOf(reString);
 
                             if (lat != null && !lat.equals("null") || (lng != null && !lng.equals("null"))) {
+
                                 // tmp hash map for detail [single]
-                                HashMap<String, String> details = new HashMap<String, String>();
+                                details = new HashMap<String, String>();
 
                                 // adding each child node to HashMap key => value
                                 details.put("plate_num", plate_num);
@@ -266,18 +307,62 @@ public class VehicleListFragment extends Fragment {
 
                                 a = details.get("date");
 
-                                // adding vehicle to vehicle list
+                                // adding details to vehicle list
                                 vehicle.add(details);
 
                                 /**
                                  * Updating parsed JSON data into ListView
                                  * */
-                                adapter = new SimpleAdapter(_context, vehicle,
+                                 adapter = new SimpleAdapter(_context, vehicle,
                                         R.layout.list_vehicle, new String[]{"plate_num",
                                         "location", "date", "time", "lat", "lng", "engine",
                                         "remarks"},
                                         new int[]{R.id.plate_num, R.id.location, R.id.date, R.id.time, R.id.latitude, R.id.longitude,
-                                                R.id.engine, R.id.remarks});
+                                                R.id.engine, R.id.remarks}) {
+
+                                     @Override
+                                     public View getView(int position, View convertView, ViewGroup parent) {
+                                         View v = convertView;
+                                         if(v== null){
+                                             LayoutInflater vi = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                             v=vi.inflate(R.layout.list_vehicle, null);
+                                         }
+
+                                         TextView textView = (TextView) v.findViewById(R.id.text);
+                                         if (position%4 == 0){
+                                             textView.setBackgroundColor(Color.parseColor("#add8e6"));
+                                         } else if (position%4 == 1){
+                                             textView.setBackgroundColor(Color.parseColor("#ffd700"));
+                                         } else if (position%4 == 2){
+                                             textView.setBackgroundColor(Color.parseColor("#ff69b4"));
+                                         } else if (position%4 == 3){
+                                             textView.setBackgroundColor(Color.parseColor("#ffa500"));
+                                         }
+
+                                         TextView plate_n = (TextView) v.findViewById(R.id.plate_num);
+                                         TextView dat = (TextView) v.findViewById(R.id.date);
+                                         TextView tim = (TextView) v.findViewById(R.id.time);
+                                         TextView loc = (TextView) v.findViewById(R.id.location);
+                                         TextView lat = (TextView) v.findViewById(R.id.latitude);
+                                         TextView lng = (TextView) v.findViewById(R.id.longitude);
+                                         TextView eng = (TextView) v.findViewById(R.id.engine);
+                                         TextView rem = (TextView) v.findViewById(R.id.remarks);
+
+                                         for(int i=0;i<details.size();i++) {
+                                             plate_n.setText(vehicle.get(position).get("plate_num"));
+                                             dat.setText(vehicle.get(position).get("date"));
+                                             tim.setText(vehicle.get(position).get("time"));
+                                             loc.setText(vehicle.get(position).get("location"));
+                                             lat.setText(vehicle.get(position).get("lat"));
+                                             lng.setText(vehicle.get(position).get("lng"));
+                                             eng.setText(vehicle.get(position).get("engine"));
+                                             rem.setText(vehicle.get(position).get("remarks"));
+                                         }
+
+                                         return v;
+                                     }
+                                 };
+
 
                                 lv.setAdapter(adapter);
 

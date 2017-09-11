@@ -1,5 +1,7 @@
 package com.journeytech.mark.mark.activity;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,9 +9,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -22,13 +25,17 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +45,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.journeytech.mark.mark.CustomTypeFaceSpan;
 import com.journeytech.mark.mark.GPSTracker;
+import com.journeytech.mark.mark.HttpHandler;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.list_fragment.VehicleListFragment;
 import com.journeytech.mark.mark.AlarmSheetModalFragment;
@@ -45,7 +53,19 @@ import com.journeytech.mark.mark.map_fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -58,6 +78,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
+import static android.content.ContentValues.TAG;
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
 import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
 import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
@@ -84,12 +105,19 @@ public class MainActivity extends AppCompatActivity
 
     public static Context _context;
 
-    public FloatingActionButton fab;
+    public ImageView fab;
 
     public static TextView counter;
 
     private String baseUrl = "http://mark.journeytech.com.ph/mobile_api/test/";
     private NetworkAPI networkAPI;
+
+    public static String dialog_msg = "";
+
+    String address;
+    GPSTracker gps = new GPSTracker(_context);
+    private ProgressDialog progress;
+    Double sLatitude, sLongitude;
 
     private interface NetworkAPI {
         @POST("alarm_api.php")
@@ -116,13 +144,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        for(Marker m : list) {
-            System.out.println(list+m.getSnippet() + m.getTitle() + m.getPosition() + " snippet");
-            if(m.getSnippet().toLowerCase().equals(query)) {
-                Toast.makeText(this, "You searched for: " + query , Toast.LENGTH_SHORT).show();
+        for (Marker m : list) {
+            System.out.println(list + m.getSnippet() + m.getTitle() + m.getPosition() + " snippet");
+            if (m.getSnippet().toLowerCase().equals(query)) {
+                Toast.makeText(this, "You searched for: " + query, Toast.LENGTH_SHORT).show();
                 mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 13.0f));
                 break; // stop the loop
-            } else if (!m.getSnippet().toLowerCase().equals(query)){
+            } else if (!m.getSnippet().toLowerCase().equals(query)) {
 //                mMapFragment.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 6.0f));
                 Toast.makeText(this, "Invalid Plate No.", Toast.LENGTH_SHORT).show();
             }
@@ -133,10 +161,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
-    }
-
-    private void centerMarker(String title) {
-
     }
 
     @Override
@@ -174,6 +198,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Counter();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -182,14 +212,12 @@ public class MainActivity extends AppCompatActivity
 
         _context = this;
 
-        counter = (TextView) findViewById(R.id.counter);
-
 //        getSupportActionBar().
 
-        Intent iin= getIntent();
+        Intent iin = getIntent();
         Bundle b = iin.getExtras();
 
-        if(b!=null) {
+        if (b != null) {
             status = (String) b.get("status");
             ucsi_num = (String) b.get("ucsi_num");
             client_table = (String) b.get("client_table");
@@ -227,7 +255,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setVoiceSearch(true);*/
         p = new Proximity();
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (ImageView) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,7 +265,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        TextView counter = (TextView) findViewById(R.id.counter);
+        counter = (TextView) findViewById(R.id.counter);
         counter.setText("");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -255,13 +283,13 @@ public class MainActivity extends AppCompatActivity
 
         //Set typeface roboto font to Navigation Text
         Menu m = navigationView.getMenu();
-        for (int i=0;i<m.size();i++) {
+        for (int i = 0; i < m.size(); i++) {
             MenuItem mi = m.getItem(i);
 
             //for aapplying a font to subMenu ...
             SubMenu subMenu = mi.getSubMenu();
-            if (subMenu!=null && subMenu.size() >0 ) {
-                for (int j=0; j <subMenu.size();j++) {
+            if (subMenu != null && subMenu.size() > 0) {
+                for (int j = 0; j < subMenu.size(); j++) {
                     MenuItem subMenuItem = subMenu.getItem(j);
                     applyFontToMenuItem(subMenuItem);
                 }
@@ -324,7 +352,7 @@ public class MainActivity extends AppCompatActivity
     private void applyFontToMenuItem(MenuItem mi) {
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
         SpannableString mNewTitle = new SpannableString(mi.getTitle());
-        mNewTitle.setSpan(new CustomTypeFaceSpan("" , font), 0 , mNewTitle.length(),  Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        mNewTitle.setSpan(new CustomTypeFaceSpan("", font), 0, mNewTitle.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         mi.setTitle(mNewTitle);
     }
 
@@ -583,16 +611,55 @@ public class MainActivity extends AppCompatActivity
             n.setLongitude(121.003601);
             VehicleMapFragment.createNavigation(list_location.get(list_location.size() - 1).getLatitude(), list_location.get(list_location.size() - 1).getLongitude());
 //            Toast.makeText(getApplicationContext(), lat+Longitude.toString(), Toast.LENGTH_SHORT).show();
-     */   } else if (id == R.id.account) {
+     */
+        } else if (id == R.id.account) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
+        } else if (id == R.id.system_alert) {
+            // create class object
+            gps = new GPSTracker(_context);
+            sLatitude = gps.getLatitude();
+            sLongitude = gps.getLongitude();
+
+            final Dialog dialog = new Dialog(MainActivity.this); // here write the name of your activity in place of "YourActivity"
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.system_alert);
+
+            TextView bt = (TextView) dialog.findViewById(R.id.btSend);
+            final EditText et = (EditText) dialog.findViewById(R.id.et_msg);
+
+            bt.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dialog_msg = et.getText().toString();
+                    if (dialog_msg.equals("") || dialog_msg == "" || dialog_msg.equals(null)) {
+                        Toast.makeText(_context, "Invalid Message Alert!", Toast.LENGTH_SHORT).show();
+                    } else {
+
+                        new GetAddress().execute();
+                        dialog.dismiss();
+                    }
+
+                }
+            });
+
+            TextView bt2 = (TextView) dialog.findViewById(R.id.btCancel);
+            bt2.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialog.show();
         } else if (id == R.id.sign_out) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Closing Activity")
                     .setMessage("Are you sure you want to Log Out?")
                     .setNegativeButton("No", null)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                    {
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent intent = new Intent(MainActivity.this, LogIn.class);// New activity
@@ -611,4 +678,125 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private class PostClass extends AsyncTask<String, Void, Void> {
+
+        private final Context context;
+
+        public PostClass(Context c) {
+
+            this.context = c;
+//            this.error = status;
+//            this.type = t;
+
+        }
+
+        protected void onPreExecute() {
+            progress = new ProgressDialog(this.context);
+            progress.setMessage("Loading");
+            progress.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String currentDateAndTime = sdf.format(new Date());
+
+                URL url = new URL("http://mark.journeytech.com.ph/mobile_alerts_api.php?location=" + URLEncoder.encode(address, "UTF-8") + "&msg=" + URLEncoder.encode(dialog_msg, "UTF-8") + "&datetime=" + URLEncoder.encode(currentDateAndTime, "UTF-8") + "&id=" + URLEncoder.encode(Build.SERIAL, "UTF-8"));
+
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("USER-AGENT", "Mozilla/5.0");
+                connection.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
+
+                int responseCode = connection.getResponseCode();
+
+                System.out.println("\nSending 'POST' request to URL : " + url);
+                System.out.println("Response Code : " + responseCode);
+
+                final StringBuilder output = new StringBuilder("Request URL " + url);
+                output.append(System.getProperty("line.separator") + "Request Parameters ");
+                output.append(System.getProperty("line.separator") + "Response Code " + responseCode);
+                output.append(System.getProperty("line.separator") + "Type " + "POST");
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line = "";
+                StringBuilder responseOutput = new StringBuilder();
+                System.out.println("output===============" + br);
+                while ((line = br.readLine()) != null) {
+                    responseOutput.append(line);
+                }
+                br.close();
+
+                output.append(System.getProperty("line.separator") + "Response " + System.getProperty("line.separator") + System.getProperty("line.separator") + responseOutput.toString());
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            progress.dismiss();
+            Toast.makeText(_context, "Your message has been forwarded.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private class GetAddress extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            progress = new ProgressDialog(MainActivity.this);
+            progress.setMessage("Getting your Location. \nPlease wait...");
+            progress.setCancelable(false);
+            progress.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            HttpHandler sh = new HttpHandler();
+
+            // Making a request to url and getting response
+            String jsonStr = sh.makeServiceCall("http://52.53.141.13:81/reverse.php?lat=" + sLatitude + "&lon=" + sLongitude + "&format=jsonv2");
+
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    address = jsonObj.getString("display_name");
+                    // Getting JSON Array node
+//                    address = jsonObj.getJSONArray("display_name");
+                    System.out.println(address + " asdasdasdassdsa");
+                } catch (final JSONException e) {
+                    Log.e(TAG, "Json parsing error: " + e.getMessage());
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        Toast.makeText(_context, address.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            if (progress.isShowing())
+                progress.dismiss();
+            new PostClass(_context).execute();
+        }
+    }
 }

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -113,9 +114,10 @@ public class ProximityListMapFragment extends Fragment implements OnMapReadyCall
                 .anchor(0.5f, 0.5f)
                 .title("My Location")
                 .snippet("This is where you are fetch.")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-            /*Integer cam = Integer.parseInt(distan);
+        mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 9.0f));
+/*            Integer cam = Integer.parseInt(distan);
             if(cam <= 50) {
                 mMapProximity.animateCamera(CameraUpdateFactory.newLatLngZoom(origin, 14.0f));
             }

@@ -30,33 +30,47 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:id="@+id/counter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:text="460"
-        android:elevation="7dp"
-        android:textColorHighlight="@color/colorBlack"
-        android:textColorHint="@color/colorBlack"
-        android:layout_marginBottom="35dp"
-        android:layout_gravity="bottom|end" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:elevation="0dp"
-        app:backgroundTint="@color/white"
-        app:borderWidth="0dp"
-        app:fabSize="normal"
-        app:layout_anchor="@+id/include2"
-        app:layout_anchorGravity="bottom|right"
-        app:srcCompat="@drawable/email" />
-
     <include
         android:id="@+id/include2"
         layout="@layout/content_main" />
+
+    <RelativeLayout
+        android:id="@+id/layoutforprofileimage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="top|left"
+        app:layout_anchor="@+id/include2"
+        app:layout_anchorGravity="bottom|right">
+
+        <ImageView
+            android:id="@+id/fab"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="top|center_horizontal"
+            android:padding="2dp"
+            android:src="@drawable/email"
+            app:layout_anchorGravity="bottom|right" />
+
+        <TextView
+            android:id="@+id/counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/fab"
+            android:layout_gravity="top"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/textview_design"
+            android:elevation="7dp"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="#FFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_anchorGravity="bottom|right" />
+    </RelativeLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:gravity="center|center_horizontal"
+        android:textSize="70sp"
+        android:textStyle="bold"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/linearLayout2" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -92,8 +105,8 @@
 
             <ImageView
                 android:id="@+id/arrow_right"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:gravity="right"
                 android:elevation="7dp"
                 android:src="@drawable/arrow_right"
@@ -209,4 +222,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

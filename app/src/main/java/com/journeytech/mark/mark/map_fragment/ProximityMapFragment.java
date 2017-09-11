@@ -124,7 +124,7 @@ public class ProximityMapFragment extends Fragment implements OnMapReadyCallback
                     .anchor(0.5f, 0.5f)
                     .title("My Location")
                     .snippet("This is where you are fetch.")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         } else{
             // can't get location
             // GPS or Network is not enabled
