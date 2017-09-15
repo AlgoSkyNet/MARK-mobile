@@ -12,8 +12,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,8 +41,8 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
+import static com.journeytech.mark.mark.list_fragment.SnailTrailTwoHrsFragment.dateFromListFragment;
+import static com.journeytech.mark.mark.list_fragment.SnailTrailTwoHrsFragment.dateToListFragment;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.plate_num;
 
 public class SnailTrailDatesFragment extends Fragment implements OnMapReadyCallback {
@@ -132,7 +130,7 @@ public class SnailTrailDatesFragment extends Fragment implements OnMapReadyCallb
         networkAPI = retrofit.create(NetworkAPI.class);
 
         SnailTrailPojo loginRequest = new SnailTrailPojo(plate_num, dateFromListFragment, dateToListFragment, client_table);
-        System.out.println(plate_num + dateFromListFragment+ dateToListFragment+ client_table +" JsonArray");
+        System.out.println(plate_num + dateFromListFragment + dateToListFragment + client_table + " JsonArray");
         Call<JsonElement> call = networkAPI.loginRequest(loginRequest);
 
         call.enqueue(new Callback<JsonElement>() {
@@ -239,7 +237,7 @@ public class SnailTrailDatesFragment extends Fragment implements OnMapReadyCallb
                     .title(location)
                     .snippet(remarks)
                     .icon(image));
-        }else if (index == response_last.body().getAsJsonArray().size() - 1){
+        } else if (index == response_last.body().getAsJsonArray().size() - 1) {
             image = BitmapDescriptorFactory.fromResource(R.drawable.end);
             mMapSnailTrail.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
@@ -247,7 +245,7 @@ public class SnailTrailDatesFragment extends Fragment implements OnMapReadyCallb
                     .title(location)
                     .snippet(remarks)
                     .icon(image));
-        }else {
+        } else {
             mMapSnailTrail.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)

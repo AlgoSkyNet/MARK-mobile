@@ -2,8 +2,10 @@ package com.journeytech.mark.mark.list_fragment;
 
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -12,17 +14,22 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,11 +45,11 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.maps.android.ui.IconGenerator;
-import com.journeytech.mark.mark.CustomDateTimePicker;
 import com.journeytech.mark.mark.R;
-import com.journeytech.mark.mark.map_fragment.SnailTrailMapFragment;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -58,17 +65,14 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
+import static com.journeytech.mark.mark.activity.MainActivity._context;
 import static com.journeytech.mark.mark.activity.MainActivity.client_table;
 import static com.journeytech.mark.mark.activity.MainActivity.manager;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.currentDateAndTime;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.minusTwoHourDateAndTime;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.plate_num;
-import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
-import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateToMapFragment;
 
-public class SnailTrailListFragment extends Fragment implements OnMapReadyCallback {
+@RequiresApi(api = Build.VERSION_CODES.O)
+public class SnailTrailTwoHrsFragment extends Fragment implements OnMapReadyCallback,
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private ProgressDialog pDialog;
 
@@ -86,9 +90,21 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
 
     Response<JsonElement> response_last;
 
-    CustomDateTimePicker custom, custom2;
+    private org.joda.time.LocalDateTime mLocalDateTime = new org.joda.time.LocalDateTime();
 
-    public SnailTrailListFragment(Context c, Activity a) {
+    String currentDateAndTime, minusTwoHourDateAndTime;
+    public static String dateFromListFragment = null, dateToListFragment = null;
+
+    int day, month, year, hour, minute;
+    int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal;
+    String dayFinalString, monthFinalString, yearFinalString, hourFinalString, minuteFinalString;
+
+    TextView et2;
+
+    String dateFrom;
+    String Dates, time;
+
+    public SnailTrailTwoHrsFragment(Context c, Activity a) {
         context = c;
         activity = a;
     }
@@ -113,6 +129,29 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
         }
     }
 
+    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+        yearFinal = i;
+        monthFinal = i1 + 1;
+        dayFinal = i2;
+
+        Calendar c = Calendar.getInstance();
+        hour = c.get(Calendar.HOUR_OF_DAY);
+        minute = c.get(Calendar.MINUTE);
+
+        Dates = (monthFinal < 10 ? ("0" + monthFinal) : (monthFinal)) + "-" + (dayFinal < 10 ? ("0" + dayFinal) : (dayFinal)) + "-" +  yearFinal ;
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(_context, this, hour, minute, DateFormat.is24HourFormat(_context));
+        timePickerDialog.show();
+    }
+
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+        hourFinal = i;
+        minuteFinal = i1;
+
+        time = (hourFinal < 10 ? ("0" + hourFinal) : (hourFinal)) + ":" + (minuteFinal < 10 ? ("0" + minuteFinal) : (minuteFinal));
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -134,7 +173,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                 dialog.setContentView(R.layout.date_time);
                 dialog.setCancelable(false);
 
-              ImageView close = (ImageView) dialog.findViewById(R.id.close);
+                ImageView close = (ImageView) dialog.findViewById(R.id.close);
                 close.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -142,52 +181,45 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                     }
                 });
 
-                final TextView et2 = (TextView) dialog.findViewById(R.id.editText2);
+                et2 = (TextView) dialog.findViewById(R.id.editText2);
                 et2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View arg0) {
-                        if (getActivity() == null) {
-                            System.out.println("yes");
-                        }
-                        custom = new
-                                CustomDateTimePicker(activity,
-                                new CustomDateTimePicker.ICustomDateTimeListener() {
-                                    @Override
-                                    public void onSet(Dialog dialog, Calendar calendarSelected,
-                                                      Date dateSelected, int year, String monthFullName,
-                                                      String monthShortName, int monthNumber, int date,
-                                                      String weekDayFullName, String weekDayShortName,
-                                                      int hour24, int hour12, int min, int sec,
-                                                      String AM_PM) {
+                        Calendar c = Calendar.getInstance();
+                        year = c.get(Calendar.YEAR);
+                        month = c.get(Calendar.MONTH);
+                        day = c.get(Calendar.DAY_OF_MONTH);
 
-                                        DecimalFormat df = new DecimalFormat("00");
-                                        String i_hr = df.format(hour24);
-                                        String i_min = df.format(min);
-                                        String i_sec = df.format(sec);
-                                        String i_monthNumber = df.format(monthNumber+1);
-                                        String i_calendar_day = df.format(calendarSelected
-                                                .get(Calendar.DAY_OF_MONTH));
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(_context, new DatePickerDialog.OnDateSetListener() {
 
-                                        dateFromListFragment = (i_monthNumber)
-                                                + "/" + i_calendar_day + "/" + year
-                                                + " " + i_hr + ":" + i_min
-                                                + ":" + i_sec;
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                                yearFinal = i;
+                                monthFinal = i1 + 1;
+                                dayFinal = i2;
 
-                                        et2.setText(dateFromListFragment);
-                                    }
+                                Calendar c = Calendar.getInstance();
+                                hour = c.get(Calendar.HOUR_OF_DAY);
+                                minute = c.get(Calendar.MINUTE);
+
+                                Dates = (monthFinal < 10 ? ("0" + monthFinal) : (monthFinal)) + "/" + (dayFinal < 10 ? ("0" + dayFinal) : (dayFinal)) + "/" +  yearFinal ;
+
+                                TimePickerDialog timePickerDialog = new TimePickerDialog(_context, new TimePickerDialog.OnTimeSetListener() {
 
                                     @Override
-                                    public void onCancel() {
+                                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                                        hourFinal = i;
+                                        minuteFinal = i1;
 
+                                        time = (hourFinal < 10 ? ("0" + hourFinal) : (hourFinal)) + ":" + (minuteFinal < 10 ? ("0" + minuteFinal) : (minuteFinal));
+                                        et2.setText(Dates + " " + time + ":00");
+                                        dateFromListFragment = et2.getText().toString();
                                     }
-                                });
+                                }, hour, minute, DateFormat.is24HourFormat(_context));
+                                timePickerDialog.show();
+                            }
+                        }, year, month, day);
 
-                        //Pass Directly current time format it will return AM and PM if you set false
-                        custom.set24HourFormat(false);
-
-                        //Pass Directly current data and time to show when it pop up
-                        custom.setDate(Calendar.getInstance());
-                        custom.showDialog();
-
+                        datePickerDialog.show();
                     }
                 });
 
@@ -195,46 +227,42 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                 et3.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        final FragmentManager manager = getFragmentManager();
-                        custom2 = new
-                                CustomDateTimePicker(activity,
-                                new CustomDateTimePicker.ICustomDateTimeListener() {
-                                    @Override
-                                    public void onSet(Dialog dialog, Calendar calendarSelected,
-                                                      Date dateSelected, int year, String monthFullName,
-                                                      String monthShortName, int monthNumber, int date,
-                                                      String weekDayFullName, String weekDayShortName,
-                                                      int hour24, int hour12, int min, int sec, String AM_PM) {
+                        Calendar c = Calendar.getInstance();
+                        year = c.get(Calendar.YEAR);
+                        month = c.get(Calendar.MONTH);
+                        day = c.get(Calendar.DAY_OF_MONTH);
 
-                                        DecimalFormat df = new DecimalFormat("00");
-                                        String i_hr = df.format(hour24);
-                                        String i_min = df.format(min);
-                                        String i_sec = df.format(sec);
-                                        String i_monthNumber = df.format(monthNumber+1);
-                                        String i_calendar_day = df.format(calendarSelected
-                                                .get(Calendar.DAY_OF_MONTH));
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(_context, new DatePickerDialog.OnDateSetListener() {
 
-                                        dateToListFragment = (i_monthNumber)
-                                                + "/" + i_calendar_day + "/" + year
-                                                + " " + i_hr + ":" + i_min
-                                                + ":" + i_sec;
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                                yearFinal = i;
+                                monthFinal = i1 + 1;
+                                dayFinal = i2;
 
-                                        et3.setText(dateToListFragment);
-                                    }
+                                Calendar c = Calendar.getInstance();
+                                hour = c.get(Calendar.HOUR_OF_DAY);
+                                minute = c.get(Calendar.MINUTE);
+
+                                Dates = (monthFinal < 10 ? ("0" + monthFinal) : (monthFinal)) + "/" + (dayFinal < 10 ? ("0" + dayFinal) : (dayFinal)) + "/" +  yearFinal ;
+
+                                TimePickerDialog timePickerDialog = new TimePickerDialog(_context, new TimePickerDialog.OnTimeSetListener() {
 
                                     @Override
-                                    public void onCancel() {
+                                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                                        hourFinal = i;
+                                        minuteFinal = i1;
 
+                                        time = (hourFinal < 10 ? ("0" + hourFinal) : (hourFinal)) + ":" + (minuteFinal < 10 ? ("0" + minuteFinal) : (minuteFinal));
+                                        et3.setText(Dates + " " + time + ":00");
+                                        dateToListFragment = et3.getText().toString();
                                     }
-                                });
+                                }, hour, minute, DateFormat.is24HourFormat(_context));
+                                timePickerDialog.show();
+                            }
+                        }, year, month, day);
 
-                        //Pass Directly current time format it will return AM and PM if you set false
-                        custom2.set24HourFormat(false);
-
-                        //Pass Directly current data and time to show when it pop up
-                        custom2.setDate(Calendar.getInstance());
-                        custom2.showDialog();
-
+                        datePickerDialog.show();
                     }
                 });
 
@@ -242,23 +270,41 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                 b5.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(dateFromListFragment == null || dateFromListFragment.equals("null")) {
+                        if (dateFromListFragment == null || dateFromListFragment.equals("null")) {
                             showToast("Please select Date From.");
-                        }
-                        else if(dateToListFragment == null || dateToListFragment.equals("null")) {
+                        } else if (dateToListFragment == null || dateToListFragment.equals("null")) {
                             showToast("Please select Date To.");
                         } else if (dateFromListFragment == null || dateFromListFragment.equals("null") && dateToListFragment == null || dateToListFragment.equals("null")) {
                             showToast("Date From and Date To is 'empty'.");
-                        }
-                         else if (dateToListFragment == dateFromListFragment) {
+                        } else if (dateToListFragment == dateFromListFragment) {
                             showToast("Invalid Date.");
+                        } else if (dateFromListFragment != null && dateFromListFragment != null) {
+                            System.out.println(dateFromListFragment + " " + dateToListFragment + " asdsd22222222");
+                            //Check if Date From is ahead than Date To..
+                            try {
+                                SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-                        }
-                        if (dateFromListFragment != null && dateFromListFragment != null) {
-                            SnailTrailDatesFragment stf = new SnailTrailDatesFragment(getContext(), getActivity());
-                            manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, stf).commit();
+                                String str1 = "10/13/2013 11:00:00";
+                                Date date1 = formatter.parse(dateFromListFragment);
 
-                            dialog.dismiss();
+                                String str2 = "10/13/2013 12:00:00";
+                                Date date2 = formatter.parse(dateToListFragment);
+
+                                //Check if Date From is ahead than Date To..
+                                if (date2.compareTo(date1) < 0) {
+                                    Toast.makeText(_context, "Invalid Date!!", Toast.LENGTH_LONG).show();
+                                    System.out.println(dateFromListFragment + " " + dateToListFragment + " asdsdddddddd");
+                                } else {
+                                    SnailTrailDatesFragment stf = new SnailTrailDatesFragment(getContext(), getActivity());
+                                    manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, stf).commit();
+
+                                    dialog.dismiss();
+                                }
+
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+
                         }
 
                     }
@@ -278,6 +324,10 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
+    }
+
+    private String formatDateString(org.joda.time.LocalDateTime localDateTime) {
+        return localDateTime.toString("MM/dd/yyyy HH:mm:ss");
     }
 
     public void onBackPressed() {
@@ -302,6 +352,11 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
 
     private void getDataFromServer() {
 
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+        currentDateAndTime = sdf.format(new Date());
+        minusTwoHourDateAndTime = sdf.format(new Date(System.currentTimeMillis() - 7200000));
+
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -324,6 +379,8 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
 
                 response_last = response;
+
+                System.out.println(response.body().toString() + " Asdasdasssss");
 
                 if (response.body().getAsJsonArray().size() != 0) {
                     // Showing progress dialog
@@ -391,7 +448,6 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                             createMarker(i, d1, d2, location, remarks);
 
 
-
                             if (i + 1 == response.body().getAsJsonArray().size()) {
                                 System.out.println(i + " asap");
                                 latitude = Double.parseDouble(lat);
@@ -406,9 +462,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                     // Adding the polyline to the map
                     mMapSnailTrail.addPolyline(polylineOptions);
                 } else if (response.body().getAsJsonArray().size() == 0) {
-                    Activity activity = getActivity();
-//                    Toast.makeText(activity, "No Data to display.", Toast.LENGTH_LONG).show();
-                    showToast("No Data to display.");
+                    Toast.makeText(activity, "No Data to display.", Toast.LENGTH_LONG).show();
                     pDialog = new ProgressDialog(getContext());
                     if (pDialog.isShowing()) {
                         pDialog.dismiss();
@@ -443,7 +497,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                     .title(location)
                     .snippet(remarks)
                     .icon(image));
-        }else if (index == response_last.body().getAsJsonArray().size()){
+        } else if (index == response_last.body().getAsJsonArray().size()) {
             image = BitmapDescriptorFactory.fromResource(R.drawable.end);
             mMapSnailTrail.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
@@ -451,7 +505,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
                     .title(location)
                     .snippet(remarks)
                     .icon(image));
-        }else {
+        } else {
             mMapSnailTrail.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
@@ -469,8 +523,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
 
     }
 
-    public Bitmap makeBitmap(Context context, String text)
-    {
+    public Bitmap makeBitmap(Context context, String text) {
         Resources resources = context.getResources();
         float scale = resources.getDisplayMetrics().density;
         Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.map_marker);
@@ -488,7 +541,7 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
         int y = bounds.height();
         canvas.drawText(text, x, y, paint);
 
-        return  bitmap;
+        return bitmap;
     }
 
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
@@ -520,7 +573,6 @@ public class SnailTrailListFragment extends Fragment implements OnMapReadyCallba
     }
 
     public void showToast(String msg) {
-        if (SnailTrailListFragment.this.isVisible() && msg != null & activity == null)
-            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

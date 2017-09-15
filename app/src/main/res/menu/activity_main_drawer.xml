@@ -26,17 +26,17 @@
 
     <item android:title="Account">
         <menu>
-            <item
+<!--            <item
                 android:id="@+id/account"
                 android:icon="@drawable/invi"
-                android:title="Account" />
+                android:title="Account" />-->
             <item
                 android:id="@+id/system_alert"
-                android:icon="@drawable/invi"
-                android:title="System Alert" />
+                android:icon="@drawable/system_assistance"
+                android:title="System Assistance" />
             <item
                 android:id="@+id/sign_out"
-                android:icon="@drawable/invi"
+                android:icon="@drawable/sign_out_drawer"
                 android:title="Sign Out" />
         </menu>
     </item>

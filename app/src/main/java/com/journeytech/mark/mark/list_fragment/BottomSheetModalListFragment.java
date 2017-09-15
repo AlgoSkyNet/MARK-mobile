@@ -9,24 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.journeytech.mark.mark.CustomDateTimePicker;
 import com.journeytech.mark.mark.R;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static com.journeytech.mark.mark.activity.LogIn.typeface;
 import static com.journeytech.mark.mark.activity.MainActivity.manager;
 
 public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
 
-    public static String dateFromListFragment = null, dateToListFragment = null;
-
-    CustomDateTimePicker custom, custom2;
-
     Activity activity;
-
-    public static String currentDateAndTime, minusTwoHourDateAndTime;
 
     public BottomSheetModalListFragment(Activity a) {
         this.activity = a;
@@ -71,12 +61,8 @@ public class BottomSheetModalListFragment extends BottomSheetDialogFragment {
         snailtrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-                currentDateAndTime = sdf.format(new Date());
-                minusTwoHourDateAndTime = sdf.format(new Date(System.currentTimeMillis() - 7200000));
-
-                SnailTrailListFragment stf = new SnailTrailListFragment(getContext(), getActivity());
+                SnailTrailTwoHrsFragment stf = new SnailTrailTwoHrsFragment(getContext(), getActivity());
                 manager.beginTransaction().addToBackStack("sd").replace(R.id.mainLayout, stf).commit();
 
                 dismiss();

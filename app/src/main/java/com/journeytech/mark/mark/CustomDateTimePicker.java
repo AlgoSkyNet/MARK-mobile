@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.journeytech.mark.mark.activity.MainActivity._context;
+
 /**
  * Created by rtyJa on 03/08/2017.
  */
@@ -47,7 +49,7 @@ public class CustomDateTimePicker implements View.OnClickListener {
         activity = a;
         iCustomDateTimeListener = customDateTimeListener;
 
-        dialog = new Dialog(activity);
+        dialog = new Dialog(_context);
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {

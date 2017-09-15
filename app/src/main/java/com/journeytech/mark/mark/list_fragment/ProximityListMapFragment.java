@@ -1,23 +1,13 @@
 package com.journeytech.mark.mark.list_fragment;
 
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,26 +16,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.journeytech.mark.mark.DirectionsJSONParser;
 import com.journeytech.mark.mark.GPSTracker;
 import com.journeytech.mark.mark.R;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import static com.journeytech.mark.mark.activity.MainActivity._context;
-import static com.journeytech.mark.mark.list_fragment.ProximityBottomSheetModalMapFragment.distanc;
-import static com.journeytech.mark.mark.list_fragment.ProximityBottomSheetModalMapFragment.tim;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.latitudeListMap;
 import static com.journeytech.mark.mark.list_fragment.VehicleListMapFragment.longitudeListMap;
 

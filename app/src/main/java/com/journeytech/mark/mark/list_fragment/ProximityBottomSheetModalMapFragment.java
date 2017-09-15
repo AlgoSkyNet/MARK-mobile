@@ -47,7 +47,7 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
     // GPSTracker class
     GPSTracker gps;
 
-    public static TextView distanc, tim;
+    public static TextView tvDistance, tvTime;
 
     ArrayList<LatLng> markerPoints;
 
@@ -95,8 +95,8 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
         View contentView = View.inflate(getContext(), R.layout.proximity_bottomsheet3, null);
 
         TextView plate_n = (TextView) contentView.findViewById(R.id.plate_num);
-        distanc = (TextView) contentView.findViewById(R.id.TVDistance);
-        tim = (TextView) contentView.findViewById(R.id.TVTime);
+        tvDistance = (TextView) contentView.findViewById(R.id.TVDistance);
+        tvTime = (TextView) contentView.findViewById(R.id.TVTime);
         plate_n.setText("PLATE NO.: " + plate_num + "\n" +
                 "LAST SEEN: " + date + " " + time + "\n" +
                 "LOCATION: " + location + "\n" +
@@ -341,10 +341,10 @@ public class ProximityBottomSheetModalMapFragment extends BottomSheetDialogFragm
 
             }
 
-            distanc.setText(distance);
-            tim.setText(duration);
+            tvDistance.setText(distance);
+            tvTime.setText(duration);
 
-            if(distanc.getText().toString().equals(null) || distanc.getText().toString() == "") {
+            if(tvDistance.getText().toString().equals(null) || tvDistance.getText().toString() == "") {
                 dismiss();
             }
 

@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -23,6 +24,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
@@ -48,7 +50,6 @@ import com.journeytech.mark.mark.GPSTracker;
 import com.journeytech.mark.mark.HttpHandler;
 import com.journeytech.mark.mark.R;
 import com.journeytech.mark.mark.list_fragment.VehicleListFragment;
-import com.journeytech.mark.mark.AlarmSheetModalFragment;
 import com.journeytech.mark.mark.map_fragment.VehicleMapFragment;
 import com.journeytech.mark.mark.model.LocationHolder;
 import com.journeytech.mark.mark.model.Proximity;
@@ -59,6 +60,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -79,8 +82,8 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 import static android.content.ContentValues.TAG;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateFromListFragment;
-import static com.journeytech.mark.mark.list_fragment.BottomSheetModalListFragment.dateToListFragment;
+import static com.journeytech.mark.mark.list_fragment.SnailTrailTwoHrsFragment.dateFromListFragment;
+import static com.journeytech.mark.mark.list_fragment.SnailTrailTwoHrsFragment.dateToListFragment;
 import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateFromMapFragment;
 import static com.journeytech.mark.mark.map_fragment.BottomSheetModalMapFragment.dateToMapFragment;
 import static com.journeytech.mark.mark.map_fragment.VehicleMapFragment.list;
@@ -118,6 +121,8 @@ public class MainActivity extends AppCompatActivity
     GPSTracker gps = new GPSTracker(_context);
     private ProgressDialog progress;
     Double sLatitude, sLongitude;
+
+    TelephonyManager telephonyManager = null;
 
     private interface NetworkAPI {
         @POST("alarm_api.php")
@@ -201,6 +206,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         Counter();
+
     }
 
     @Override
@@ -257,13 +263,13 @@ public class MainActivity extends AppCompatActivity
 
         fab = (ImageView) findViewById(R.id.fab);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+/*        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlarmSheetModalFragment bottomSheetDialogFragment = new AlarmSheetModalFragment();
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
             }
-        });
+        });*/
 
         counter = (TextView) findViewById(R.id.counter);
         counter.setText("");
@@ -612,9 +618,9 @@ public class MainActivity extends AppCompatActivity
             VehicleMapFragment.createNavigation(list_location.get(list_location.size() - 1).getLatitude(), list_location.get(list_location.size() - 1).getLongitude());
 //            Toast.makeText(getApplicationContext(), lat+Longitude.toString(), Toast.LENGTH_SHORT).show();
      */
-        } else if (id == R.id.account) {
+        } /*else if (id == R.id.account) {
             Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG).show();
-        } else if (id == R.id.system_alert) {
+        }*/ else if (id == R.id.system_alert) {
             // create class object
             gps = new GPSTracker(_context);
             sLatitude = gps.getLatitude();
@@ -678,6 +684,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // System Alert
     private class PostClass extends AsyncTask<String, Void, Void> {
 
         private final Context context;
@@ -691,9 +698,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         protected void onPreExecute() {
-            progress = new ProgressDialog(this.context);
+/*            progress = new ProgressDialog(this.context);
             progress.setMessage("Loading");
-            progress.show();
+            progress.show();*/
         }
 
         @Override
@@ -702,8 +709,11 @@ public class MainActivity extends AppCompatActivity
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String currentDateAndTime = sdf.format(new Date());
+                System.out.println(address + dialog_msg+currentDateAndTime+" "+Build.SERIAL+" 11211222312123");
 
                 URL url = new URL("http://mark.journeytech.com.ph/mobile_alerts_api.php?location=" + URLEncoder.encode(address, "UTF-8") + "&msg=" + URLEncoder.encode(dialog_msg, "UTF-8") + "&datetime=" + URLEncoder.encode(currentDateAndTime, "UTF-8") + "&id=" + URLEncoder.encode(Build.SERIAL, "UTF-8"));
+
+
 
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -743,12 +753,14 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            progress.dismiss();
+//            progress.dismiss();
             Toast.makeText(_context, "Your message has been forwarded.", Toast.LENGTH_SHORT).show();
         }
 
     }
 
+    // System Alert..
+    // Parsing Address
     private class GetAddress extends AsyncTask<Void, Void, Void> {
 
         @Override

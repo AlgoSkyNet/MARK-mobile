@@ -73,6 +73,9 @@ public class AlarmSheetVehicleListMapModalFragment extends BottomSheetDialogFrag
     @Override
     public void setupDialog(final Dialog dialog, int style) {
         super.setupDialog(dialog, style);
+
+        alarms.clear();
+
         View contentView = View.inflate(getContext(), R.layout.list_alarm_bottomsheet3, null);
         lv = (ListView) contentView.findViewById(R.id.list);
 

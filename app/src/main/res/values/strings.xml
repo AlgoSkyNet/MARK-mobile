@@ -18,6 +18,8 @@
     <string name="cancel">Cancel</string>
     <string name="vehicleList">Vehicle List</string>
 
+    <string name="choose_date_or_time">Choose Date or Time:</string>
+
     <string-array name="query_suggestions">
         <item>Android</item>
         <item>iOS</item>

@@ -212,6 +212,8 @@ public class VehicleListMapFragment extends Fragment implements OnMapReadyCallba
 
         AlarmPojo alarm = new AlarmPojo(client_table, MainActivity.ucsi_num, plate_num);
 
+        System.out.println(client_table+ MainActivity.ucsi_num+ plate_num + " asdasddddddd");
+
         Call<JsonElement> call = networkAPI.alarm(alarm);
 
         call.enqueue(new Callback<JsonElement>() {
