@@ -140,8 +140,6 @@ public class SnailTrailTwoHrsFragment extends Fragment implements OnMapReadyCall
 
         Dates = (monthFinal < 10 ? ("0" + monthFinal) : (monthFinal)) + "-" + (dayFinal < 10 ? ("0" + dayFinal) : (dayFinal)) + "-" +  yearFinal ;
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(_context, this, hour, minute, DateFormat.is24HourFormat(_context));
-        timePickerDialog.show();
     }
 
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
